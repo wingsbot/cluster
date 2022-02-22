@@ -1,0 +1,35 @@
+{
+  "name": "wings",
+  "version": "1.0.0",
+  "description": "Discord Bot",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "nodemon --watch 'build/**/*' build/src/index.js",
+    "compile-protos": "sh compile-protos.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wingsbot/cluster.git"
+  },
+  "author": "ShyPianoGuy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wingsbot/cluster/issues"
+  },
+  "homepage": "https://github.com/wingsbot/cluster#readme",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.5.5",
+    "canvas": "^2.9.0",
+    "eris": "github:DevinThePancake/eris#dev",
+    "ioredis": "^4.28.5",
+    "long": "^5.2.0",
+    "mongodb": "^4.4.0",
+    "protobufjs": "^6.11.2",
+    "ts-proto": "^1.106.1",
+    "undici": "^4.14.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.69.1",
+    "xo": "^0.48.0"
+  }
+}

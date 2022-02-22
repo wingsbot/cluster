@@ -1,0 +1,52 @@
+import type { Collection } from 'mongodb';
+import { ModuleBase } from '../lib/framework';
+import type { Gang } from '../lib/interfaces/Economy.d';
+
+export class Gangs extends ModuleBase {
+  private readonly db: Collection<{ _id: string }> = this.client.db.collection('gangs');
+
+  public async getGang(gangId: string) {
+    const gang = await this.db.findOne({ _id: gangId }) as Gang;
+
+    return gang;
+  }
+
+  public removeGang(gangId: string) {
+    this.db.deleteOne({ _id: gangId });
+  }
+
+  public createGang(gangObject: Gang) {
+    const gangId = this.createGangId();
+
+    this.db.insertOne(Object.assign(gangObject, { _id: gangId }));
+  }
+
+  public updateGang(gangId: string, gangObject: Gang) {
+    this.db.updateOne({ _id: gangId }, { $set: gangObject });
+  }
+
+  public async getAllGangs() {
+    const gang = await this.db.find().toArray() as Gang[];
+
+    return gang;
+  }
+
+  public async getTop10Gangs() {
+    const gangs = await this.db.aggregate([
+      { $addFields: { sortOrder: { $add: ['$balance'] } } },
+      { $sort: { sortOrder: -1 } },
+      { $project: { sortOrder: 0 } },
+    ]).limit(10).toArray() as Gang[];
+
+    return gangs;
+  }
+
+  private async createGangId(): Promise<string> {
+    const gangs = await this.db.find().toArray();
+    const id = this.client.util.generateId();
+
+    if (gangs.find(g => g._id === id)) return this.createGangId();
+
+    return id;
+  }
+}

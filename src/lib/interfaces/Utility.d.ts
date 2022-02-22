@@ -1,0 +1,29 @@
+export interface Units {
+  ms: number;
+  millis: number;
+  millisecond: number;
+  milliseconds: number;
+  s: number;
+  sec: number;
+  second: number;
+  seconds: number;
+  m: number;
+  min: number;
+  minute: number;
+  minutes: number;
+  h: number;
+  hour: number;
+  hours: number;
+  d: number;
+  day: number;
+  days: number;
+  w: number;
+  week: number;
+  weeks: number;
+  mth: number;
+  month: number;
+  months: number;
+  y: number;
+  year: number;
+  years: number;
+}

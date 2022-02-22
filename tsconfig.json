@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "declaration": false,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "outDir": "./build",
+    "target": "es2019",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+  },
+  "include": [
+    "./src",
+    "./src/**/*.json",
+    "./generated"
+  ],
+  "exclude": [
+    "./node_modules",
+    "./build"
+  ]
+}
+  
