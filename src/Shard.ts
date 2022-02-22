@@ -83,7 +83,7 @@ export class Shard extends Client {
 
   public async fetchUser(userId: string) {
     if (this.users.has(userId)) return this.users.get(userId);
-
+    // testin webhook
     return this.getRESTUser(userId);
   }
 
