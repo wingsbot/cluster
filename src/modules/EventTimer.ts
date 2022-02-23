@@ -1,13 +1,11 @@
-import { Collection } from 'mongodb';
 import type { Shard } from '../Shard';
 import { ModuleBase } from '../lib/framework/bases/ModuleBase';
 import { EventManager } from '../lib/framework/utils/EventManager';
-import type { ItemExpire, ShopItemExpire, TimerData } from '../lib/interfaces/EventTimer.d';
+import { EventItem, TimedEvent } from '../lib/interfaces/EventTimer';
 
 export class EventTimer extends ModuleBase {
-  private readonly db: Collection = this.client.db.collection('timedEvents');
   private readonly eventManager: EventManager = new EventManager();
-  private readonly timers: TimerData[] = [];
+  private readonly timers: TimedEvent[] = [];
 
   constructor(client: Shard) {
     super(client);
@@ -17,11 +15,11 @@ export class EventTimer extends ModuleBase {
   }
 
   private async setup() {
-    const timers = await this.db.find().toArray() as TimerData[];
+    const timers = await this.client.grpc.timedEvents.getAllEvents();
 
     for (const timer of timers) {
-      if (timer.data.guildId) {
-        const shardId = (Number(timer.data.guildId) >> 22) % this.client.totalShards;
+      if (timer.guildId) {
+        const shardId = (Number(timer.guildId) >> 22) % this.client.totalShards;
         if (!this.client.shards.find(s => s.id === shardId)) continue;
       }
 
@@ -30,21 +28,21 @@ export class EventTimer extends ModuleBase {
     }
   }
 
-  private async handleEvent(timer: TimerData) {
+  private async handleEvent(timer: TimedEvent) {
     if (!timer) return;
 
     switch (timer.type) {
       case 'activeItemTimer': {
-        const data = timer.data as ItemExpire;
+        const item = await this.client.grpc.timedEvents.getEventItem(timer.id);
 
-        this.client.modules.economy.removeActiveItem(data.userId, data.item);
+        this.client.modules.economy.removeActiveItem(timer.userId, item);
         break;
       }
 
       case 'limitedItemTimer': {
-        const data = timer.data as ShopItemExpire;
+        const item = await this.client.grpc.timedEvents.getEventItem(timer.id);
 
-        this.client.modules.shop.removeSpecialItem(data.item);
+        this.client.modules.shop.removeSpecialItem(item);
         break;
       }
 
@@ -56,24 +54,18 @@ export class EventTimer extends ModuleBase {
     this.expireEvent(timer);
   }
 
-  private expireEvent(timer: TimerData) {
-    const index = this.timers.findIndex(t => t._id === timer._id);
+  private expireEvent(timer: TimedEvent) {
+    const index = this.timers.findIndex(t => t.id === timer.id);
     if (index === -1) return;
 
     this.timers.splice(index, 1);
-    this.db.deleteOne({ _id: timer._id });
+    this.client.grpc.timedEvents.removeEvent(timer.id);
   }
 
-  public async setupTimer(type: string, time: number, data: TimerData['data']) {
-    const timer: TimerData = {
-      type,
-      time,
-      data,
-    };
+  public async setupTimer(timer: TimedEvent, item: EventItem) {
+    const timerData = await this.client.grpc.timedEvents.addEvent(timer, item);
 
-    const timerData = await this.db.insertOne(timer);
-
-    timer._id = timerData.insertedId;
+    timer.id = timerData.id;
     this.timers.push(timer);
 
     this.eventManager.queueEvent(timer);

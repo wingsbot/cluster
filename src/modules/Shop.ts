@@ -1,5 +1,5 @@
 import { ModuleBase } from '../lib/framework';
-import type { Item, SpecialItem } from '../lib/interfaces/Shop.d';
+import type { Item, SpecialItem } from '../lib/interfaces/Shop';
 import { shopItems } from '../lib/core';
 import type { Shard } from '../Shard';
 

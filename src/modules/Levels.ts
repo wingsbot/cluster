@@ -3,7 +3,7 @@ import { Constants, Message } from 'eris';
 
 import type { Shard } from '../Shard';
 import { ModuleBase } from '../lib/framework/bases/ModuleBase';
-import type { UserLevelData } from '../lib/interfaces/Levels.d';
+import type { UserLevelData } from '../lib/interfaces/Levels';
 
 export class Levels extends ModuleBase {
   private readonly db: Collection<{ _id: string }> = this.client.db.collection('levels');

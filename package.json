@@ -4,8 +4,9 @@
   "description": "Discord Bot",
   "main": "src/index.js",
   "scripts": {
-    "test": "nodemon --watch 'build/**/*' build/src/index.js",
-    "compile-protos": "sh compile-protos.sh"
+    "build": "tsc",
+    "compile-protos": "sh compile-protos.sh",
+    "test": "nodemon --watch 'build/**/*' build/src/index.js"
   },
   "repository": {
     "type": "git",

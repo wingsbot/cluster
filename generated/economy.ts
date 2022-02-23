@@ -63,7 +63,7 @@ export interface ActiveItem {
   id?: number | undefined;
   itemId: string;
   userId: string;
-  guildId: string;
+  guildId?: string | undefined;
   name: string;
   description: string;
   price: number;
@@ -742,7 +742,7 @@ function createBaseActiveItem(): ActiveItem {
     id: undefined,
     itemId: "",
     userId: "",
-    guildId: "",
+    guildId: undefined,
     name: "",
     description: "",
     price: 0,
@@ -777,7 +777,7 @@ export const ActiveItem = {
     if (message.userId !== "") {
       writer.uint32(26).string(message.userId);
     }
-    if (message.guildId !== "") {
+    if (message.guildId !== undefined) {
       writer.uint32(34).string(message.guildId);
     }
     if (message.name !== "") {
@@ -919,7 +919,7 @@ export const ActiveItem = {
       id: isSet(object.id) ? Number(object.id) : undefined,
       itemId: isSet(object.itemId) ? String(object.itemId) : "",
       userId: isSet(object.userId) ? String(object.userId) : "",
-      guildId: isSet(object.guildId) ? String(object.guildId) : "",
+      guildId: isSet(object.guildId) ? String(object.guildId) : undefined,
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
       price: isSet(object.price) ? Number(object.price) : 0,
@@ -996,7 +996,7 @@ export const ActiveItem = {
     message.id = object.id ?? undefined;
     message.itemId = object.itemId ?? "";
     message.userId = object.userId ?? "";
-    message.guildId = object.guildId ?? "";
+    message.guildId = object.guildId ?? undefined;
     message.name = object.name ?? "";
     message.description = object.description ?? "";
     message.price = object.price ?? 0;

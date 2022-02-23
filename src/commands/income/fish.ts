@@ -1,6 +1,6 @@
 import { TextChannel } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
-import { Item } from '../../lib/interfaces/Shop.d';
+import { Item } from '../../lib/interfaces/Shop';
 
 export default class Fish extends CommandBase {
   public description = 'Go fishin for Wings!';

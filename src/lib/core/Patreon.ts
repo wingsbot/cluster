@@ -1,7 +1,7 @@
 import type { Collection } from 'mongodb';
 import { request } from 'undici';
 import type { Shard } from '../../Shard';
-import type { TokenRefreshData, PatreonData, UserPatronData } from '../interfaces/Patreons.d';
+import type { TokenRefreshData, PatreonData, UserPatronData } from '../interfaces/Patreons';
 
 export class Patreon {
   private readonly client: Shard;

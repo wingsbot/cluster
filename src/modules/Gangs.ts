@@ -1,6 +1,6 @@
 import type { Collection } from 'mongodb';
 import { ModuleBase } from '../lib/framework';
-import type { Gang } from '../lib/interfaces/Economy.d';
+import type { Gang } from '../lib/interfaces/Economy';
 
 export class Gangs extends ModuleBase {
   private readonly db: Collection<{ _id: string }> = this.client.db.collection('gangs');

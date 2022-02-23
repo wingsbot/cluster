@@ -1,11 +1,11 @@
-import type { TimerData } from '../../../interfaces/EventTimer.d';
+import type { TimedEvent } from '../../../interfaces/EventTimer';
 import type { EventManager } from '../EventManager';
 
 export class Default {
   private readonly manager: EventManager;
-  private readonly timer: TimerData;
+  private readonly timer: TimedEvent;
 
-  constructor(manager: EventManager, timer: TimerData) {
+  constructor(manager: EventManager, timer: TimedEvent) {
     this.manager = manager;
     this.timer = timer;
   }

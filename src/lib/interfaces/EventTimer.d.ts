@@ -1,20 +1,32 @@
-import type { ObjectId } from 'bson';
-import type { ActiveItem, Item } from './Shop.d';
-
-export interface TimerData {
-  _id?: ObjectId;
+export interface TimedEvent {
+  id?: number;
   time: number;
   type: string;
-  data: ItemExpire | ShopItemExpire;
-}
-
-export interface ItemExpire {
-  guildId: string;
-  userId: string;
-  item: ActiveItem;
-}
-
-export interface ShopItemExpire {
   guildId?: string;
-  item: Item;
+  userId?: string;
 }
+
+export interface EventItem {
+  id?: number;
+  eventId: number;
+  itemId: string;
+  userId: string;
+  name: string;
+  description: string;
+  price: number;
+  canBeSold: boolean;
+  replyMessage: string;
+  count: number;
+  useable: boolean;
+  powerUp?: boolean;
+  cooldownBetweenPurchase?: number;
+  priceStack?: boolean;
+  durability?: number;
+  maxDurability?: number;
+  maxInInv?: number;
+  stock?: number;
+  usageTime?: number;
+  timeBought?: number;
+  timeUsed?: number;
+}
+

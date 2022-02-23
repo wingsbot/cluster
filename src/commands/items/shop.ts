@@ -1,7 +1,7 @@
 import { Constants, InteractionButton } from 'eris';
 import { CommandBase, CommandData, ComponentData } from '../../lib/framework';
 import { MessageComponent } from '../../lib/framework/utils';
-import type { Item } from '../../lib/interfaces/Shop.d';
+import type { Item } from '../../lib/interfaces/Shop';
 
 export default class Shop extends CommandBase {
   public description = 'Fishing Rods, Pickaxes, Robber Stopper, and more!';

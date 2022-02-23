@@ -1,6 +1,6 @@
 import { EventEmitter } from 'node:events';
 import { Shard } from '../../../Shard';
-import { GameData } from '../../interfaces/Games.d';
+import { GameData } from '../../interfaces/Games';
 
 export class RussianUtil extends EventEmitter {
   private readonly client: Shard;

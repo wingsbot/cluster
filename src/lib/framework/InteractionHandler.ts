@@ -5,7 +5,7 @@ import type { EventListeners, ApplicationCommandStructure } from 'eris';
 import { Responder } from '../core';
 import { Store } from '../core/fs/Store';
 
-import type { Item } from '../interfaces/Shop.d';
+import type { Item } from '../interfaces/Shop';
 import type { Shard } from '../../Shard';
 import { CooldownGuard } from './guards/CooldownGuard';
 import type { CommandBase, CommandData, ComponentData } from '.';

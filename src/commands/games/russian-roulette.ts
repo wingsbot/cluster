@@ -1,7 +1,7 @@
 import { ApplicationCommandOptions, ComponentInteraction, Constants, Message } from 'eris';
 import { CommandBase, CommandData, InteractionTimeoutError, AwaitComponentReturn } from '../../lib/framework';
 import { MessageComponent, RussianUtil } from '../../lib/framework/utils';
-import { GameData } from '../../lib/interfaces/Games.d';
+import { GameData } from '../../lib/interfaces/Games';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

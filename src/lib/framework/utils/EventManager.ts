@@ -1,11 +1,11 @@
 
 import EventEmitter from 'node:events';
-import { TimerData } from '../../interfaces/EventTimer.d';
+import { TimedEvent } from '../../interfaces/EventTimer';
 import { Default } from './timers/Default';
 
 export class EventManager extends EventEmitter {
-  private readonly pendingEvents: TimerData[] = [];
-  private readonly cutoff: number = 1000 * 60 * 60 * 24 * 7;
+  private readonly pendingEvents: TimedEvent[] = [];
+  private readonly cutOff: number = 1000 * 60 * 60 * 24 * 7;
 
   constructor() {
     super();
@@ -14,7 +14,7 @@ export class EventManager extends EventEmitter {
   }
 
   private async checkPending() {
-    const pending = this.pendingEvents.filter(timer => timer.time - Date.now() <= this.cutoff);
+    const pending = this.pendingEvents.filter(timer => timer.time - Date.now() <= this.cutOff);
 
     if (pending.length <= 0) return;
 
@@ -22,11 +22,11 @@ export class EventManager extends EventEmitter {
       event.time = Date.now() + (event.time - Date.now());
 
       this.setupTimer(event);
-      this.pendingEvents.splice(this.pendingEvents.findIndex(timer => timer._id === event._id), 1);
+      this.pendingEvents.splice(this.pendingEvents.findIndex(timer => timer.id === event.id), 1);
     }
   }
 
-  public setupTimer(timer: TimerData) {
+  public setupTimer(timer: TimedEvent) {
     const { type } = timer;
 
     switch (type) {
@@ -41,8 +41,8 @@ export class EventManager extends EventEmitter {
     }
   }
 
-  public queueEvent(timer: TimerData) {
-    if (timer.time - Date.now() <= this.cutoff) {
+  public queueEvent(timer: TimedEvent) {
+    if (timer.time - Date.now() <= this.cutOff) {
       this.setupTimer(timer);
     } else {
       this.pendingEvents.push(timer);

@@ -6,7 +6,7 @@ import { join } from 'node:path';
 
 import { IPC } from './lib/core/IPC';
 
-import type { Config, StartMessage } from './lib/interfaces/Client.d';
+import type { Config, StartMessage } from './lib/interfaces/Client';
 
 import { config, Store } from './lib/core';
 import { Patreon } from './lib/core/Patreon';
@@ -14,7 +14,7 @@ import { ClientUtil } from './lib/core/utils/Util';
 
 import { CommandBase, EventBase, InteractionHandler } from './lib/framework';
 import { ModuleHandler, Modules } from './lib/framework/ModuleHandler';
-import type { GameData } from './lib/interfaces/Games.d';
+import type { GameData } from './lib/interfaces/Games';
 import { GRPC } from './lib/core/GRPC';
 
 export class Shard extends Client {

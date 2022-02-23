@@ -2,7 +2,7 @@ import { ApplicationCommandOptions, Constants } from 'eris';
 import type { Responder } from '../../lib/core';
 import { CommandBase, CommandData, InteractionTimeoutError, AwaitComponentReturn } from '../../lib/framework';
 import { BlackjackUtil, MessageComponent } from '../../lib/framework/utils';
-import type { BlackjackData, GameData } from '../../lib/interfaces/Games.d';
+import type { BlackjackData, GameData } from '../../lib/interfaces/Games';
 
 export default class Blackjack extends CommandBase {
   public description = 'Play blackjack against Wings.';

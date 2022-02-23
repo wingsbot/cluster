@@ -1,6 +1,6 @@
-import type { TopTenUser, UserData } from '../lib/interfaces/Economy.d';
+import type { TopTenUser, UserData } from '../lib/interfaces/Economy';
 import { ModuleBase } from '../lib/framework/bases/ModuleBase';
-import { ActiveItem, Item } from '../lib/interfaces/Shop.d';
+import { ActiveItem, Item } from '../lib/interfaces/Shop';
 
 export class Economy extends ModuleBase {
   public readonly userCache: Map<string, UserData> = new Map();

@@ -1,6 +1,6 @@
 import type { CommandInteraction, ComponentInteraction } from 'eris';
 import type { AwaitComponentReturn } from '../../framework/InteractionHandler';
-import type { Units } from '../../interfaces/Utility.d';
+import type { Units } from '../../interfaces/Utility';
 import { InteractionTimeoutError } from '../../framework/errors/InteractionTimeoutError';
 
 import type { Shard } from '../../../Shard';

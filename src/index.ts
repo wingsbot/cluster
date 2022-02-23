@@ -1,5 +1,5 @@
 import master, { Worker } from 'node:cluster';
-import type { Config } from './lib/interfaces/Client.d';
+import type { Config } from './lib/interfaces/Client';
 import { config } from './lib/core';
 
 export interface Outputs {

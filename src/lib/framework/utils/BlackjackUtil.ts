@@ -1,6 +1,6 @@
 import EventEmitter from 'node:events';
 import { Shard } from '../../../Shard';
-import type { GameData, BlackjackData, Hand } from '../../interfaces/Games.d';
+import type { GameData, BlackjackData, Hand } from '../../interfaces/Games';
 
 const emojis = {
   AC: '<:AC:777051438634893312>', '2C': '<:2C:777634070867083336>', '3C': '<:3C:777051538027053086>',

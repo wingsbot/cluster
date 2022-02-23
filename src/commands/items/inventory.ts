@@ -1,7 +1,7 @@
 import { ComponentInteractionSelectMenuData, Constants, InteractionButton, SelectMenu, SelectMenuOptions } from 'eris';
 import { CommandBase, CommandData, ComponentData } from '../../lib/framework';
 import { MessageComponent } from '../../lib/framework/utils';
-import { Item } from '../../lib/interfaces/Shop.d';
+import { Item } from '../../lib/interfaces/Shop';
 
 export default class Inventory extends CommandBase {
   public description = 'Check the items you have!';
