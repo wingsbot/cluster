@@ -29,7 +29,7 @@ export class Shop extends ModuleBase {
   }
 
   public getShopItems(): Item[] {
-    return Object.assign({}, [...Object.values(this.shopCache), ...this.defaultItems]) as Item[];
+    return [...Object.values(this.shopCache), ...this.defaultItems] as Item[];
   }
 
   public getShopItem(itemId: string | number) {

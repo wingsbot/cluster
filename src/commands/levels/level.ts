@@ -34,14 +34,14 @@ export default class Level extends CommandBase {
     const userId = options?.[0]?.value as string || interaction.member.id;
     const user = await this.client.fetchUser(userId);
 
-    const userLevelData = this.client.modules.levels.getUserData(userId);
+    const userLevelData = await this.client.modules.levels.getUserData(userId);
     const xpToFinishLevel = this.client.modules.levels.xpToFinishLevel(userLevelData.level);
     const rank = await this.client.modules.levels.getUserRank(userId);
 
     const canvas = createCanvas(1250, 600);
     const ctx = canvas.getContext('2d');
 
-    const background = await loadImage(userLevelData.levelPicture.backgroundURL);
+    const background = await loadImage(userLevelData.backgroundURL);
     const avatarURL = await loadImage(user.avatarURL);
 
     // draw the starting canvas image
@@ -56,21 +56,21 @@ export default class Level extends CommandBase {
     ctx.stroke();
     ctx.clip();
     ctx.drawImage(background,
-      userLevelData.levelPicture.backgroundX || 0,
-      userLevelData.levelPicture.backgroundY || 0,
-      userLevelData.levelPicture.backgroundW || background.width,
-      userLevelData.levelPicture.backgroundH || background.height);
+      userLevelData.backgroundX || 0,
+      userLevelData.backgroundY || 0,
+      userLevelData.backgroundW || background.width,
+      userLevelData.backgroundH || background.height);
     ctx.restore();
 
     // sets the big background square
-    ctx.globalAlpha = userLevelData.levelPicture.bigSquareOpacity;
+    ctx.globalAlpha = userLevelData.bigSquareOpacity;
     this.roundRectangle(ctx, {
       x: 25,
       y: 125,
       w: 1200,
       h: 450,
       radius: 100,
-      color: userLevelData.levelPicture.bigSquareColor,
+      color: userLevelData.bigSquareColor,
     });
     ctx.globalAlpha = 1;
     ctx.save();
@@ -90,31 +90,31 @@ export default class Level extends CommandBase {
       y: 400,
       completedSize: 18,
       leftSize: 15,
-      completedColor: userLevelData.levelPicture.filledDotsColor,
-      leftColor: userLevelData.levelPicture.emptyDotsColor,
+      completedColor: userLevelData.filledDotsColor,
+      leftColor: userLevelData.emptyDotsColor,
       userPercent: userLevelData.percent,
     });
 
     // username
-    ctx.fillStyle = userLevelData.levelPicture.usernameColor;
+    ctx.fillStyle = userLevelData.usernameColor;
     ctx.textAlign = 'center';
     ctx.font = 'bold 60px calibri';
     ctx.fillText(`${user.tag}`, 625, 305);
 
     // global rank
-    ctx.fillStyle = userLevelData.levelPicture.rankColor;
+    ctx.fillStyle = userLevelData.rankColor;
     ctx.font = 'bold 60px calibri';
     ctx.textAlign = 'right';
     ctx.fillText(`Rank #${rank.toLocaleString()}`, 1150, 90);
 
     // XP till next level text
-    ctx.fillStyle = userLevelData.levelPicture.xpColor;
+    ctx.fillStyle = userLevelData.xpColor;
     ctx.font = '45px calibri';
     ctx.textAlign = 'center';
     ctx.fillText(`${this.fixedNumber(xpToFinishLevel - userLevelData.exp)} XP to reach next level.`, 625, 525);
 
     // Current level
-    ctx.fillStyle = userLevelData.levelPicture.levelColor;
+    ctx.fillStyle = userLevelData.levelColor;
     ctx.textAlign = 'left';
     ctx.font = 'bold 60px calibri';
     ctx.fillText(`Level ${userLevelData.level}`, 90, 90);

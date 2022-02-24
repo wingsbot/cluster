@@ -141,17 +141,19 @@ export class Economy extends ModuleBase {
 
   public async setActiveItem(userId: string, guildId: string, item: Item) {
     const activeItems = await this.getActiveItems(userId);
-    const newActiveItem = await this.client.grpc.economy.addActiveItem(userId, Object.assign(item, { guildId }));
+    const newActiveItem = await this.client.grpc.economy.addActiveItem(userId, Object.assign(item, { guildId, timeUsed: Date.now() }));
 
     activeItems.push(newActiveItem);
 
-    if (item.usageTime) {
+    this.activeItemsCache.set(userId, activeItems);
+
+    if (newActiveItem.usageTime) {
       const timer = {
         userId,
         guildId,
         type: 'activeItemTimer',
         time: item.timeUsed + item.usageTime,
-        itemId: item.id,
+        itemId: newActiveItem.id,
       };
 
       await this.client.modules.eventTimer.setupTimer(timer);
@@ -162,6 +164,8 @@ export class Economy extends ModuleBase {
     const userActiveItems = await this.getActiveItems(userId);
 
     userActiveItems.splice(userActiveItems.findIndex(uItem => uItem.id === item.id), 1);
+
+    this.activeItemsCache.set(userId, userActiveItems);
 
     await this.client.grpc.economy.removeActiveItem(userId, item);
   }
