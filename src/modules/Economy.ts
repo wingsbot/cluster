@@ -133,18 +133,29 @@ export class Economy extends ModuleBase {
     return userActiveItems;
   }
 
-  public async getActiveItem(userId: string, itemId: string) {
+  public async getActiveItem(userId: string, itemId: number | string) {
     const activeItems = await this.getActiveItems(userId);
 
-    return activeItems.find(item => item.itemId === itemId);
+    return activeItems.find(item => typeof itemId === 'string' ? item.itemId === itemId : item.id === itemId);
   }
 
   public async setActiveItem(userId: string, guildId: string, item: Item) {
     const activeItems = await this.getActiveItems(userId);
-    const activeItem = Object.assign(item, { guildId });
-    const newActiveItem = await this.client.grpc.economy.addActiveItem(userId, activeItem);
+    const newActiveItem = await this.client.grpc.economy.addActiveItem(userId, Object.assign(item, { guildId }));
 
     activeItems.push(newActiveItem);
+
+    if (item.usageTime) {
+      const timer = {
+        userId,
+        guildId,
+        type: 'activeItemTimer',
+        time: item.timeUsed + item.usageTime,
+        itemId: item.id,
+      };
+
+      await this.client.modules.eventTimer.setupTimer(timer);
+    }
   }
 
   public async removeActiveItem(userId: string, item: ActiveItem) {

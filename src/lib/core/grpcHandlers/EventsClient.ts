@@ -1,38 +1,26 @@
 import { ChannelCredentials } from '@grpc/grpc-js';
-import { AddEventRequest, AddEventResponse, EventItem,
-  EventsClient, GetEventItemRequest, GetEventItemResponse,
-  RemoveEventRequest,
-  RemoveEventResponse,
-  TimedEvent } from '../../../../generated/events';
+import { AddEventRequest, AddEventResponse, EventsClient,
+  RemoveEventRequest, RemoveEventResponse, TimedEvent } from '../../../../generated/events';
 
 export class GrpcEventsClient {
-  private readonly shopClient: EventsClient;
+  private readonly eventsClient: EventsClient;
 
   constructor(address: string, credentials: ChannelCredentials) {
-    this.shopClient = new EventsClient(address, credentials);
+    this.eventsClient = new EventsClient(address, credentials);
   }
 
   public async getAllEvents(): Promise<TimedEvent[]> {
     return new Promise((resolve, reject) => {
-      this.shopClient.getAllEvents(null, (error, response) => {
+      this.eventsClient.getAllEvents(null, (error, response) => {
         if (error) reject(error);
         resolve(response.events);
       });
     });
   }
 
-  public async getEventItem(eventId: number): Promise<GetEventItemResponse> {
+  public async addEvent(event: TimedEvent): Promise<AddEventResponse> {
     return new Promise((resolve, reject) => {
-      this.shopClient.getEventItem(GetEventItemRequest.fromJSON({ eventId }), (error, response) => {
-        if (error) reject(error);
-        resolve(response);
-      });
-    });
-  }
-
-  public async addEvent(event: TimedEvent, item: EventItem): Promise<AddEventResponse> {
-    return new Promise((resolve, reject) => {
-      this.shopClient.addEvent(AddEventRequest.fromJSON({ event, item }), (error, response) => {
+      this.eventsClient.addEvent(AddEventRequest.fromJSON({ event }), (error, response) => {
         if (error) reject(error);
         resolve(response);
       });
@@ -41,7 +29,7 @@ export class GrpcEventsClient {
 
   public async removeEvent(eventId: number): Promise<RemoveEventResponse> {
     return new Promise((resolve, reject) => {
-      this.shopClient.removeEvent(RemoveEventRequest.fromJSON({ eventId }), (error, response) => {
+      this.eventsClient.removeEvent(RemoveEventRequest.fromJSON({ eventId }), (error, response) => {
         if (error) reject(error);
         resolve(response);
       });

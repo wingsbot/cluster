@@ -1,15 +1,10 @@
 export interface UserLevelData {
-  _id?: string;
-  userId: string;
+  id: string;
   exp: number;
   level: number;
   total: number;
   percent: number;
   cooldown: number;
-  levelPicture: UserLevelPicture;
-}
-
-export interface UserLevelPicture {
   usernameColor: string;
   bigSquareColor: string;
   bigSquareOpacity: number;

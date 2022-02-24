@@ -1,7 +1,7 @@
 import type { Shard } from '../Shard';
 import { ModuleBase } from '../lib/framework/bases/ModuleBase';
 import { EventManager } from '../lib/framework/utils/EventManager';
-import { EventItem, TimedEvent } from '../lib/interfaces/EventTimer';
+import { TimedEvent } from '../lib/interfaces/EventTimer';
 
 export class EventTimer extends ModuleBase {
   private readonly eventManager: EventManager = new EventManager();
@@ -33,14 +33,14 @@ export class EventTimer extends ModuleBase {
 
     switch (timer.type) {
       case 'activeItemTimer': {
-        const item = await this.client.grpc.timedEvents.getEventItem(timer.id);
+        const item = await this.client.modules.economy.getActiveItem(timer.userId, timer.itemId);
 
         this.client.modules.economy.removeActiveItem(timer.userId, item);
         break;
       }
 
       case 'limitedItemTimer': {
-        const item = await this.client.grpc.timedEvents.getEventItem(timer.id);
+        const item = this.client.modules.shop.getShopItem(timer.itemId);
 
         this.client.modules.shop.removeSpecialItem(item);
         break;
@@ -62,8 +62,8 @@ export class EventTimer extends ModuleBase {
     this.client.grpc.timedEvents.removeEvent(timer.id);
   }
 
-  public async setupTimer(timer: TimedEvent, item: EventItem) {
-    const timerData = await this.client.grpc.timedEvents.addEvent(timer, item);
+  public async setupTimer(timer: TimedEvent) {
+    const timerData = await this.client.grpc.timedEvents.addEvent(timer);
 
     timer.id = timerData.id;
     this.timers.push(timer);

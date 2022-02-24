@@ -29,17 +29,13 @@ export class Shop extends ModuleBase {
   }
 
   public getShopItems(): Item[] {
-    return [...Object.values(this.shopCache), ...this.defaultItems] as Item[];
+    return Object.assign({}, [...Object.values(this.shopCache), ...this.defaultItems]) as Item[];
   }
 
-  public getShopItem(itemId: string) {
+  public getShopItem(itemId: string | number) {
     const shopItems = this.getShopItems();
 
-    for (let i = 0; i < this.getShopItems().length; i++) {
-      shopItems[i] = this.getShopItems()[i];
-    }
-
-    return shopItems.find(item => item.itemId === itemId);
+    return shopItems.find(item => typeof itemId === 'string' ? item.itemId === itemId : item.id === itemId);
   }
 
   // special limited time items

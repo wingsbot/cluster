@@ -25,7 +25,7 @@ export interface ActiveItem {
   id?: number;
   itemId: string;
   userId: string;
-  guildId?: string;
+  guildId: string;
   name: string;
   description: string;
   price: number;
