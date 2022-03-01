@@ -17,8 +17,8 @@ export interface Item {
   maxInInv?: number;
   stock?: number;
   usageTime?: number;
-  timeBought?: number;
-  timeUsed?: number;
+  timeBought?: Date;
+  timeUsed?: Date;
 }
 
 export interface ActiveItem {
@@ -41,8 +41,8 @@ export interface ActiveItem {
   maxInInv?: number;
   stock?: number;
   usageTime?: number;
-  timeBought?: number;
-  timeUsed?: number;
+  timeBought?: Date;
+  timeUsed?: Date;
 }
 
 export interface SpecialItem {
@@ -63,6 +63,6 @@ export interface SpecialItem {
   maxInInv?: number;
   stock?: number;
   usageTime?: number;
-  timeBought?: number;
-  timeUsed?: number;
+  timeBought?: Date;
+  timeUsed?: Date;
 }

@@ -111,7 +111,7 @@ export default class Level extends CommandBase {
     ctx.fillStyle = userLevelData.xpColor;
     ctx.font = '45px calibri';
     ctx.textAlign = 'center';
-    ctx.fillText(`${this.fixedNumber(xpToFinishLevel - userLevelData.exp)} XP to reach next level.`, 625, 525);
+    ctx.fillText(`${this.fixedNumber(userLevelData.exp - xpToFinishLevel)} XP to reach next level.`, 625, 525);
 
     // Current level
     ctx.fillStyle = userLevelData.levelColor;

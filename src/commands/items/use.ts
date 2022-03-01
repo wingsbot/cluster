@@ -26,7 +26,10 @@ export default class Use extends CommandBase {
       return;
     }
 
-    if (existingItem.powerUp) await this.client.modules.economy.setActiveItem(interaction.member.id, interaction.guildID, existingItem);
+    if (existingItem.powerUp) {
+      await this.client.modules.economy.removeInventoryItem(interaction.member.id, existingItem);
+      await this.client.modules.economy.setActiveItem(interaction.member.id, interaction.guildID, existingItem);
+    }
 
     responder.send(existingItem.replyMessage);
   };

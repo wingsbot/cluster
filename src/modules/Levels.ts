@@ -63,7 +63,14 @@ export class Levels extends ModuleBase {
     }
 
     this.levelCache.set(cachedUser.id, cachedUser);
-    await this.client.grpc.levels.updateUser(cachedUser.id, cachedUser);
+
+    const grpcLevel = Object.assign(cachedUser, {
+      exp: cachedUser.exp.toString(),
+      total: cachedUser.total.toString(),
+      cooldown: cachedUser.cooldown.toString(),
+    });
+
+    await this.client.grpc.levels.updateUser(cachedUser.id, grpcLevel);
   }
 
   public xpRequiredForLevel(level: number) {
@@ -74,15 +81,24 @@ export class Levels extends ModuleBase {
     return Math.round((5 * (level ** 2)) + (50 * level) + 100);
   }
 
-  public async getUserData(userId: string) {
+  public async getUserData(userId: string): Promise<UserLevelData> {
     if (this.levelCache.has(userId)) return this.levelCache.get(userId);
 
     const data = await this.client.grpc.levels.getUserData(userId);
-    return data ?? Object.assign({ id: userId }, this.defaultLevelData);
+
+    if (data) {
+      return Object.assign(data, {
+        exp: Number(data.exp),
+        total: Number(data.total),
+        cooldown: Number(data.cooldown),
+      });
+    }
+
+    return Object.assign({ id: userId }, this.defaultLevelData);
   }
 
   public async getUserRank(userId: string) {
-    const users = await this.client.grpc.levels.getAllUsers() as UserLevelData[];
+    const users = await this.client.grpc.levels.getAllUsers();
     return users.findIndex(user => user.id === userId) + 1;
   }
 }

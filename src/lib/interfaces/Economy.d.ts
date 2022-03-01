@@ -3,7 +3,7 @@ export interface UserData {
   balance: number;
   bank: number;
   bankCap: number;
-  gangId: string;
+  gangId?: string;
 }
 
 export interface TopTenUser {

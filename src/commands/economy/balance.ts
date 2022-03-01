@@ -27,7 +27,7 @@ export default class Balance extends CommandBase {
       __**Total**:__ ${this.client.modules.economy.parseInt(userData.balance + userData.bank)}`,
       fields: [{
         name: 'Active Items',
-        value: activeItems.length > 0 ? activeItems.map(item => `${item.name} - <t:${Math.floor((item.timeUsed + item.usageTime) / 1000)}:R>`).join('\n') : 'None',
+        value: activeItems.length > 0 ? activeItems.map(item => `${item.name} - <t:${Math.floor((item.timeUsed.getTime() + item.usageTime) / 1000)}:R>`).join('\n') : 'None',
       }],
     });
   };

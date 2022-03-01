@@ -12,12 +12,12 @@ export class Default {
 
   async update() {
     const { time } = this.timer;
-    if (time - Date.now() <= 0) {
+    if (Number(time) - Date.now() <= 0) {
       this.manager.emit('eventExpire', this.timer);
       return;
     }
 
-    const interval = time - Date.now() <= 10000 ? 1000 : (time - Date.now()) / 10;
+    const interval = Number(time) - Date.now() <= 10000 ? 1000 : (Number(time) - Date.now()) / 10;
     setTimeout(this.update.bind(this), interval);
   }
 }

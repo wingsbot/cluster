@@ -42,7 +42,7 @@ export default class Buy extends CommandBase {
 
     await this.client.modules.economy.editBalance(interaction.member.id, -shopItem.price);
 
-    shopItem.timeBought = Date.now();
+    shopItem.timeBought = new Date();
     shopItem.userId = interaction.member.id;
 
     if (shopItem.itemId === 'upgradebank') {

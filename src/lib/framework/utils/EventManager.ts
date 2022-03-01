@@ -14,12 +14,12 @@ export class EventManager extends EventEmitter {
   }
 
   private async checkPending() {
-    const pending = this.pendingEvents.filter(timer => timer.time - Date.now() <= this.cutOff);
+    const pending = this.pendingEvents.filter(timer => Number(timer.time) - Date.now() <= this.cutOff);
 
     if (pending.length <= 0) return;
 
     for (const event of pending) {
-      event.time = Date.now() + (event.time - Date.now());
+      event.time = (Date.now() + (Number(event.time) - Date.now())).toString();
 
       this.setupTimer(event);
       this.pendingEvents.splice(this.pendingEvents.findIndex(timer => timer.id === event.id), 1);
@@ -42,7 +42,7 @@ export class EventManager extends EventEmitter {
   }
 
   public queueEvent(timer: TimedEvent) {
-    if (timer.time - Date.now() <= this.cutOff) {
+    if (Number(timer.time) - Date.now() <= this.cutOff) {
       this.setupTimer(timer);
     } else {
       this.pendingEvents.push(timer);

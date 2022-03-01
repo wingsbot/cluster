@@ -13,6 +13,7 @@ import {
   ServiceError,
 } from "@grpc/grpc-js";
 import _m0 from "protobufjs/minimal";
+import { Timestamp } from "./google/protobuf/timestamp";
 
 export const protobufPackage = "shop";
 
@@ -31,21 +32,21 @@ export interface AddSpecialItemResponse {
   itemId: string;
   name: string;
   description: string;
-  price: number;
+  price: string;
   canBeSold: boolean;
   replyMessage: string;
   count: number;
   useable: boolean;
   powerUp?: boolean | undefined;
-  cooldownBetweenPurchase?: number | undefined;
+  cooldownBetweenPurchase?: string | undefined;
   priceStack?: boolean | undefined;
   durability?: number | undefined;
   maxDurability?: number | undefined;
   maxInInv?: number | undefined;
   stock?: number | undefined;
-  usageTime?: number | undefined;
-  timeBought?: number | undefined;
-  timeUsed?: number | undefined;
+  usageTime?: string | undefined;
+  timeBought?: Date | undefined;
+  timeUsed?: Date | undefined;
 }
 
 export interface RemoveSpecialItemRequest {
@@ -59,21 +60,21 @@ export interface SpecialItem {
   itemId: string;
   name: string;
   description: string;
-  price: number;
+  price: string;
   canBeSold: boolean;
   replyMessage: string;
   count: number;
   useable: boolean;
   powerUp?: boolean | undefined;
-  cooldownBetweenPurchase?: number | undefined;
+  cooldownBetweenPurchase?: string | undefined;
   priceStack?: boolean | undefined;
   durability?: number | undefined;
   maxDurability?: number | undefined;
   maxInInv?: number | undefined;
   stock?: number | undefined;
-  usageTime?: number | undefined;
-  timeBought?: number | undefined;
-  timeUsed?: number | undefined;
+  usageTime?: string | undefined;
+  timeBought?: Date | undefined;
+  timeUsed?: Date | undefined;
 }
 
 function createBaseGetSpecialItemsRequest(): GetSpecialItemsRequest {
@@ -258,7 +259,7 @@ function createBaseAddSpecialItemResponse(): AddSpecialItemResponse {
     itemId: "",
     name: "",
     description: "",
-    price: 0,
+    price: "",
     canBeSold: false,
     replyMessage: "",
     count: 0,
@@ -293,8 +294,8 @@ export const AddSpecialItemResponse = {
     if (message.description !== "") {
       writer.uint32(34).string(message.description);
     }
-    if (message.price !== 0) {
-      writer.uint32(41).fixed64(message.price);
+    if (message.price !== "") {
+      writer.uint32(42).string(message.price);
     }
     if (message.canBeSold === true) {
       writer.uint32(48).bool(message.canBeSold);
@@ -312,7 +313,7 @@ export const AddSpecialItemResponse = {
       writer.uint32(80).bool(message.powerUp);
     }
     if (message.cooldownBetweenPurchase !== undefined) {
-      writer.uint32(89).fixed64(message.cooldownBetweenPurchase);
+      writer.uint32(90).string(message.cooldownBetweenPurchase);
     }
     if (message.priceStack !== undefined) {
       writer.uint32(96).bool(message.priceStack);
@@ -330,13 +331,19 @@ export const AddSpecialItemResponse = {
       writer.uint32(129).fixed64(message.stock);
     }
     if (message.usageTime !== undefined) {
-      writer.uint32(137).fixed64(message.usageTime);
+      writer.uint32(138).string(message.usageTime);
     }
     if (message.timeBought !== undefined) {
-      writer.uint32(145).fixed64(message.timeBought);
+      Timestamp.encode(
+        toTimestamp(message.timeBought),
+        writer.uint32(146).fork()
+      ).ldelim();
     }
     if (message.timeUsed !== undefined) {
-      writer.uint32(153).fixed64(message.timeUsed);
+      Timestamp.encode(
+        toTimestamp(message.timeUsed),
+        writer.uint32(154).fork()
+      ).ldelim();
     }
     return writer;
   },
@@ -364,7 +371,7 @@ export const AddSpecialItemResponse = {
           message.description = reader.string();
           break;
         case 5:
-          message.price = longToNumber(reader.fixed64() as Long);
+          message.price = reader.string();
           break;
         case 6:
           message.canBeSold = reader.bool();
@@ -382,9 +389,7 @@ export const AddSpecialItemResponse = {
           message.powerUp = reader.bool();
           break;
         case 11:
-          message.cooldownBetweenPurchase = longToNumber(
-            reader.fixed64() as Long
-          );
+          message.cooldownBetweenPurchase = reader.string();
           break;
         case 12:
           message.priceStack = reader.bool();
@@ -402,13 +407,17 @@ export const AddSpecialItemResponse = {
           message.stock = longToNumber(reader.fixed64() as Long);
           break;
         case 17:
-          message.usageTime = longToNumber(reader.fixed64() as Long);
+          message.usageTime = reader.string();
           break;
         case 18:
-          message.timeBought = longToNumber(reader.fixed64() as Long);
+          message.timeBought = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 19:
-          message.timeUsed = longToNumber(reader.fixed64() as Long);
+          message.timeUsed = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -424,7 +433,7 @@ export const AddSpecialItemResponse = {
       itemId: isSet(object.itemId) ? String(object.itemId) : "",
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
-      price: isSet(object.price) ? Number(object.price) : 0,
+      price: isSet(object.price) ? String(object.price) : "",
       canBeSold: isSet(object.canBeSold) ? Boolean(object.canBeSold) : false,
       replyMessage: isSet(object.replyMessage)
         ? String(object.replyMessage)
@@ -433,7 +442,7 @@ export const AddSpecialItemResponse = {
       useable: isSet(object.useable) ? Boolean(object.useable) : false,
       powerUp: isSet(object.powerUp) ? Boolean(object.powerUp) : undefined,
       cooldownBetweenPurchase: isSet(object.cooldownBetweenPurchase)
-        ? Number(object.cooldownBetweenPurchase)
+        ? String(object.cooldownBetweenPurchase)
         : undefined,
       priceStack: isSet(object.priceStack)
         ? Boolean(object.priceStack)
@@ -446,11 +455,13 @@ export const AddSpecialItemResponse = {
         : undefined,
       maxInInv: isSet(object.maxInInv) ? Number(object.maxInInv) : undefined,
       stock: isSet(object.stock) ? Number(object.stock) : undefined,
-      usageTime: isSet(object.usageTime) ? Number(object.usageTime) : undefined,
+      usageTime: isSet(object.usageTime) ? String(object.usageTime) : undefined,
       timeBought: isSet(object.timeBought)
-        ? Number(object.timeBought)
+        ? fromJsonTimestamp(object.timeBought)
         : undefined,
-      timeUsed: isSet(object.timeUsed) ? Number(object.timeUsed) : undefined,
+      timeUsed: isSet(object.timeUsed)
+        ? fromJsonTimestamp(object.timeUsed)
+        : undefined,
     };
   },
 
@@ -461,7 +472,7 @@ export const AddSpecialItemResponse = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.price !== undefined && (obj.price = Math.round(message.price));
+    message.price !== undefined && (obj.price = message.price);
     message.canBeSold !== undefined && (obj.canBeSold = message.canBeSold);
     message.replyMessage !== undefined &&
       (obj.replyMessage = message.replyMessage);
@@ -469,9 +480,7 @@ export const AddSpecialItemResponse = {
     message.useable !== undefined && (obj.useable = message.useable);
     message.powerUp !== undefined && (obj.powerUp = message.powerUp);
     message.cooldownBetweenPurchase !== undefined &&
-      (obj.cooldownBetweenPurchase = Math.round(
-        message.cooldownBetweenPurchase
-      ));
+      (obj.cooldownBetweenPurchase = message.cooldownBetweenPurchase);
     message.priceStack !== undefined && (obj.priceStack = message.priceStack);
     message.durability !== undefined &&
       (obj.durability = Math.round(message.durability));
@@ -480,12 +489,11 @@ export const AddSpecialItemResponse = {
     message.maxInInv !== undefined &&
       (obj.maxInInv = Math.round(message.maxInInv));
     message.stock !== undefined && (obj.stock = Math.round(message.stock));
-    message.usageTime !== undefined &&
-      (obj.usageTime = Math.round(message.usageTime));
+    message.usageTime !== undefined && (obj.usageTime = message.usageTime);
     message.timeBought !== undefined &&
-      (obj.timeBought = Math.round(message.timeBought));
+      (obj.timeBought = message.timeBought.toISOString());
     message.timeUsed !== undefined &&
-      (obj.timeUsed = Math.round(message.timeUsed));
+      (obj.timeUsed = message.timeUsed.toISOString());
     return obj;
   },
 
@@ -497,7 +505,7 @@ export const AddSpecialItemResponse = {
     message.itemId = object.itemId ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? "";
-    message.price = object.price ?? 0;
+    message.price = object.price ?? "";
     message.canBeSold = object.canBeSold ?? false;
     message.replyMessage = object.replyMessage ?? "";
     message.count = object.count ?? 0;
@@ -631,7 +639,7 @@ function createBaseSpecialItem(): SpecialItem {
     itemId: "",
     name: "",
     description: "",
-    price: 0,
+    price: "",
     canBeSold: false,
     replyMessage: "",
     count: 0,
@@ -666,8 +674,8 @@ export const SpecialItem = {
     if (message.description !== "") {
       writer.uint32(34).string(message.description);
     }
-    if (message.price !== 0) {
-      writer.uint32(41).fixed64(message.price);
+    if (message.price !== "") {
+      writer.uint32(42).string(message.price);
     }
     if (message.canBeSold === true) {
       writer.uint32(48).bool(message.canBeSold);
@@ -685,7 +693,7 @@ export const SpecialItem = {
       writer.uint32(80).bool(message.powerUp);
     }
     if (message.cooldownBetweenPurchase !== undefined) {
-      writer.uint32(89).fixed64(message.cooldownBetweenPurchase);
+      writer.uint32(90).string(message.cooldownBetweenPurchase);
     }
     if (message.priceStack !== undefined) {
       writer.uint32(96).bool(message.priceStack);
@@ -703,13 +711,19 @@ export const SpecialItem = {
       writer.uint32(129).fixed64(message.stock);
     }
     if (message.usageTime !== undefined) {
-      writer.uint32(137).fixed64(message.usageTime);
+      writer.uint32(138).string(message.usageTime);
     }
     if (message.timeBought !== undefined) {
-      writer.uint32(145).fixed64(message.timeBought);
+      Timestamp.encode(
+        toTimestamp(message.timeBought),
+        writer.uint32(146).fork()
+      ).ldelim();
     }
     if (message.timeUsed !== undefined) {
-      writer.uint32(153).fixed64(message.timeUsed);
+      Timestamp.encode(
+        toTimestamp(message.timeUsed),
+        writer.uint32(154).fork()
+      ).ldelim();
     }
     return writer;
   },
@@ -734,7 +748,7 @@ export const SpecialItem = {
           message.description = reader.string();
           break;
         case 5:
-          message.price = longToNumber(reader.fixed64() as Long);
+          message.price = reader.string();
           break;
         case 6:
           message.canBeSold = reader.bool();
@@ -752,9 +766,7 @@ export const SpecialItem = {
           message.powerUp = reader.bool();
           break;
         case 11:
-          message.cooldownBetweenPurchase = longToNumber(
-            reader.fixed64() as Long
-          );
+          message.cooldownBetweenPurchase = reader.string();
           break;
         case 12:
           message.priceStack = reader.bool();
@@ -772,13 +784,17 @@ export const SpecialItem = {
           message.stock = longToNumber(reader.fixed64() as Long);
           break;
         case 17:
-          message.usageTime = longToNumber(reader.fixed64() as Long);
+          message.usageTime = reader.string();
           break;
         case 18:
-          message.timeBought = longToNumber(reader.fixed64() as Long);
+          message.timeBought = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         case 19:
-          message.timeUsed = longToNumber(reader.fixed64() as Long);
+          message.timeUsed = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -794,7 +810,7 @@ export const SpecialItem = {
       itemId: isSet(object.itemId) ? String(object.itemId) : "",
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
-      price: isSet(object.price) ? Number(object.price) : 0,
+      price: isSet(object.price) ? String(object.price) : "",
       canBeSold: isSet(object.canBeSold) ? Boolean(object.canBeSold) : false,
       replyMessage: isSet(object.replyMessage)
         ? String(object.replyMessage)
@@ -803,7 +819,7 @@ export const SpecialItem = {
       useable: isSet(object.useable) ? Boolean(object.useable) : false,
       powerUp: isSet(object.powerUp) ? Boolean(object.powerUp) : undefined,
       cooldownBetweenPurchase: isSet(object.cooldownBetweenPurchase)
-        ? Number(object.cooldownBetweenPurchase)
+        ? String(object.cooldownBetweenPurchase)
         : undefined,
       priceStack: isSet(object.priceStack)
         ? Boolean(object.priceStack)
@@ -816,11 +832,13 @@ export const SpecialItem = {
         : undefined,
       maxInInv: isSet(object.maxInInv) ? Number(object.maxInInv) : undefined,
       stock: isSet(object.stock) ? Number(object.stock) : undefined,
-      usageTime: isSet(object.usageTime) ? Number(object.usageTime) : undefined,
+      usageTime: isSet(object.usageTime) ? String(object.usageTime) : undefined,
       timeBought: isSet(object.timeBought)
-        ? Number(object.timeBought)
+        ? fromJsonTimestamp(object.timeBought)
         : undefined,
-      timeUsed: isSet(object.timeUsed) ? Number(object.timeUsed) : undefined,
+      timeUsed: isSet(object.timeUsed)
+        ? fromJsonTimestamp(object.timeUsed)
+        : undefined,
     };
   },
 
@@ -831,7 +849,7 @@ export const SpecialItem = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.price !== undefined && (obj.price = Math.round(message.price));
+    message.price !== undefined && (obj.price = message.price);
     message.canBeSold !== undefined && (obj.canBeSold = message.canBeSold);
     message.replyMessage !== undefined &&
       (obj.replyMessage = message.replyMessage);
@@ -839,9 +857,7 @@ export const SpecialItem = {
     message.useable !== undefined && (obj.useable = message.useable);
     message.powerUp !== undefined && (obj.powerUp = message.powerUp);
     message.cooldownBetweenPurchase !== undefined &&
-      (obj.cooldownBetweenPurchase = Math.round(
-        message.cooldownBetweenPurchase
-      ));
+      (obj.cooldownBetweenPurchase = message.cooldownBetweenPurchase);
     message.priceStack !== undefined && (obj.priceStack = message.priceStack);
     message.durability !== undefined &&
       (obj.durability = Math.round(message.durability));
@@ -850,12 +866,11 @@ export const SpecialItem = {
     message.maxInInv !== undefined &&
       (obj.maxInInv = Math.round(message.maxInInv));
     message.stock !== undefined && (obj.stock = Math.round(message.stock));
-    message.usageTime !== undefined &&
-      (obj.usageTime = Math.round(message.usageTime));
+    message.usageTime !== undefined && (obj.usageTime = message.usageTime);
     message.timeBought !== undefined &&
-      (obj.timeBought = Math.round(message.timeBought));
+      (obj.timeBought = message.timeBought.toISOString());
     message.timeUsed !== undefined &&
-      (obj.timeUsed = Math.round(message.timeUsed));
+      (obj.timeUsed = message.timeUsed.toISOString());
     return obj;
   },
 
@@ -867,7 +882,7 @@ export const SpecialItem = {
     message.itemId = object.itemId ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? "";
-    message.price = object.price ?? 0;
+    message.price = object.price ?? "";
     message.canBeSold = object.canBeSold ?? false;
     message.replyMessage = object.replyMessage ?? "";
     message.count = object.count ?? 0;
@@ -1066,6 +1081,28 @@ export type Exact<P, I extends P> = P extends Builtin
         Exclude<keyof I, KeysOfUnion<P>>,
         never
       >;
+
+function toTimestamp(date: Date): Timestamp {
+  const seconds = date.getTime() / 1_000;
+  const nanos = (date.getTime() % 1_000) * 1_000_000;
+  return { seconds, nanos };
+}
+
+function fromTimestamp(t: Timestamp): Date {
+  let millis = t.seconds * 1_000;
+  millis += t.nanos / 1_000_000;
+  return new Date(millis);
+}
+
+function fromJsonTimestamp(o: any): Date {
+  if (o instanceof Date) {
+    return o;
+  } else if (typeof o === "string") {
+    return new Date(o);
+  } else {
+    return fromTimestamp(Timestamp.fromJSON(o));
+  }
+}
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {
