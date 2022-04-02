@@ -1,6 +1,6 @@
 export interface TimedEvent {
   id?: number;
-  time: string;
+  time: number;
   type: string;
   guildId?: string;
   userId?: string;

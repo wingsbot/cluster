@@ -23,17 +23,17 @@ export interface UserDataRequest {
 
 export interface UserDataResponse {
   id: string;
-  balance: string;
-  bank: string;
-  bankCap: string;
+  balance: number;
+  bank: number;
+  bankCap: number;
   gangId?: string | undefined;
 }
 
 export interface UserData {
   id: string;
-  balance: string;
-  bank: string;
-  bankCap: string;
+  balance: number;
+  bank: number;
+  bankCap: number;
   gangId: string;
 }
 
@@ -43,19 +43,19 @@ export interface InventoryItem {
   userId: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   canBeSold: boolean;
   replyMessage: string;
   count: number;
   useable: boolean;
   powerUp?: boolean | undefined;
-  cooldownBetweenPurchase?: string | undefined;
+  cooldownBetweenPurchase?: number | undefined;
   priceStack?: boolean | undefined;
   durability?: number | undefined;
   maxDurability?: number | undefined;
   maxInInv?: number | undefined;
   stock?: number | undefined;
-  usageTime?: string | undefined;
+  usageTime?: number | undefined;
   timeBought?: Date | undefined;
   timeUsed?: Date | undefined;
 }
@@ -67,19 +67,19 @@ export interface ActiveItem {
   guildId: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   canBeSold: boolean;
   replyMessage: string;
   count: number;
   useable: boolean;
   powerUp?: boolean | undefined;
-  cooldownBetweenPurchase?: string | undefined;
+  cooldownBetweenPurchase?: number | undefined;
   priceStack?: boolean | undefined;
   durability?: number | undefined;
   maxDurability?: number | undefined;
   maxInInv?: number | undefined;
   stock?: number | undefined;
-  usageTime?: string | undefined;
+  usageTime?: number | undefined;
   timeBought?: Date | undefined;
   timeUsed?: Date | undefined;
 }
@@ -91,21 +91,21 @@ export interface TopTenUser {
 
 export interface UpdateBalanceRequest {
   userId: string;
-  balance: string;
+  balance: number;
 }
 
 export interface UpdateBalanceResponse {}
 
 export interface UpdateBankRequest {
   userId: string;
-  bank: string;
+  bank: number;
 }
 
 export interface UpdateBankResponse {}
 
 export interface UpdateBankCapRequest {
   userId: string;
-  bankCap: string;
+  bankCap: number;
 }
 
 export interface UpdateBankCapResponse {}
@@ -148,19 +148,19 @@ export interface AddInventoryItemResponse {
   userId: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   canBeSold: boolean;
   replyMessage: string;
   count: number;
   useable: boolean;
   powerUp?: boolean | undefined;
-  cooldownBetweenPurchase?: string | undefined;
+  cooldownBetweenPurchase?: number | undefined;
   priceStack?: boolean | undefined;
   durability?: number | undefined;
   maxDurability?: number | undefined;
   maxInInv?: number | undefined;
   stock?: number | undefined;
-  usageTime?: string | undefined;
+  usageTime?: number | undefined;
   timeBought?: Date | undefined;
   timeUsed?: Date | undefined;
 }
@@ -206,19 +206,19 @@ export interface AddActiveItemResponse {
   guildId: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   canBeSold: boolean;
   replyMessage: string;
   count: number;
   useable: boolean;
   powerUp?: boolean | undefined;
-  cooldownBetweenPurchase?: string | undefined;
+  cooldownBetweenPurchase?: number | undefined;
   priceStack?: boolean | undefined;
   durability?: number | undefined;
   maxDurability?: number | undefined;
   maxInInv?: number | undefined;
   stock?: number | undefined;
-  usageTime?: string | undefined;
+  usageTime?: number | undefined;
   timeBought?: Date | undefined;
   timeUsed?: Date | undefined;
 }
@@ -285,7 +285,7 @@ export const UserDataRequest = {
 };
 
 function createBaseUserDataResponse(): UserDataResponse {
-  return { id: "", balance: "", bank: "", bankCap: "", gangId: undefined };
+  return { id: "", balance: 0, bank: 0, bankCap: 0, gangId: undefined };
 }
 
 export const UserDataResponse = {
@@ -296,14 +296,14 @@ export const UserDataResponse = {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
-    if (message.balance !== "") {
-      writer.uint32(18).string(message.balance);
+    if (message.balance !== 0) {
+      writer.uint32(17).sfixed64(message.balance);
     }
-    if (message.bank !== "") {
-      writer.uint32(26).string(message.bank);
+    if (message.bank !== 0) {
+      writer.uint32(25).sfixed64(message.bank);
     }
-    if (message.bankCap !== "") {
-      writer.uint32(34).string(message.bankCap);
+    if (message.bankCap !== 0) {
+      writer.uint32(33).fixed64(message.bankCap);
     }
     if (message.gangId !== undefined) {
       writer.uint32(42).string(message.gangId);
@@ -322,13 +322,13 @@ export const UserDataResponse = {
           message.id = reader.string();
           break;
         case 2:
-          message.balance = reader.string();
+          message.balance = longToNumber(reader.sfixed64() as Long);
           break;
         case 3:
-          message.bank = reader.string();
+          message.bank = longToNumber(reader.sfixed64() as Long);
           break;
         case 4:
-          message.bankCap = reader.string();
+          message.bankCap = longToNumber(reader.fixed64() as Long);
           break;
         case 5:
           message.gangId = reader.string();
@@ -344,9 +344,9 @@ export const UserDataResponse = {
   fromJSON(object: any): UserDataResponse {
     return {
       id: isSet(object.id) ? String(object.id) : "",
-      balance: isSet(object.balance) ? String(object.balance) : "",
-      bank: isSet(object.bank) ? String(object.bank) : "",
-      bankCap: isSet(object.bankCap) ? String(object.bankCap) : "",
+      balance: isSet(object.balance) ? Number(object.balance) : 0,
+      bank: isSet(object.bank) ? Number(object.bank) : 0,
+      bankCap: isSet(object.bankCap) ? Number(object.bankCap) : 0,
       gangId: isSet(object.gangId) ? String(object.gangId) : undefined,
     };
   },
@@ -354,9 +354,11 @@ export const UserDataResponse = {
   toJSON(message: UserDataResponse): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = message.id);
-    message.balance !== undefined && (obj.balance = message.balance);
-    message.bank !== undefined && (obj.bank = message.bank);
-    message.bankCap !== undefined && (obj.bankCap = message.bankCap);
+    message.balance !== undefined &&
+      (obj.balance = Math.round(message.balance));
+    message.bank !== undefined && (obj.bank = Math.round(message.bank));
+    message.bankCap !== undefined &&
+      (obj.bankCap = Math.round(message.bankCap));
     message.gangId !== undefined && (obj.gangId = message.gangId);
     return obj;
   },
@@ -366,16 +368,16 @@ export const UserDataResponse = {
   ): UserDataResponse {
     const message = createBaseUserDataResponse();
     message.id = object.id ?? "";
-    message.balance = object.balance ?? "";
-    message.bank = object.bank ?? "";
-    message.bankCap = object.bankCap ?? "";
+    message.balance = object.balance ?? 0;
+    message.bank = object.bank ?? 0;
+    message.bankCap = object.bankCap ?? 0;
     message.gangId = object.gangId ?? undefined;
     return message;
   },
 };
 
 function createBaseUserData(): UserData {
-  return { id: "", balance: "", bank: "", bankCap: "", gangId: "" };
+  return { id: "", balance: 0, bank: 0, bankCap: 0, gangId: "" };
 }
 
 export const UserData = {
@@ -386,14 +388,14 @@ export const UserData = {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
-    if (message.balance !== "") {
-      writer.uint32(18).string(message.balance);
+    if (message.balance !== 0) {
+      writer.uint32(17).sfixed64(message.balance);
     }
-    if (message.bank !== "") {
-      writer.uint32(26).string(message.bank);
+    if (message.bank !== 0) {
+      writer.uint32(25).sfixed64(message.bank);
     }
-    if (message.bankCap !== "") {
-      writer.uint32(34).string(message.bankCap);
+    if (message.bankCap !== 0) {
+      writer.uint32(33).fixed64(message.bankCap);
     }
     if (message.gangId !== "") {
       writer.uint32(42).string(message.gangId);
@@ -412,13 +414,13 @@ export const UserData = {
           message.id = reader.string();
           break;
         case 2:
-          message.balance = reader.string();
+          message.balance = longToNumber(reader.sfixed64() as Long);
           break;
         case 3:
-          message.bank = reader.string();
+          message.bank = longToNumber(reader.sfixed64() as Long);
           break;
         case 4:
-          message.bankCap = reader.string();
+          message.bankCap = longToNumber(reader.fixed64() as Long);
           break;
         case 5:
           message.gangId = reader.string();
@@ -434,9 +436,9 @@ export const UserData = {
   fromJSON(object: any): UserData {
     return {
       id: isSet(object.id) ? String(object.id) : "",
-      balance: isSet(object.balance) ? String(object.balance) : "",
-      bank: isSet(object.bank) ? String(object.bank) : "",
-      bankCap: isSet(object.bankCap) ? String(object.bankCap) : "",
+      balance: isSet(object.balance) ? Number(object.balance) : 0,
+      bank: isSet(object.bank) ? Number(object.bank) : 0,
+      bankCap: isSet(object.bankCap) ? Number(object.bankCap) : 0,
       gangId: isSet(object.gangId) ? String(object.gangId) : "",
     };
   },
@@ -444,9 +446,11 @@ export const UserData = {
   toJSON(message: UserData): unknown {
     const obj: any = {};
     message.id !== undefined && (obj.id = message.id);
-    message.balance !== undefined && (obj.balance = message.balance);
-    message.bank !== undefined && (obj.bank = message.bank);
-    message.bankCap !== undefined && (obj.bankCap = message.bankCap);
+    message.balance !== undefined &&
+      (obj.balance = Math.round(message.balance));
+    message.bank !== undefined && (obj.bank = Math.round(message.bank));
+    message.bankCap !== undefined &&
+      (obj.bankCap = Math.round(message.bankCap));
     message.gangId !== undefined && (obj.gangId = message.gangId);
     return obj;
   },
@@ -454,9 +458,9 @@ export const UserData = {
   fromPartial<I extends Exact<DeepPartial<UserData>, I>>(object: I): UserData {
     const message = createBaseUserData();
     message.id = object.id ?? "";
-    message.balance = object.balance ?? "";
-    message.bank = object.bank ?? "";
-    message.bankCap = object.bankCap ?? "";
+    message.balance = object.balance ?? 0;
+    message.bank = object.bank ?? 0;
+    message.bankCap = object.bankCap ?? 0;
     message.gangId = object.gangId ?? "";
     return message;
   },
@@ -469,7 +473,7 @@ function createBaseInventoryItem(): InventoryItem {
     userId: "",
     name: "",
     description: "",
-    price: "",
+    price: 0,
     canBeSold: false,
     replyMessage: "",
     count: 0,
@@ -507,8 +511,8 @@ export const InventoryItem = {
     if (message.description !== "") {
       writer.uint32(42).string(message.description);
     }
-    if (message.price !== "") {
-      writer.uint32(50).string(message.price);
+    if (message.price !== 0) {
+      writer.uint32(49).fixed64(message.price);
     }
     if (message.canBeSold === true) {
       writer.uint32(56).bool(message.canBeSold);
@@ -526,7 +530,7 @@ export const InventoryItem = {
       writer.uint32(88).bool(message.powerUp);
     }
     if (message.cooldownBetweenPurchase !== undefined) {
-      writer.uint32(98).string(message.cooldownBetweenPurchase);
+      writer.uint32(97).fixed64(message.cooldownBetweenPurchase);
     }
     if (message.priceStack !== undefined) {
       writer.uint32(104).bool(message.priceStack);
@@ -544,7 +548,7 @@ export const InventoryItem = {
       writer.uint32(137).fixed64(message.stock);
     }
     if (message.usageTime !== undefined) {
-      writer.uint32(146).string(message.usageTime);
+      writer.uint32(145).fixed64(message.usageTime);
     }
     if (message.timeBought !== undefined) {
       Timestamp.encode(
@@ -584,7 +588,7 @@ export const InventoryItem = {
           message.description = reader.string();
           break;
         case 6:
-          message.price = reader.string();
+          message.price = longToNumber(reader.fixed64() as Long);
           break;
         case 7:
           message.canBeSold = reader.bool();
@@ -602,7 +606,9 @@ export const InventoryItem = {
           message.powerUp = reader.bool();
           break;
         case 12:
-          message.cooldownBetweenPurchase = reader.string();
+          message.cooldownBetweenPurchase = longToNumber(
+            reader.fixed64() as Long
+          );
           break;
         case 13:
           message.priceStack = reader.bool();
@@ -620,7 +626,7 @@ export const InventoryItem = {
           message.stock = longToNumber(reader.fixed64() as Long);
           break;
         case 18:
-          message.usageTime = reader.string();
+          message.usageTime = longToNumber(reader.fixed64() as Long);
           break;
         case 19:
           message.timeBought = fromTimestamp(
@@ -647,7 +653,7 @@ export const InventoryItem = {
       userId: isSet(object.userId) ? String(object.userId) : "",
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
-      price: isSet(object.price) ? String(object.price) : "",
+      price: isSet(object.price) ? Number(object.price) : 0,
       canBeSold: isSet(object.canBeSold) ? Boolean(object.canBeSold) : false,
       replyMessage: isSet(object.replyMessage)
         ? String(object.replyMessage)
@@ -656,7 +662,7 @@ export const InventoryItem = {
       useable: isSet(object.useable) ? Boolean(object.useable) : false,
       powerUp: isSet(object.powerUp) ? Boolean(object.powerUp) : undefined,
       cooldownBetweenPurchase: isSet(object.cooldownBetweenPurchase)
-        ? String(object.cooldownBetweenPurchase)
+        ? Number(object.cooldownBetweenPurchase)
         : undefined,
       priceStack: isSet(object.priceStack)
         ? Boolean(object.priceStack)
@@ -669,7 +675,7 @@ export const InventoryItem = {
         : undefined,
       maxInInv: isSet(object.maxInInv) ? Number(object.maxInInv) : undefined,
       stock: isSet(object.stock) ? Number(object.stock) : undefined,
-      usageTime: isSet(object.usageTime) ? String(object.usageTime) : undefined,
+      usageTime: isSet(object.usageTime) ? Number(object.usageTime) : undefined,
       timeBought: isSet(object.timeBought)
         ? fromJsonTimestamp(object.timeBought)
         : undefined,
@@ -687,7 +693,7 @@ export const InventoryItem = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.price !== undefined && (obj.price = message.price);
+    message.price !== undefined && (obj.price = Math.round(message.price));
     message.canBeSold !== undefined && (obj.canBeSold = message.canBeSold);
     message.replyMessage !== undefined &&
       (obj.replyMessage = message.replyMessage);
@@ -695,7 +701,9 @@ export const InventoryItem = {
     message.useable !== undefined && (obj.useable = message.useable);
     message.powerUp !== undefined && (obj.powerUp = message.powerUp);
     message.cooldownBetweenPurchase !== undefined &&
-      (obj.cooldownBetweenPurchase = message.cooldownBetweenPurchase);
+      (obj.cooldownBetweenPurchase = Math.round(
+        message.cooldownBetweenPurchase
+      ));
     message.priceStack !== undefined && (obj.priceStack = message.priceStack);
     message.durability !== undefined &&
       (obj.durability = Math.round(message.durability));
@@ -704,7 +712,8 @@ export const InventoryItem = {
     message.maxInInv !== undefined &&
       (obj.maxInInv = Math.round(message.maxInInv));
     message.stock !== undefined && (obj.stock = Math.round(message.stock));
-    message.usageTime !== undefined && (obj.usageTime = message.usageTime);
+    message.usageTime !== undefined &&
+      (obj.usageTime = Math.round(message.usageTime));
     message.timeBought !== undefined &&
       (obj.timeBought = message.timeBought.toISOString());
     message.timeUsed !== undefined &&
@@ -721,7 +730,7 @@ export const InventoryItem = {
     message.userId = object.userId ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? "";
-    message.price = object.price ?? "";
+    message.price = object.price ?? 0;
     message.canBeSold = object.canBeSold ?? false;
     message.replyMessage = object.replyMessage ?? "";
     message.count = object.count ?? 0;
@@ -749,7 +758,7 @@ function createBaseActiveItem(): ActiveItem {
     guildId: "",
     name: "",
     description: "",
-    price: "",
+    price: 0,
     canBeSold: false,
     replyMessage: "",
     count: 0,
@@ -790,8 +799,8 @@ export const ActiveItem = {
     if (message.description !== "") {
       writer.uint32(50).string(message.description);
     }
-    if (message.price !== "") {
-      writer.uint32(58).string(message.price);
+    if (message.price !== 0) {
+      writer.uint32(57).fixed64(message.price);
     }
     if (message.canBeSold === true) {
       writer.uint32(64).bool(message.canBeSold);
@@ -809,7 +818,7 @@ export const ActiveItem = {
       writer.uint32(96).bool(message.powerUp);
     }
     if (message.cooldownBetweenPurchase !== undefined) {
-      writer.uint32(106).string(message.cooldownBetweenPurchase);
+      writer.uint32(105).fixed64(message.cooldownBetweenPurchase);
     }
     if (message.priceStack !== undefined) {
       writer.uint32(112).bool(message.priceStack);
@@ -827,7 +836,7 @@ export const ActiveItem = {
       writer.uint32(145).fixed64(message.stock);
     }
     if (message.usageTime !== undefined) {
-      writer.uint32(154).string(message.usageTime);
+      writer.uint32(153).fixed64(message.usageTime);
     }
     if (message.timeBought !== undefined) {
       Timestamp.encode(
@@ -870,7 +879,7 @@ export const ActiveItem = {
           message.description = reader.string();
           break;
         case 7:
-          message.price = reader.string();
+          message.price = longToNumber(reader.fixed64() as Long);
           break;
         case 8:
           message.canBeSold = reader.bool();
@@ -888,7 +897,9 @@ export const ActiveItem = {
           message.powerUp = reader.bool();
           break;
         case 13:
-          message.cooldownBetweenPurchase = reader.string();
+          message.cooldownBetweenPurchase = longToNumber(
+            reader.fixed64() as Long
+          );
           break;
         case 14:
           message.priceStack = reader.bool();
@@ -906,7 +917,7 @@ export const ActiveItem = {
           message.stock = longToNumber(reader.fixed64() as Long);
           break;
         case 19:
-          message.usageTime = reader.string();
+          message.usageTime = longToNumber(reader.fixed64() as Long);
           break;
         case 20:
           message.timeBought = fromTimestamp(
@@ -934,7 +945,7 @@ export const ActiveItem = {
       guildId: isSet(object.guildId) ? String(object.guildId) : "",
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
-      price: isSet(object.price) ? String(object.price) : "",
+      price: isSet(object.price) ? Number(object.price) : 0,
       canBeSold: isSet(object.canBeSold) ? Boolean(object.canBeSold) : false,
       replyMessage: isSet(object.replyMessage)
         ? String(object.replyMessage)
@@ -943,7 +954,7 @@ export const ActiveItem = {
       useable: isSet(object.useable) ? Boolean(object.useable) : false,
       powerUp: isSet(object.powerUp) ? Boolean(object.powerUp) : undefined,
       cooldownBetweenPurchase: isSet(object.cooldownBetweenPurchase)
-        ? String(object.cooldownBetweenPurchase)
+        ? Number(object.cooldownBetweenPurchase)
         : undefined,
       priceStack: isSet(object.priceStack)
         ? Boolean(object.priceStack)
@@ -956,7 +967,7 @@ export const ActiveItem = {
         : undefined,
       maxInInv: isSet(object.maxInInv) ? Number(object.maxInInv) : undefined,
       stock: isSet(object.stock) ? Number(object.stock) : undefined,
-      usageTime: isSet(object.usageTime) ? String(object.usageTime) : undefined,
+      usageTime: isSet(object.usageTime) ? Number(object.usageTime) : undefined,
       timeBought: isSet(object.timeBought)
         ? fromJsonTimestamp(object.timeBought)
         : undefined,
@@ -975,7 +986,7 @@ export const ActiveItem = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.price !== undefined && (obj.price = message.price);
+    message.price !== undefined && (obj.price = Math.round(message.price));
     message.canBeSold !== undefined && (obj.canBeSold = message.canBeSold);
     message.replyMessage !== undefined &&
       (obj.replyMessage = message.replyMessage);
@@ -983,7 +994,9 @@ export const ActiveItem = {
     message.useable !== undefined && (obj.useable = message.useable);
     message.powerUp !== undefined && (obj.powerUp = message.powerUp);
     message.cooldownBetweenPurchase !== undefined &&
-      (obj.cooldownBetweenPurchase = message.cooldownBetweenPurchase);
+      (obj.cooldownBetweenPurchase = Math.round(
+        message.cooldownBetweenPurchase
+      ));
     message.priceStack !== undefined && (obj.priceStack = message.priceStack);
     message.durability !== undefined &&
       (obj.durability = Math.round(message.durability));
@@ -992,7 +1005,8 @@ export const ActiveItem = {
     message.maxInInv !== undefined &&
       (obj.maxInInv = Math.round(message.maxInInv));
     message.stock !== undefined && (obj.stock = Math.round(message.stock));
-    message.usageTime !== undefined && (obj.usageTime = message.usageTime);
+    message.usageTime !== undefined &&
+      (obj.usageTime = Math.round(message.usageTime));
     message.timeBought !== undefined &&
       (obj.timeBought = message.timeBought.toISOString());
     message.timeUsed !== undefined &&
@@ -1010,7 +1024,7 @@ export const ActiveItem = {
     message.guildId = object.guildId ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? "";
-    message.price = object.price ?? "";
+    message.price = object.price ?? 0;
     message.canBeSold = object.canBeSold ?? false;
     message.replyMessage = object.replyMessage ?? "";
     message.count = object.count ?? 0;
@@ -1094,7 +1108,7 @@ export const TopTenUser = {
 };
 
 function createBaseUpdateBalanceRequest(): UpdateBalanceRequest {
-  return { userId: "", balance: "" };
+  return { userId: "", balance: 0 };
 }
 
 export const UpdateBalanceRequest = {
@@ -1105,8 +1119,8 @@ export const UpdateBalanceRequest = {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
-    if (message.balance !== "") {
-      writer.uint32(18).string(message.balance);
+    if (message.balance !== 0) {
+      writer.uint32(17).sfixed64(message.balance);
     }
     return writer;
   },
@@ -1125,7 +1139,7 @@ export const UpdateBalanceRequest = {
           message.userId = reader.string();
           break;
         case 2:
-          message.balance = reader.string();
+          message.balance = longToNumber(reader.sfixed64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1138,14 +1152,15 @@ export const UpdateBalanceRequest = {
   fromJSON(object: any): UpdateBalanceRequest {
     return {
       userId: isSet(object.userId) ? String(object.userId) : "",
-      balance: isSet(object.balance) ? String(object.balance) : "",
+      balance: isSet(object.balance) ? Number(object.balance) : 0,
     };
   },
 
   toJSON(message: UpdateBalanceRequest): unknown {
     const obj: any = {};
     message.userId !== undefined && (obj.userId = message.userId);
-    message.balance !== undefined && (obj.balance = message.balance);
+    message.balance !== undefined &&
+      (obj.balance = Math.round(message.balance));
     return obj;
   },
 
@@ -1154,7 +1169,7 @@ export const UpdateBalanceRequest = {
   ): UpdateBalanceRequest {
     const message = createBaseUpdateBalanceRequest();
     message.userId = object.userId ?? "";
-    message.balance = object.balance ?? "";
+    message.balance = object.balance ?? 0;
     return message;
   },
 };
@@ -1207,7 +1222,7 @@ export const UpdateBalanceResponse = {
 };
 
 function createBaseUpdateBankRequest(): UpdateBankRequest {
-  return { userId: "", bank: "" };
+  return { userId: "", bank: 0 };
 }
 
 export const UpdateBankRequest = {
@@ -1218,8 +1233,8 @@ export const UpdateBankRequest = {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
-    if (message.bank !== "") {
-      writer.uint32(18).string(message.bank);
+    if (message.bank !== 0) {
+      writer.uint32(17).sfixed64(message.bank);
     }
     return writer;
   },
@@ -1235,7 +1250,7 @@ export const UpdateBankRequest = {
           message.userId = reader.string();
           break;
         case 2:
-          message.bank = reader.string();
+          message.bank = longToNumber(reader.sfixed64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1248,14 +1263,14 @@ export const UpdateBankRequest = {
   fromJSON(object: any): UpdateBankRequest {
     return {
       userId: isSet(object.userId) ? String(object.userId) : "",
-      bank: isSet(object.bank) ? String(object.bank) : "",
+      bank: isSet(object.bank) ? Number(object.bank) : 0,
     };
   },
 
   toJSON(message: UpdateBankRequest): unknown {
     const obj: any = {};
     message.userId !== undefined && (obj.userId = message.userId);
-    message.bank !== undefined && (obj.bank = message.bank);
+    message.bank !== undefined && (obj.bank = Math.round(message.bank));
     return obj;
   },
 
@@ -1264,7 +1279,7 @@ export const UpdateBankRequest = {
   ): UpdateBankRequest {
     const message = createBaseUpdateBankRequest();
     message.userId = object.userId ?? "";
-    message.bank = object.bank ?? "";
+    message.bank = object.bank ?? 0;
     return message;
   },
 };
@@ -1314,7 +1329,7 @@ export const UpdateBankResponse = {
 };
 
 function createBaseUpdateBankCapRequest(): UpdateBankCapRequest {
-  return { userId: "", bankCap: "" };
+  return { userId: "", bankCap: 0 };
 }
 
 export const UpdateBankCapRequest = {
@@ -1325,8 +1340,8 @@ export const UpdateBankCapRequest = {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
-    if (message.bankCap !== "") {
-      writer.uint32(18).string(message.bankCap);
+    if (message.bankCap !== 0) {
+      writer.uint32(17).fixed64(message.bankCap);
     }
     return writer;
   },
@@ -1345,7 +1360,7 @@ export const UpdateBankCapRequest = {
           message.userId = reader.string();
           break;
         case 2:
-          message.bankCap = reader.string();
+          message.bankCap = longToNumber(reader.fixed64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1358,14 +1373,15 @@ export const UpdateBankCapRequest = {
   fromJSON(object: any): UpdateBankCapRequest {
     return {
       userId: isSet(object.userId) ? String(object.userId) : "",
-      bankCap: isSet(object.bankCap) ? String(object.bankCap) : "",
+      bankCap: isSet(object.bankCap) ? Number(object.bankCap) : 0,
     };
   },
 
   toJSON(message: UpdateBankCapRequest): unknown {
     const obj: any = {};
     message.userId !== undefined && (obj.userId = message.userId);
-    message.bankCap !== undefined && (obj.bankCap = message.bankCap);
+    message.bankCap !== undefined &&
+      (obj.bankCap = Math.round(message.bankCap));
     return obj;
   },
 
@@ -1374,7 +1390,7 @@ export const UpdateBankCapRequest = {
   ): UpdateBankCapRequest {
     const message = createBaseUpdateBankCapRequest();
     message.userId = object.userId ?? "";
-    message.bankCap = object.bankCap ?? "";
+    message.bankCap = object.bankCap ?? 0;
     return message;
   },
 };
@@ -1938,7 +1954,7 @@ function createBaseAddInventoryItemResponse(): AddInventoryItemResponse {
     userId: "",
     name: "",
     description: "",
-    price: "",
+    price: 0,
     canBeSold: false,
     replyMessage: "",
     count: 0,
@@ -1976,8 +1992,8 @@ export const AddInventoryItemResponse = {
     if (message.description !== "") {
       writer.uint32(42).string(message.description);
     }
-    if (message.price !== "") {
-      writer.uint32(50).string(message.price);
+    if (message.price !== 0) {
+      writer.uint32(49).fixed64(message.price);
     }
     if (message.canBeSold === true) {
       writer.uint32(56).bool(message.canBeSold);
@@ -1995,7 +2011,7 @@ export const AddInventoryItemResponse = {
       writer.uint32(88).bool(message.powerUp);
     }
     if (message.cooldownBetweenPurchase !== undefined) {
-      writer.uint32(98).string(message.cooldownBetweenPurchase);
+      writer.uint32(97).fixed64(message.cooldownBetweenPurchase);
     }
     if (message.priceStack !== undefined) {
       writer.uint32(104).bool(message.priceStack);
@@ -2013,7 +2029,7 @@ export const AddInventoryItemResponse = {
       writer.uint32(137).fixed64(message.stock);
     }
     if (message.usageTime !== undefined) {
-      writer.uint32(146).string(message.usageTime);
+      writer.uint32(145).fixed64(message.usageTime);
     }
     if (message.timeBought !== undefined) {
       Timestamp.encode(
@@ -2056,7 +2072,7 @@ export const AddInventoryItemResponse = {
           message.description = reader.string();
           break;
         case 6:
-          message.price = reader.string();
+          message.price = longToNumber(reader.fixed64() as Long);
           break;
         case 7:
           message.canBeSold = reader.bool();
@@ -2074,7 +2090,9 @@ export const AddInventoryItemResponse = {
           message.powerUp = reader.bool();
           break;
         case 12:
-          message.cooldownBetweenPurchase = reader.string();
+          message.cooldownBetweenPurchase = longToNumber(
+            reader.fixed64() as Long
+          );
           break;
         case 13:
           message.priceStack = reader.bool();
@@ -2092,7 +2110,7 @@ export const AddInventoryItemResponse = {
           message.stock = longToNumber(reader.fixed64() as Long);
           break;
         case 18:
-          message.usageTime = reader.string();
+          message.usageTime = longToNumber(reader.fixed64() as Long);
           break;
         case 19:
           message.timeBought = fromTimestamp(
@@ -2119,7 +2137,7 @@ export const AddInventoryItemResponse = {
       userId: isSet(object.userId) ? String(object.userId) : "",
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
-      price: isSet(object.price) ? String(object.price) : "",
+      price: isSet(object.price) ? Number(object.price) : 0,
       canBeSold: isSet(object.canBeSold) ? Boolean(object.canBeSold) : false,
       replyMessage: isSet(object.replyMessage)
         ? String(object.replyMessage)
@@ -2128,7 +2146,7 @@ export const AddInventoryItemResponse = {
       useable: isSet(object.useable) ? Boolean(object.useable) : false,
       powerUp: isSet(object.powerUp) ? Boolean(object.powerUp) : undefined,
       cooldownBetweenPurchase: isSet(object.cooldownBetweenPurchase)
-        ? String(object.cooldownBetweenPurchase)
+        ? Number(object.cooldownBetweenPurchase)
         : undefined,
       priceStack: isSet(object.priceStack)
         ? Boolean(object.priceStack)
@@ -2141,7 +2159,7 @@ export const AddInventoryItemResponse = {
         : undefined,
       maxInInv: isSet(object.maxInInv) ? Number(object.maxInInv) : undefined,
       stock: isSet(object.stock) ? Number(object.stock) : undefined,
-      usageTime: isSet(object.usageTime) ? String(object.usageTime) : undefined,
+      usageTime: isSet(object.usageTime) ? Number(object.usageTime) : undefined,
       timeBought: isSet(object.timeBought)
         ? fromJsonTimestamp(object.timeBought)
         : undefined,
@@ -2159,7 +2177,7 @@ export const AddInventoryItemResponse = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.price !== undefined && (obj.price = message.price);
+    message.price !== undefined && (obj.price = Math.round(message.price));
     message.canBeSold !== undefined && (obj.canBeSold = message.canBeSold);
     message.replyMessage !== undefined &&
       (obj.replyMessage = message.replyMessage);
@@ -2167,7 +2185,9 @@ export const AddInventoryItemResponse = {
     message.useable !== undefined && (obj.useable = message.useable);
     message.powerUp !== undefined && (obj.powerUp = message.powerUp);
     message.cooldownBetweenPurchase !== undefined &&
-      (obj.cooldownBetweenPurchase = message.cooldownBetweenPurchase);
+      (obj.cooldownBetweenPurchase = Math.round(
+        message.cooldownBetweenPurchase
+      ));
     message.priceStack !== undefined && (obj.priceStack = message.priceStack);
     message.durability !== undefined &&
       (obj.durability = Math.round(message.durability));
@@ -2176,7 +2196,8 @@ export const AddInventoryItemResponse = {
     message.maxInInv !== undefined &&
       (obj.maxInInv = Math.round(message.maxInInv));
     message.stock !== undefined && (obj.stock = Math.round(message.stock));
-    message.usageTime !== undefined && (obj.usageTime = message.usageTime);
+    message.usageTime !== undefined &&
+      (obj.usageTime = Math.round(message.usageTime));
     message.timeBought !== undefined &&
       (obj.timeBought = message.timeBought.toISOString());
     message.timeUsed !== undefined &&
@@ -2193,7 +2214,7 @@ export const AddInventoryItemResponse = {
     message.userId = object.userId ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? "";
-    message.price = object.price ?? "";
+    message.price = object.price ?? 0;
     message.canBeSold = object.canBeSold ?? false;
     message.replyMessage = object.replyMessage ?? "";
     message.count = object.count ?? 0;
@@ -2779,7 +2800,7 @@ function createBaseAddActiveItemResponse(): AddActiveItemResponse {
     guildId: "",
     name: "",
     description: "",
-    price: "",
+    price: 0,
     canBeSold: false,
     replyMessage: "",
     count: 0,
@@ -2820,8 +2841,8 @@ export const AddActiveItemResponse = {
     if (message.description !== "") {
       writer.uint32(50).string(message.description);
     }
-    if (message.price !== "") {
-      writer.uint32(58).string(message.price);
+    if (message.price !== 0) {
+      writer.uint32(57).fixed64(message.price);
     }
     if (message.canBeSold === true) {
       writer.uint32(64).bool(message.canBeSold);
@@ -2839,7 +2860,7 @@ export const AddActiveItemResponse = {
       writer.uint32(96).bool(message.powerUp);
     }
     if (message.cooldownBetweenPurchase !== undefined) {
-      writer.uint32(106).string(message.cooldownBetweenPurchase);
+      writer.uint32(105).fixed64(message.cooldownBetweenPurchase);
     }
     if (message.priceStack !== undefined) {
       writer.uint32(112).bool(message.priceStack);
@@ -2857,7 +2878,7 @@ export const AddActiveItemResponse = {
       writer.uint32(145).fixed64(message.stock);
     }
     if (message.usageTime !== undefined) {
-      writer.uint32(154).string(message.usageTime);
+      writer.uint32(153).fixed64(message.usageTime);
     }
     if (message.timeBought !== undefined) {
       Timestamp.encode(
@@ -2903,7 +2924,7 @@ export const AddActiveItemResponse = {
           message.description = reader.string();
           break;
         case 7:
-          message.price = reader.string();
+          message.price = longToNumber(reader.fixed64() as Long);
           break;
         case 8:
           message.canBeSold = reader.bool();
@@ -2921,7 +2942,9 @@ export const AddActiveItemResponse = {
           message.powerUp = reader.bool();
           break;
         case 13:
-          message.cooldownBetweenPurchase = reader.string();
+          message.cooldownBetweenPurchase = longToNumber(
+            reader.fixed64() as Long
+          );
           break;
         case 14:
           message.priceStack = reader.bool();
@@ -2939,7 +2962,7 @@ export const AddActiveItemResponse = {
           message.stock = longToNumber(reader.fixed64() as Long);
           break;
         case 19:
-          message.usageTime = reader.string();
+          message.usageTime = longToNumber(reader.fixed64() as Long);
           break;
         case 20:
           message.timeBought = fromTimestamp(
@@ -2967,7 +2990,7 @@ export const AddActiveItemResponse = {
       guildId: isSet(object.guildId) ? String(object.guildId) : "",
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
-      price: isSet(object.price) ? String(object.price) : "",
+      price: isSet(object.price) ? Number(object.price) : 0,
       canBeSold: isSet(object.canBeSold) ? Boolean(object.canBeSold) : false,
       replyMessage: isSet(object.replyMessage)
         ? String(object.replyMessage)
@@ -2976,7 +2999,7 @@ export const AddActiveItemResponse = {
       useable: isSet(object.useable) ? Boolean(object.useable) : false,
       powerUp: isSet(object.powerUp) ? Boolean(object.powerUp) : undefined,
       cooldownBetweenPurchase: isSet(object.cooldownBetweenPurchase)
-        ? String(object.cooldownBetweenPurchase)
+        ? Number(object.cooldownBetweenPurchase)
         : undefined,
       priceStack: isSet(object.priceStack)
         ? Boolean(object.priceStack)
@@ -2989,7 +3012,7 @@ export const AddActiveItemResponse = {
         : undefined,
       maxInInv: isSet(object.maxInInv) ? Number(object.maxInInv) : undefined,
       stock: isSet(object.stock) ? Number(object.stock) : undefined,
-      usageTime: isSet(object.usageTime) ? String(object.usageTime) : undefined,
+      usageTime: isSet(object.usageTime) ? Number(object.usageTime) : undefined,
       timeBought: isSet(object.timeBought)
         ? fromJsonTimestamp(object.timeBought)
         : undefined,
@@ -3008,7 +3031,7 @@ export const AddActiveItemResponse = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.price !== undefined && (obj.price = message.price);
+    message.price !== undefined && (obj.price = Math.round(message.price));
     message.canBeSold !== undefined && (obj.canBeSold = message.canBeSold);
     message.replyMessage !== undefined &&
       (obj.replyMessage = message.replyMessage);
@@ -3016,7 +3039,9 @@ export const AddActiveItemResponse = {
     message.useable !== undefined && (obj.useable = message.useable);
     message.powerUp !== undefined && (obj.powerUp = message.powerUp);
     message.cooldownBetweenPurchase !== undefined &&
-      (obj.cooldownBetweenPurchase = message.cooldownBetweenPurchase);
+      (obj.cooldownBetweenPurchase = Math.round(
+        message.cooldownBetweenPurchase
+      ));
     message.priceStack !== undefined && (obj.priceStack = message.priceStack);
     message.durability !== undefined &&
       (obj.durability = Math.round(message.durability));
@@ -3025,7 +3050,8 @@ export const AddActiveItemResponse = {
     message.maxInInv !== undefined &&
       (obj.maxInInv = Math.round(message.maxInInv));
     message.stock !== undefined && (obj.stock = Math.round(message.stock));
-    message.usageTime !== undefined && (obj.usageTime = message.usageTime);
+    message.usageTime !== undefined &&
+      (obj.usageTime = Math.round(message.usageTime));
     message.timeBought !== undefined &&
       (obj.timeBought = message.timeBought.toISOString());
     message.timeUsed !== undefined &&
@@ -3043,7 +3069,7 @@ export const AddActiveItemResponse = {
     message.guildId = object.guildId ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? "";
-    message.price = object.price ?? "";
+    message.price = object.price ?? 0;
     message.canBeSold = object.canBeSold ?? false;
     message.replyMessage = object.replyMessage ?? "";
     message.count = object.count ?? 0;

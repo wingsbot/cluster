@@ -24,13 +24,7 @@ export class Shop extends ModuleBase {
 
     if (specialItems.length === 0) return;
     for (const item of specialItems) {
-      const parsedItem = Object.assign(item, {
-        price: Number(item.price),
-        ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: Number(item.cooldownBetweenPurchase) }),
-        ...(item.usageTime && { usageTime: Number(item.usageTime) }),
-      });
-
-      this.shopCache.set(item.itemId, parsedItem);
+      this.shopCache.set(item.itemId, item);
     }
   }
 
@@ -47,18 +41,7 @@ export class Shop extends ModuleBase {
   // special limited time items
   public async addSpecialItem(item: Item) {
     if (this.shopCache.has(item.itemId) || this.defaultItems.find(i => i.itemId === item.itemId)) return;
-    const parsedItem = Object.assign(item, {
-      price: item.price.toString(),
-      ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-      ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-    });
-
-    const newGrpcItem = await this.client.grpc.shop.addSpecialItem(parsedItem);
-    const newItem = Object.assign(newGrpcItem, {
-      price: Number(item.price),
-      ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: Number(item.cooldownBetweenPurchase) }),
-      ...(item.usageTime && { usageTime: Number(item.usageTime) }),
-    });
+    const newItem = await this.client.grpc.shop.addSpecialItem(item);
 
     this.shopCache.set(item.itemId, newItem);
   }
@@ -67,13 +50,6 @@ export class Shop extends ModuleBase {
     if (!this.shopCache.has(item.itemId)) return;
 
     this.shopCache.delete(item.itemId);
-
-    const parsedItem = Object.assign(item, {
-      price: item.price.toString(),
-      ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-      ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-    });
-
-    await this.client.grpc.shop.removeSpecialItem(parsedItem);
+    await this.client.grpc.shop.removeSpecialItem(item);
   }
 }

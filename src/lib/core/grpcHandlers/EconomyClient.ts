@@ -26,7 +26,7 @@ export class GrpcEconomyClient {
     });
   }
 
-  public async updateBalance(userId: string, balance: string): Promise<UpdateBalanceResponse> {
+  public async updateBalance(userId: string, balance: number): Promise<UpdateBalanceResponse> {
     return new Promise((resolve, reject) => {
       this.economyClient.updateBalance(UpdateBalanceRequest.fromJSON({ userId, balance }), (error, response) => {
         if (error) reject(error);
@@ -35,7 +35,7 @@ export class GrpcEconomyClient {
     });
   }
 
-  public async updateBank(userId: string, bank: string): Promise<UpdateBankResponse> {
+  public async updateBank(userId: string, bank: number): Promise<UpdateBankResponse> {
     return new Promise((resolve, reject) => {
       this.economyClient.updateBank(UpdateBankRequest.fromJSON({ userId, bank }), (error, response) => {
         if (error) reject(error);
@@ -44,7 +44,7 @@ export class GrpcEconomyClient {
     });
   }
 
-  public async updateBankCap(userId: string, bankCap: string): Promise<UpdateBankCapResponse> {
+  public async updateBankCap(userId: string, bankCap: number): Promise<UpdateBankCapResponse> {
     return new Promise((resolve, reject) => {
       this.economyClient.updateBankCap(UpdateBankCapRequest.fromJSON({ userId, bankCap }), (error, response) => {
         if (error) reject(error);

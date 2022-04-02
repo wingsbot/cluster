@@ -2,6 +2,11 @@ import { Constants, InteractionButton } from 'eris';
 import { AwaitComponentReturn, CommandBase, CommandData, InteractionTimeoutError } from '../../lib/framework';
 import { SimonSaysData, WorkUtil } from '../../lib/framework/utils';
 
+interface TaskCompletion {
+  finished: boolean;
+  winner: boolean;
+}
+
 // eslint-disable-next-line no-promise-executor-return
 const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -35,7 +40,24 @@ export default class Work extends CommandBase {
         task.componentBase.enableAllComponents();
         responder.editRaw({ content: 'Select them in order.', components: task.componentBase.components });
 
-        await this.runSimonSays(task, responder, interaction);
+        const result = await this.runSimonSays(task, responder, interaction);
+
+        task.componentBase.disableAllComponents();
+
+        if (!result.finished) {
+          responder.editRaw({
+            content: '',
+            embeds: [{
+              description: 'You ran out of time :(',
+            }],
+            components: [],
+          });
+        } else if (result.winner) {
+          responder.editRaw({ content: `Select them in order. ${4 - task.simonSelection.length}/4`, components: task.componentBase.components });
+        } else {
+          responder.editRaw({ content: `Select them in order. ${4 - task.simonSelection.length}/4`, components: task.componentBase.components });
+        }
+
         break;
       }
 
@@ -49,40 +71,19 @@ export default class Work extends CommandBase {
     }
   };
 
-  private async runSimonSays(task: SimonSaysData, responder: CommandData['responder'], interaction: CommandData['interaction'], _i = 1) {
-    if (task.simonSelection.length === 0) {
-      responder.success('You win!');
-      return;
-    }
+  private async runSimonSays(task: SimonSaysData, responder: CommandData['responder'], interaction: CommandData['interaction'], _i = 1): Promise<TaskCompletion> {
+    if (task.simonSelection.length === 0) return { finished: true, winner: true };
 
     let response: AwaitComponentReturn;
     try {
       response = await this.client.util.awaitComponent(interaction, responder, task.id);
     } catch (error) {
-      if (error instanceof InteractionTimeoutError) {
-        task.componentBase.disableAllComponents();
-
-        responder.editRaw({
-          content: '',
-          embeds: [{
-            description: 'You ran out of time :(',
-          }],
-          components: [],
-        });
-
-        return;
-      }
+      if (error instanceof InteractionTimeoutError) return { finished: false, winner: false };
     }
 
     const number = task.simonSelection.shift();
 
-    if (response.parsedId !== `square${number}`) {
-      task.componentBase.disableAllComponents();
-      response.responder.editRaw({ content: `Select them in order. ${_i}/4`, components: task.componentBase.components });
-
-      responder.error('You were incorrect!');
-      return;
-    }
+    if (response.parsedId !== `square${number}`) return { finished: true, winner: false };
 
     for (const row of task.componentBase.components) {
       const buttons = row.components as InteractionButton[];

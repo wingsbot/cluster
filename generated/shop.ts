@@ -32,19 +32,19 @@ export interface AddSpecialItemResponse {
   itemId: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   canBeSold: boolean;
   replyMessage: string;
   count: number;
   useable: boolean;
   powerUp?: boolean | undefined;
-  cooldownBetweenPurchase?: string | undefined;
+  cooldownBetweenPurchase?: number | undefined;
   priceStack?: boolean | undefined;
   durability?: number | undefined;
   maxDurability?: number | undefined;
   maxInInv?: number | undefined;
   stock?: number | undefined;
-  usageTime?: string | undefined;
+  usageTime?: number | undefined;
   timeBought?: Date | undefined;
   timeUsed?: Date | undefined;
 }
@@ -60,19 +60,19 @@ export interface SpecialItem {
   itemId: string;
   name: string;
   description: string;
-  price: string;
+  price: number;
   canBeSold: boolean;
   replyMessage: string;
   count: number;
   useable: boolean;
   powerUp?: boolean | undefined;
-  cooldownBetweenPurchase?: string | undefined;
+  cooldownBetweenPurchase?: number | undefined;
   priceStack?: boolean | undefined;
   durability?: number | undefined;
   maxDurability?: number | undefined;
   maxInInv?: number | undefined;
   stock?: number | undefined;
-  usageTime?: string | undefined;
+  usageTime?: number | undefined;
   timeBought?: Date | undefined;
   timeUsed?: Date | undefined;
 }
@@ -259,7 +259,7 @@ function createBaseAddSpecialItemResponse(): AddSpecialItemResponse {
     itemId: "",
     name: "",
     description: "",
-    price: "",
+    price: 0,
     canBeSold: false,
     replyMessage: "",
     count: 0,
@@ -294,8 +294,8 @@ export const AddSpecialItemResponse = {
     if (message.description !== "") {
       writer.uint32(34).string(message.description);
     }
-    if (message.price !== "") {
-      writer.uint32(42).string(message.price);
+    if (message.price !== 0) {
+      writer.uint32(41).fixed64(message.price);
     }
     if (message.canBeSold === true) {
       writer.uint32(48).bool(message.canBeSold);
@@ -313,7 +313,7 @@ export const AddSpecialItemResponse = {
       writer.uint32(80).bool(message.powerUp);
     }
     if (message.cooldownBetweenPurchase !== undefined) {
-      writer.uint32(90).string(message.cooldownBetweenPurchase);
+      writer.uint32(89).fixed64(message.cooldownBetweenPurchase);
     }
     if (message.priceStack !== undefined) {
       writer.uint32(96).bool(message.priceStack);
@@ -331,7 +331,7 @@ export const AddSpecialItemResponse = {
       writer.uint32(129).fixed64(message.stock);
     }
     if (message.usageTime !== undefined) {
-      writer.uint32(138).string(message.usageTime);
+      writer.uint32(137).fixed64(message.usageTime);
     }
     if (message.timeBought !== undefined) {
       Timestamp.encode(
@@ -371,7 +371,7 @@ export const AddSpecialItemResponse = {
           message.description = reader.string();
           break;
         case 5:
-          message.price = reader.string();
+          message.price = longToNumber(reader.fixed64() as Long);
           break;
         case 6:
           message.canBeSold = reader.bool();
@@ -389,7 +389,9 @@ export const AddSpecialItemResponse = {
           message.powerUp = reader.bool();
           break;
         case 11:
-          message.cooldownBetweenPurchase = reader.string();
+          message.cooldownBetweenPurchase = longToNumber(
+            reader.fixed64() as Long
+          );
           break;
         case 12:
           message.priceStack = reader.bool();
@@ -407,7 +409,7 @@ export const AddSpecialItemResponse = {
           message.stock = longToNumber(reader.fixed64() as Long);
           break;
         case 17:
-          message.usageTime = reader.string();
+          message.usageTime = longToNumber(reader.fixed64() as Long);
           break;
         case 18:
           message.timeBought = fromTimestamp(
@@ -433,7 +435,7 @@ export const AddSpecialItemResponse = {
       itemId: isSet(object.itemId) ? String(object.itemId) : "",
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
-      price: isSet(object.price) ? String(object.price) : "",
+      price: isSet(object.price) ? Number(object.price) : 0,
       canBeSold: isSet(object.canBeSold) ? Boolean(object.canBeSold) : false,
       replyMessage: isSet(object.replyMessage)
         ? String(object.replyMessage)
@@ -442,7 +444,7 @@ export const AddSpecialItemResponse = {
       useable: isSet(object.useable) ? Boolean(object.useable) : false,
       powerUp: isSet(object.powerUp) ? Boolean(object.powerUp) : undefined,
       cooldownBetweenPurchase: isSet(object.cooldownBetweenPurchase)
-        ? String(object.cooldownBetweenPurchase)
+        ? Number(object.cooldownBetweenPurchase)
         : undefined,
       priceStack: isSet(object.priceStack)
         ? Boolean(object.priceStack)
@@ -455,7 +457,7 @@ export const AddSpecialItemResponse = {
         : undefined,
       maxInInv: isSet(object.maxInInv) ? Number(object.maxInInv) : undefined,
       stock: isSet(object.stock) ? Number(object.stock) : undefined,
-      usageTime: isSet(object.usageTime) ? String(object.usageTime) : undefined,
+      usageTime: isSet(object.usageTime) ? Number(object.usageTime) : undefined,
       timeBought: isSet(object.timeBought)
         ? fromJsonTimestamp(object.timeBought)
         : undefined,
@@ -472,7 +474,7 @@ export const AddSpecialItemResponse = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.price !== undefined && (obj.price = message.price);
+    message.price !== undefined && (obj.price = Math.round(message.price));
     message.canBeSold !== undefined && (obj.canBeSold = message.canBeSold);
     message.replyMessage !== undefined &&
       (obj.replyMessage = message.replyMessage);
@@ -480,7 +482,9 @@ export const AddSpecialItemResponse = {
     message.useable !== undefined && (obj.useable = message.useable);
     message.powerUp !== undefined && (obj.powerUp = message.powerUp);
     message.cooldownBetweenPurchase !== undefined &&
-      (obj.cooldownBetweenPurchase = message.cooldownBetweenPurchase);
+      (obj.cooldownBetweenPurchase = Math.round(
+        message.cooldownBetweenPurchase
+      ));
     message.priceStack !== undefined && (obj.priceStack = message.priceStack);
     message.durability !== undefined &&
       (obj.durability = Math.round(message.durability));
@@ -489,7 +493,8 @@ export const AddSpecialItemResponse = {
     message.maxInInv !== undefined &&
       (obj.maxInInv = Math.round(message.maxInInv));
     message.stock !== undefined && (obj.stock = Math.round(message.stock));
-    message.usageTime !== undefined && (obj.usageTime = message.usageTime);
+    message.usageTime !== undefined &&
+      (obj.usageTime = Math.round(message.usageTime));
     message.timeBought !== undefined &&
       (obj.timeBought = message.timeBought.toISOString());
     message.timeUsed !== undefined &&
@@ -505,7 +510,7 @@ export const AddSpecialItemResponse = {
     message.itemId = object.itemId ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? "";
-    message.price = object.price ?? "";
+    message.price = object.price ?? 0;
     message.canBeSold = object.canBeSold ?? false;
     message.replyMessage = object.replyMessage ?? "";
     message.count = object.count ?? 0;
@@ -639,7 +644,7 @@ function createBaseSpecialItem(): SpecialItem {
     itemId: "",
     name: "",
     description: "",
-    price: "",
+    price: 0,
     canBeSold: false,
     replyMessage: "",
     count: 0,
@@ -674,8 +679,8 @@ export const SpecialItem = {
     if (message.description !== "") {
       writer.uint32(34).string(message.description);
     }
-    if (message.price !== "") {
-      writer.uint32(42).string(message.price);
+    if (message.price !== 0) {
+      writer.uint32(41).fixed64(message.price);
     }
     if (message.canBeSold === true) {
       writer.uint32(48).bool(message.canBeSold);
@@ -693,7 +698,7 @@ export const SpecialItem = {
       writer.uint32(80).bool(message.powerUp);
     }
     if (message.cooldownBetweenPurchase !== undefined) {
-      writer.uint32(90).string(message.cooldownBetweenPurchase);
+      writer.uint32(89).fixed64(message.cooldownBetweenPurchase);
     }
     if (message.priceStack !== undefined) {
       writer.uint32(96).bool(message.priceStack);
@@ -711,7 +716,7 @@ export const SpecialItem = {
       writer.uint32(129).fixed64(message.stock);
     }
     if (message.usageTime !== undefined) {
-      writer.uint32(138).string(message.usageTime);
+      writer.uint32(137).fixed64(message.usageTime);
     }
     if (message.timeBought !== undefined) {
       Timestamp.encode(
@@ -748,7 +753,7 @@ export const SpecialItem = {
           message.description = reader.string();
           break;
         case 5:
-          message.price = reader.string();
+          message.price = longToNumber(reader.fixed64() as Long);
           break;
         case 6:
           message.canBeSold = reader.bool();
@@ -766,7 +771,9 @@ export const SpecialItem = {
           message.powerUp = reader.bool();
           break;
         case 11:
-          message.cooldownBetweenPurchase = reader.string();
+          message.cooldownBetweenPurchase = longToNumber(
+            reader.fixed64() as Long
+          );
           break;
         case 12:
           message.priceStack = reader.bool();
@@ -784,7 +791,7 @@ export const SpecialItem = {
           message.stock = longToNumber(reader.fixed64() as Long);
           break;
         case 17:
-          message.usageTime = reader.string();
+          message.usageTime = longToNumber(reader.fixed64() as Long);
           break;
         case 18:
           message.timeBought = fromTimestamp(
@@ -810,7 +817,7 @@ export const SpecialItem = {
       itemId: isSet(object.itemId) ? String(object.itemId) : "",
       name: isSet(object.name) ? String(object.name) : "",
       description: isSet(object.description) ? String(object.description) : "",
-      price: isSet(object.price) ? String(object.price) : "",
+      price: isSet(object.price) ? Number(object.price) : 0,
       canBeSold: isSet(object.canBeSold) ? Boolean(object.canBeSold) : false,
       replyMessage: isSet(object.replyMessage)
         ? String(object.replyMessage)
@@ -819,7 +826,7 @@ export const SpecialItem = {
       useable: isSet(object.useable) ? Boolean(object.useable) : false,
       powerUp: isSet(object.powerUp) ? Boolean(object.powerUp) : undefined,
       cooldownBetweenPurchase: isSet(object.cooldownBetweenPurchase)
-        ? String(object.cooldownBetweenPurchase)
+        ? Number(object.cooldownBetweenPurchase)
         : undefined,
       priceStack: isSet(object.priceStack)
         ? Boolean(object.priceStack)
@@ -832,7 +839,7 @@ export const SpecialItem = {
         : undefined,
       maxInInv: isSet(object.maxInInv) ? Number(object.maxInInv) : undefined,
       stock: isSet(object.stock) ? Number(object.stock) : undefined,
-      usageTime: isSet(object.usageTime) ? String(object.usageTime) : undefined,
+      usageTime: isSet(object.usageTime) ? Number(object.usageTime) : undefined,
       timeBought: isSet(object.timeBought)
         ? fromJsonTimestamp(object.timeBought)
         : undefined,
@@ -849,7 +856,7 @@ export const SpecialItem = {
     message.name !== undefined && (obj.name = message.name);
     message.description !== undefined &&
       (obj.description = message.description);
-    message.price !== undefined && (obj.price = message.price);
+    message.price !== undefined && (obj.price = Math.round(message.price));
     message.canBeSold !== undefined && (obj.canBeSold = message.canBeSold);
     message.replyMessage !== undefined &&
       (obj.replyMessage = message.replyMessage);
@@ -857,7 +864,9 @@ export const SpecialItem = {
     message.useable !== undefined && (obj.useable = message.useable);
     message.powerUp !== undefined && (obj.powerUp = message.powerUp);
     message.cooldownBetweenPurchase !== undefined &&
-      (obj.cooldownBetweenPurchase = message.cooldownBetweenPurchase);
+      (obj.cooldownBetweenPurchase = Math.round(
+        message.cooldownBetweenPurchase
+      ));
     message.priceStack !== undefined && (obj.priceStack = message.priceStack);
     message.durability !== undefined &&
       (obj.durability = Math.round(message.durability));
@@ -866,7 +875,8 @@ export const SpecialItem = {
     message.maxInInv !== undefined &&
       (obj.maxInInv = Math.round(message.maxInInv));
     message.stock !== undefined && (obj.stock = Math.round(message.stock));
-    message.usageTime !== undefined && (obj.usageTime = message.usageTime);
+    message.usageTime !== undefined &&
+      (obj.usageTime = Math.round(message.usageTime));
     message.timeBought !== undefined &&
       (obj.timeBought = message.timeBought.toISOString());
     message.timeUsed !== undefined &&
@@ -882,7 +892,7 @@ export const SpecialItem = {
     message.itemId = object.itemId ?? "";
     message.name = object.name ?? "";
     message.description = object.description ?? "";
-    message.price = object.price ?? "";
+    message.price = object.price ?? 0;
     message.canBeSold = object.canBeSold ?? false;
     message.replyMessage = object.replyMessage ?? "";
     message.count = object.count ?? 0;

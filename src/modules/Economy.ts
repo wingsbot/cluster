@@ -8,15 +8,10 @@ export class Economy extends ModuleBase {
   public readonly activeItemsCache: Map<string, ActiveItem[]> = new Map();
 
   public async getUserData(userId: string): Promise<UserData> {
-    if (this.userCache.has(userId)) return this.userCache.get(userId);
+    const userCache = this.userCache.get(userId);
+    if (userCache) return userCache;
 
-    const grpcUserData = await this.client.grpc.economy.getUser(userId);
-    const userData = Object.assign(grpcUserData, {
-      balance: Number(grpcUserData.balance),
-      bank: Number(grpcUserData.bank),
-      bankCap: Number(grpcUserData.bankCap),
-    });
-
+    const userData = await this.client.grpc.economy.getUser(userId) as UserData;
     this.userCache.set(userId, userData);
 
     return userData;
@@ -32,7 +27,7 @@ export class Economy extends ModuleBase {
 
     userData.balance += balance;
 
-    await this.client.grpc.economy.updateBalance(userId, userData.balance.toString());
+    await this.client.grpc.economy.updateBalance(userId, balance);
   }
 
   public async editBank(userId: string, bank: number) {
@@ -40,7 +35,7 @@ export class Economy extends ModuleBase {
 
     userData.bank += bank;
 
-    await this.client.grpc.economy.updateBank(userId, userData.bank.toString());
+    await this.client.grpc.economy.updateBank(userId, bank);
   }
 
   public async editBankCap(userId: string, bankCap: number) {
@@ -48,25 +43,18 @@ export class Economy extends ModuleBase {
 
     userData.bankCap += bankCap;
 
-    await this.client.grpc.economy.updateBankCap(userId, userData.bankCap.toString());
+    await this.client.grpc.economy.updateBankCap(userId, bankCap);
   }
 
   // inventory
   public async getUserInventory(userId: string) {
-    if (this.inventoryCache.has(userId)) return this.inventoryCache.get(userId);
+    let userInventory = this.inventoryCache.get(userId);
 
-    const grpcUserInventory = await this.client.grpc.economy.getUserInventory(userId) || [];
-    const userInventory: Item[] = [];
-
-    for (const item of grpcUserInventory) {
-      userInventory.push(Object.assign(item, {
-        price: Number(item.price),
-        ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: Number(item.cooldownBetweenPurchase) }),
-        ...(item.usageTime && { usageTime: Number(item.usageTime) }),
-      }));
+    if (!userInventory) {
+      userInventory = await this.client.grpc.economy.getUserInventory(userId) || [];
+      this.inventoryCache.set(userId, userInventory);
     }
 
-    this.inventoryCache.set(userId, userInventory);
     return userInventory;
   }
 
@@ -84,26 +72,9 @@ export class Economy extends ModuleBase {
       Object.assign(existingItem, item);
       existingItem.count++;
 
-      const grpcItem = Object.assign(existingItem, {
-        price: item.price.toString(),
-        ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-        ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-      });
-
-      await this.client.grpc.economy.addInventoryItem(userId, grpcItem);
+      await this.client.grpc.economy.addInventoryItem(userId, existingItem);
     } else {
-      const grpcItem = Object.assign(item, {
-        price: item.price.toString(),
-        ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-        ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-      });
-
-      const newGrpcItem = await this.client.grpc.economy.addInventoryItem(userId, grpcItem);
-      const newItem = Object.assign(newGrpcItem, {
-        price: Number(item.price),
-        ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: Number(item.cooldownBetweenPurchase) }),
-        ...(item.usageTime && { usageTime: Number(item.usageTime) }),
-      });
+      const newItem = await this.client.grpc.economy.addInventoryItem(userId, item);
 
       userItems.push(newItem);
     }
@@ -114,13 +85,7 @@ export class Economy extends ModuleBase {
     const existingItem = userItems.find(i => i.id === item.id);
 
     if (!existingItem) return;
-    const grpcItem = Object.assign(item, {
-      price: item.price.toString(),
-      ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-      ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-    });
-
-    await this.client.grpc.economy.addInventoryItem(userId, grpcItem);
+    await this.client.grpc.economy.addInventoryItem(userId, item);
 
     Object.assign(existingItem, item);
   }
@@ -133,37 +98,19 @@ export class Economy extends ModuleBase {
       existingItem.count -= item.count;
 
       if (existingItem.count <= 0) {
-        const grpcItem = Object.assign(existingItem, {
-          price: item.price.toString(),
-          ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-          ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-        });
-
-        await this.client.grpc.economy.deleteInventoryItem(userId, grpcItem);
+        await this.client.grpc.economy.deleteInventoryItem(userId, existingItem);
 
         userItems.splice(userItems.findIndex(i => i.id === item.id), 1);
         return;
       }
 
-      const grpcItem = Object.assign(item, {
-        price: item.price.toString(),
-        ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-        ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-      });
-
-      await this.client.grpc.economy.removeInventoryItem(userId, grpcItem);
+      await this.client.grpc.economy.removeInventoryItem(userId, existingItem);
       return;
     }
 
     userItems.splice(userItems.findIndex(uItem => uItem.id === item.id), 1);
 
-    const grpcItem = Object.assign(item, {
-      price: item.price.toString(),
-      ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-      ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-    });
-
-    await this.client.grpc.economy.deleteInventoryItem(userId, grpcItem);
+    await this.client.grpc.economy.deleteInventoryItem(userId, item);
   }
 
   public async removeInventoryItems(userId: string, excludeList: string[]) {
@@ -176,21 +123,14 @@ export class Economy extends ModuleBase {
 
   // Active Item bullshit
   public async getActiveItems(userId: string) {
-    if (this.activeItemsCache.has(userId)) return this.activeItemsCache.get(userId);
+    let userActiveItems = this.activeItemsCache.get(userId);
 
-    const grpcUserActiveItems = await this.client.grpc.economy.getActiveItems(userId) || [];
-    const userAciveItems: ActiveItem[] = [];
-
-    for (const item of grpcUserActiveItems) {
-      userAciveItems.push(Object.assign(item, {
-        price: Number(item.price),
-        ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: Number(item.cooldownBetweenPurchase) }),
-        ...(item.usageTime && { usageTime: Number(item.usageTime) }),
-      }));
+    if (!userActiveItems) {
+      userActiveItems = await this.client.grpc.economy.getActiveItems(userId) || [];
+      this.activeItemsCache.set(userId, userActiveItems);
     }
 
-    this.activeItemsCache.set(userId, userAciveItems);
-    return userAciveItems;
+    return userActiveItems;
   }
 
   public async getActiveItem(userId: string, itemId: number | string) {
@@ -201,20 +141,7 @@ export class Economy extends ModuleBase {
 
   public async setActiveItem(userId: string, guildId: string, item: Item) {
     const activeItems = await this.getActiveItems(userId);
-    const grpcItem = Object.assign(item, {
-      price: item.price.toString(),
-      ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-      ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-      guildId,
-      timeUsed: new Date(),
-    });
-
-    const newGrpcActiveItem = await this.client.grpc.economy.addActiveItem(userId, grpcItem);
-    const newActiveItem = Object.assign(newGrpcActiveItem, {
-      price: Number(item.price),
-      ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: Number(item.cooldownBetweenPurchase) }),
-      ...(item.usageTime && { usageTime: Number(item.usageTime) }),
-    });
+    const newActiveItem = await this.client.grpc.economy.addActiveItem(userId, Object.assign(item, { guildId, timeUsed: new Date() }));
 
     activeItems.push(newActiveItem);
 
@@ -225,7 +152,7 @@ export class Economy extends ModuleBase {
         userId,
         guildId,
         type: 'activeItemTimer',
-        time: (newActiveItem.timeUsed.getTime() + newActiveItem.usageTime).toString(),
+        time: item.timeUsed.getTime() + item.usageTime,
         itemId: newActiveItem.id,
       };
 
@@ -240,13 +167,7 @@ export class Economy extends ModuleBase {
 
     this.activeItemsCache.set(userId, userActiveItems);
 
-    const grpcItem = Object.assign(item, {
-      price: item.price.toString(),
-      ...(item.cooldownBetweenPurchase && { cooldownBetweenPurchase: item.cooldownBetweenPurchase.toString() }),
-      ...(item.usageTime && { usageTime: item.usageTime.toString() }),
-    });
-
-    await this.client.grpc.economy.removeActiveItem(userId, grpcItem);
+    await this.client.grpc.economy.removeActiveItem(userId, item);
   }
 
   public async getMultiplier(userId: string) {
