@@ -4,15 +4,12 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "outDir": "./build",
-    "target": "es2019",
-    "resolveJsonModule": true,
+    "target": "es2022",
     "esModuleInterop": true,
     "allowJs": true,
   },
   "include": [
     "./src",
-    "./src/**/*.json",
-    "./generated"
   ],
   "exclude": [
     "./node_modules",

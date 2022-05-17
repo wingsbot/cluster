@@ -1,5 +1,6 @@
 // handlers
 export * from './InteractionHandler';
+export * from './utils/EventManager';
 
 // bases
 export * from './bases/CommandBase';

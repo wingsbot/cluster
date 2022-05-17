@@ -1,49 +1,48 @@
-import type { TopTenUser, UserData } from '../lib/interfaces/Economy';
-import { ModuleBase } from '../lib/framework/bases/ModuleBase';
-import { ActiveItem, Item } from '../lib/interfaces/Shop';
+import type { ActiveItem, Inventory, User } from '@prisma/client';
+import { ModuleBase } from '../lib/framework';
 
 export class Economy extends ModuleBase {
-  public readonly userCache: Map<string, UserData> = new Map();
-  public readonly inventoryCache: Map<string, Item[]> = new Map();
+  public readonly userCache: Map<string, User> = new Map();
+  public readonly inventoryCache: Map<string, Inventory[]> = new Map();
   public readonly activeItemsCache: Map<string, ActiveItem[]> = new Map();
 
-  public async getUserData(userId: string): Promise<UserData> {
+  public async getUserData(userId: string): Promise<User> {
     const userCache = this.userCache.get(userId);
     if (userCache) return userCache;
 
-    const userData = await this.client.grpc.economy.getUser(userId) as UserData;
+    const userData = await this.client.db.user.getUser(userId);
     this.userCache.set(userId, userData);
 
     return userData;
   }
 
-  public parseInt(amount?: number) {
-    if (!amount && amount !== 0) return '🍖';
+  public parseInt(amount?: number | bigint) {
+    if (!amount && Number(amount) !== 0) return '🍖';
     return `🍖${amount.toLocaleString()}`;
   }
 
-  public async editBalance(userId: string, balance: number) {
+  public async editBalance(userId: string, balance: number | bigint) {
     const userData = await this.getUserData(userId);
 
-    userData.balance += balance;
+    userData.balance += BigInt(balance);
 
-    await this.client.grpc.economy.updateBalance(userId, balance);
+    await this.client.db.user.editUserBalance(userId, BigInt(balance));
   }
 
-  public async editBank(userId: string, bank: number) {
+  public async editBank(userId: string, bank: number | bigint) {
     const userData = await this.getUserData(userId);
 
-    userData.bank += bank;
+    userData.bank += BigInt(bank);
 
-    await this.client.grpc.economy.updateBank(userId, bank);
+    await this.client.db.user.editUserBank(userId, BigInt(bank));
   }
 
-  public async editBankCap(userId: string, bankCap: number) {
+  public async editBankCap(userId: string, bankCap: number | bigint) {
     const userData = await this.getUserData(userId);
 
-    userData.bankCap += bankCap;
+    userData.bankCap += BigInt(bankCap);
 
-    await this.client.grpc.economy.updateBankCap(userId, bankCap);
+    await this.client.db.user.editUserBankCap(userId, BigInt(bankCap));
   }
 
   // inventory
@@ -51,7 +50,7 @@ export class Economy extends ModuleBase {
     let userInventory = this.inventoryCache.get(userId);
 
     if (!userInventory) {
-      userInventory = await this.client.grpc.economy.getUserInventory(userId) || [];
+      userInventory = await this.client.db.inventory.getUserInventory(userId) || [];
       this.inventoryCache.set(userId, userInventory);
     }
 
@@ -64,53 +63,54 @@ export class Economy extends ModuleBase {
     return userInventory.find(item => item.itemId === itemId);
   }
 
-  public async addInventoryItem(userId: string, item: Item) {
+  public async addInventoryItem(userId: string, item: Inventory) {
     const userItems = await this.getUserInventory(userId);
     const existingItem = userItems.find(i => i.id === item.id);
 
     if (existingItem) {
       Object.assign(existingItem, item);
-      existingItem.count++;
+      existingItem.quantity++;
 
-      await this.client.grpc.economy.addInventoryItem(userId, existingItem);
+      await this.client.db.inventory.addItem(existingItem);
     } else {
-      const newItem = await this.client.grpc.economy.addInventoryItem(userId, item);
+      item.userId = userId;
+      const newItem = await this.client.db.inventory.addItem(item);
 
       userItems.push(newItem);
     }
   }
 
-  public async updateInventoryItem(userId: string, item: Item) {
+  public async updateInventoryItem(userId: string, item: Inventory) {
     const userItems = await this.getUserInventory(userId);
     const existingItem = userItems.find(i => i.id === item.id);
 
     if (!existingItem) return;
-    await this.client.grpc.economy.addInventoryItem(userId, item);
+    await this.client.db.inventory.updateItem(item);
 
     Object.assign(existingItem, item);
   }
 
-  public async removeInventoryItem(userId: string, item: Item) {
+  public async removeInventoryItem(userId: string, item: Inventory) {
     const userItems = await this.getUserInventory(userId);
     const existingItem = userItems.find(i => i.id === item.id);
 
     if (existingItem) {
-      existingItem.count -= item.count;
+      existingItem.quantity -= item.quantity;
 
-      if (existingItem.count <= 0) {
-        await this.client.grpc.economy.deleteInventoryItem(userId, existingItem);
+      if (existingItem.quantity <= 0) {
+        await this.client.db.inventory.deleteItem(existingItem.id);
 
         userItems.splice(userItems.findIndex(i => i.id === item.id), 1);
         return;
       }
 
-      await this.client.grpc.economy.removeInventoryItem(userId, existingItem);
+      await this.client.db.inventory.removeItem(existingItem.id);
       return;
     }
 
     userItems.splice(userItems.findIndex(uItem => uItem.id === item.id), 1);
 
-    await this.client.grpc.economy.deleteInventoryItem(userId, item);
+    await this.client.db.inventory.deleteItem(item.id);
   }
 
   public async removeInventoryItems(userId: string, excludeList: string[]) {
@@ -118,7 +118,7 @@ export class Economy extends ModuleBase {
     const newInventory = userItems.filter(item => excludeList.includes(item.itemId) || !item.canBeSold);
     this.inventoryCache.set(userId, newInventory);
 
-    await this.client.grpc.economy.deleteInventoryItems(userId, excludeList);
+    await this.client.db.inventory.deleteMultipleItems(userId, excludeList);
   }
 
   // Active Item bullshit
@@ -126,7 +126,7 @@ export class Economy extends ModuleBase {
     let userActiveItems = this.activeItemsCache.get(userId);
 
     if (!userActiveItems) {
-      userActiveItems = await this.client.grpc.economy.getActiveItems(userId) || [];
+      userActiveItems = await this.client.db.activeItems.getUserActiveItem(userId) || [];
       this.activeItemsCache.set(userId, userActiveItems);
     }
 
@@ -139,9 +139,9 @@ export class Economy extends ModuleBase {
     return activeItems.find(item => typeof itemId === 'string' ? item.itemId === itemId : item.id === itemId);
   }
 
-  public async setActiveItem(userId: string, guildId: string, item: Item) {
+  public async setActiveItem(userId: string, guildId: string, item: ActiveItem) {
     const activeItems = await this.getActiveItems(userId);
-    const newActiveItem = await this.client.grpc.economy.addActiveItem(userId, Object.assign(item, { guildId, timeUsed: new Date() }));
+    const newActiveItem = await this.client.db.activeItems.addItem(item);
 
     activeItems.push(newActiveItem);
 
@@ -149,10 +149,11 @@ export class Economy extends ModuleBase {
 
     if (newActiveItem.usageTime) {
       const timer = {
+        id: null,
         userId,
         guildId,
         type: 'activeItemTimer',
-        time: item.timeUsed.getTime() + item.usageTime,
+        time: BigInt(item.timeUsed.getTime()) + item.usageTime,
         itemId: newActiveItem.id,
       };
 
@@ -167,7 +168,7 @@ export class Economy extends ModuleBase {
 
     this.activeItemsCache.set(userId, userActiveItems);
 
-    await this.client.grpc.economy.removeActiveItem(userId, item);
+    await this.client.db.activeItems.deleteItem(item.id);
   }
 
   public async getMultiplier(userId: string) {
@@ -181,25 +182,15 @@ export class Economy extends ModuleBase {
 
   // leaderboard
   public async getTopTen() {
-    const userList = await this.client.grpc.economy.getTopTen() as TopTenUser[];
-
-    return userList;
+    return this.client.db.user.getTopTen();
   }
 
   // gang shit thats all im on
   public async joinGang(userId: string, gangId: string) {
-    const userData = await this.getUserData(userId);
-
-    userData.gangId = gangId;
-
-    await this.client.grpc.economy.joinGang(userId, gangId);
+    await this.client.db.user.setGangId(userId, gangId);
   }
 
   public async leaveGang(userId: string) {
-    const userData = await this.getUserData(userId);
-
-    userData.gangId = '';
-
-    await this.client.grpc.economy.leaveGang(userId);
+    await this.client.db.user.setGangId(userId, '');
   }
 }

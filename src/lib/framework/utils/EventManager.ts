@@ -1,10 +1,11 @@
 
 import EventEmitter from 'node:events';
-import { TimedEvent } from '../../interfaces/EventTimer';
+import type { Events } from '@prisma/client';
+
 import { Default } from './timers/Default';
 
 export class EventManager extends EventEmitter {
-  private readonly pendingEvents: TimedEvent[] = [];
+  private readonly pendingEvents: Events[] = [];
   private readonly cutOff: number = 1000 * 60 * 60 * 24 * 7;
 
   constructor() {
@@ -14,19 +15,19 @@ export class EventManager extends EventEmitter {
   }
 
   private async checkPending() {
-    const pending = this.pendingEvents.filter(timer => timer.time - Date.now() <= this.cutOff);
+    const pending = this.pendingEvents.filter(timer => Number(timer.time) - Date.now() <= this.cutOff);
 
     if (pending.length <= 0) return;
 
     for (const event of pending) {
-      event.time = Date.now() + (Number(event.time) - Date.now());
+      event.time = BigInt(Date.now()) + (event.time - BigInt(Date.now()));
 
       this.setupTimer(event);
       this.pendingEvents.splice(this.pendingEvents.findIndex(timer => timer.id === event.id), 1);
     }
   }
 
-  public setupTimer(timer: TimedEvent) {
+  public setupTimer(timer: Events) {
     const { type } = timer;
 
     switch (type) {
@@ -41,8 +42,8 @@ export class EventManager extends EventEmitter {
     }
   }
 
-  public queueEvent(timer: TimedEvent) {
-    if (timer.time - Date.now() <= this.cutOff) {
+  public queueEvent(timer: Events) {
+    if (Number(timer.time) - Date.now() <= this.cutOff) {
       this.setupTimer(timer);
     } else {
       this.pendingEvents.push(timer);

@@ -1,0 +1,34 @@
+{
+  "token": "NzcxOTk5OTYzMjM1NzQ1Nzkz.X50S_g.rJECoijzXqyuz4-Zz8Nie4g6dKY",
+  "owners": ["596263924689666048"],
+  "botInstance": "development",
+  "contributors": ["596263924689666048", "358776042829119498", "655307797906587669", "393294718345412618", "293092771722559499"],
+  "mongodb": "mongodb://127.0.0.1:27017/wings",
+  "wolkeToken": "Wolke cms0ZVhZT19mOmQ3YWYyYjg1NjkyZTRjZGViYzZmZmNhOTk1NmU5N2MyYzVhNGVjYzE5ZjU2YTgwYWVjMWY5NDE1",
+  "spotifyClientId": "252564c8e0cc4e4ba51690723bde361f",
+  "spotifyClientSecret": "c3a64097cc294d5da0799249e9f2cc24",
+  "alexToken": "-_A8Z5hi2zPkeArl7KJuKGdx_Bt2omLQQta6-qjq",
+  "fortnite": "3964782b-7fac-4dfc-93f7-d3c9c197de03",
+  "lavalink": {
+      "nodes": [
+          { "host":"127.0.0.1", "port":42069, "restPort":42069, "region":"us", "password":"lakers2001" }
+      ]
+  },
+  "patreon": {
+      "clientId": "O9jPVe6tPXHGHOb9oWQ3xT_AAjXu_2YZuTZyZE8OWZ7hlHV8-mMXycG1MOy0UONm",
+      "clientSecret": "TaXm7YDPfPFiMSnyKEBrjlEOq2nE2Iv-Q9t4nddv_If56Du7tvtxHoNWfoEFJUWV",
+      "refreshToken": "VW0Gjo1RogCGQmEVkNNfUOaD4z6gOvqiH-6buS2DCfs",
+      "accessToken": "FWyN1yJlGrhWtuhsuYOLKS-aLfVeLorAUcHSTXgIi8Y"
+  },
+  "shards": 1,
+  "clusters": 1,
+  "errorWebhook": "https://discord.com/api/webhooks/778625352599470112/SwhUmPB5DP6iM-de1q6yJIHJL9BpbAdpuG8VD0txJ5h9EPV8WyBjNdZUQJeWL-ErOJD5",
+  "guildWebhook": "https://discord.com/api/webhooks/772740166061785098/O6GFNlawgFAyRxdwCOZMbGh9clel4HFlhhE6Ld0Fa95pDC7AOCRt9G2clZIHw3F8uoQc",
+  "webhook": "https://discord.com/api/webhooks/772001835585241100/bk-_9WNOCbyt5bRKpD0svNJSjCWvlqEYJwqRMb0myP0zvLSnvCcdDCxJgyG_6LEA-rNc",
+  "patreonWebhook": "WPNerEHtCwqWQq8E7URxN_Ejv5mqY7fINBl0rGlnZXC3DmSXMu_tyEfuEUXDQleD",
+  "prodBot": "dev",
+  "dblToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijc2NjIyOTI2ODQxMzAyMjI0OCIsImJvdCI6dHJ1ZSwiaWF0IjoxNjA5MTQyNjk0fQ.RXkfWXToRwTAaa4AMEKtsKADORmIccut0aeFGh76UJU",
+  "dbotsToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGkiOnRydWUsImlkIjoiNTk2MjYzOTI0Njg5NjY2MDQ4IiwiaWF0IjoxNjA2MDEyMDcwfQ.zyzhDd09PQpETiU1pvPP_KCFQWbhUhE8beC3sc1CMXc",
+  "otherToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoxLCJpZCI6Ijc2NjIyOTI2ODQxMzAyMjI0OCIsImlhdCI6MTYwNjg2NTczOH0.QBAOjYBmxyfp8GPu9Cj9NkYR5ip9NOpwXNIDTL70GI4",
+  "prodPassword": "NzcxOTk5OTYzMjM1NzQ1Nzkz.X50S_g.rJECoijzXqyuz4-Zz8Nie4g6dKY"
+}

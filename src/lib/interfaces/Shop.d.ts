@@ -1,46 +1,46 @@
 export interface Item {
-  id?: number;
+  id: number;
   itemId: string;
   userId: string;
   name: string;
   description: string;
-  price: number;
+  price: bigint;
   canBeSold: boolean;
   replyMessage: string;
-  count: number;
+  quantity: bigint;
   useable: boolean;
-  powerUp?: boolean;
-  cooldownBetweenPurchase?: number;
+  powerUp: boolean;
+  cooldownBetweenPurchase?: string;
   priceStack?: boolean;
   durability?: number;
   maxDurability?: number;
   maxInInv?: number;
   stock?: number;
-  usageTime?: number;
+  usageTime?: string;
   timeBought?: Date;
   timeUsed?: Date;
 }
 
 export interface ActiveItem {
-  id?: number;
+  id: number;
   itemId: string;
   userId: string;
   guildId: string;
   name: string;
   description: string;
-  price: number;
+  price: bigint;
   canBeSold: boolean;
   replyMessage: string;
-  count: number;
+  quantity: bigint;
   useable: boolean;
-  powerUp?: boolean;
-  cooldownBetweenPurchase?: number;
+  powerUp: boolean;
+  cooldownBetweenPurchase?: string;
   priceStack?: boolean;
   durability?: number;
   maxDurability?: number;
   maxInInv?: number;
   stock?: number;
-  usageTime?: number;
+  usageTime?: string;
   timeBought?: Date;
   timeUsed?: Date;
 }

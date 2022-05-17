@@ -1,0 +1,17 @@
+version: '1.0'
+
+services:
+  wings:
+    image: 
+    environment:
+     - "test=test"
+
+  mariaDB:
+    image: 
+    environment:
+     - "test=test"
+
+  redis:
+    image: 
+    environment:
+     - "test=test"

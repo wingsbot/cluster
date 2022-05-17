@@ -1,13 +1,11 @@
-import { Constants, Message } from 'eris';
+import { CommandInteraction } from 'eris';
 
-import type { Shard } from '../Shard';
 import { ModuleBase } from '../lib/framework/bases/ModuleBase';
 import type { UserLevelData } from '../lib/interfaces/Levels';
 
 export class Levels extends ModuleBase {
   private readonly levelCache: Map<string, UserLevelData> = new Map();
   private readonly defaultLevelData: UserLevelData = {
-    id: 'none',
     exp: 0,
     level: 1,
     total: 100,
@@ -28,16 +26,9 @@ export class Levels extends ModuleBase {
     backgroundH: null,
   };
 
-  constructor(client: Shard) {
-    super(client);
-
-    this.client.on('messageCreate', this.handleMessages.bind(this));
-  }
-
-  private async handleMessages(message: Message) {
-    if (!message.guildID || message.author.bot || (message.type !== Constants.MessageTypes.DEFAULT && message.type !== Constants.MessageTypes.REPLY)) return;
-
-    const cachedUser = this.levelCache.get(message.author.id) ?? { ...this.defaultLevelData };
+  public async handleLeveling(interaction: CommandInteraction) {
+    if (!interaction.user) return;
+    const cachedUser = this.levelCache.get(interaction.user.id) ?? { ...this.defaultLevelData };
     if (Date.now() - cachedUser.cooldown < 1000 * 60) return;
 
     const xpFromLastLevel = this.xpRequiredForLevel(cachedUser.level);
@@ -46,7 +37,6 @@ export class Levels extends ModuleBase {
 
     const amount = this.client.util.getRandomInt(10, 15);
 
-    cachedUser.id = message.author.id;
     cachedUser.total += amount;
     cachedUser.exp = cachedUser.total - xpFromLastLevel;
     cachedUser.percent = Math.round((cachedUser.exp / xpToFinishLevel) * 100);
@@ -62,8 +52,8 @@ export class Levels extends ModuleBase {
       // in here at special levels give cool things, plus how to notify level up?
     }
 
-    this.levelCache.set(cachedUser.id, cachedUser);
-    await this.client.grpc.levels.updateUser(cachedUser.id, cachedUser);
+    this.levelCache.set(interaction.user.id, cachedUser);
+    await this.client.db.user.updateLevel(interaction.user.id, cachedUser);
   }
 
   public xpRequiredForLevel(level: number) {
@@ -77,8 +67,8 @@ export class Levels extends ModuleBase {
   public async getUserData(userId: string) {
     if (this.levelCache.has(userId)) return this.levelCache.get(userId);
 
-    const data = await this.client.grpc.levels.getUserData(userId);
-    return data ?? Object.assign({ id: userId }, this.defaultLevelData);
+    const data = await this.client.db.user.getUser(userId);
+    return data.levelData ?? this.defaultLevelData;
   }
 
   public async getUserRank(userId: string) {

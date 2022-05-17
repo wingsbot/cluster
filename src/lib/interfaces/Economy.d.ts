@@ -1,8 +1,8 @@
 export interface UserData {
   id: string;
-  balance: number;
-  bank: number;
-  bankCap: number;
+  balance: bigint;
+  bank: bigint;
+  bankCap: bigint;
   gangId?: string;
 }
 

@@ -1,11 +1,12 @@
+
+import type { Events } from '@prisma/client';
 import type { Shard } from '../Shard';
-import { ModuleBase } from '../lib/framework/bases/ModuleBase';
-import { EventManager } from '../lib/framework/utils/EventManager';
-import { TimedEvent } from '../lib/interfaces/EventTimer';
+
+import { ModuleBase, EventManager } from '../lib/framework';
 
 export class EventTimer extends ModuleBase {
   private readonly eventManager: EventManager = new EventManager();
-  private readonly timers: TimedEvent[] = [];
+  private readonly timers: Events[] = [];
 
   constructor(client: Shard) {
     super(client);
@@ -15,7 +16,7 @@ export class EventTimer extends ModuleBase {
   }
 
   private async setup() {
-    const timers = await this.client.grpc.timedEvents.getAllEvents();
+    const timers = await this.client.db.events.getAllEvents();
 
     for (const timer of timers) {
       if (timer.guildId) {
@@ -28,7 +29,7 @@ export class EventTimer extends ModuleBase {
     }
   }
 
-  private async handleEvent(timer: TimedEvent) {
+  private async handleEvent(timer: Events) {
     if (!timer) return;
 
     switch (timer.type) {
@@ -54,16 +55,16 @@ export class EventTimer extends ModuleBase {
     this.expireEvent(timer);
   }
 
-  private expireEvent(timer: TimedEvent) {
+  private expireEvent(timer: Events) {
     const index = this.timers.findIndex(t => t.id === timer.id);
     if (index === -1) return;
 
     this.timers.splice(index, 1);
-    this.client.grpc.timedEvents.removeEvent(timer.id);
+    this.client.db.events.deleteEvent(timer.id);
   }
 
-  public async setupTimer(timer: TimedEvent) {
-    const timerData = await this.client.grpc.timedEvents.addEvent(timer);
+  public async setupTimer(timer: Events) {
+    const timerData = await this.client.db.events.addEvent(timer);
 
     timer.id = timerData.id;
     this.timers.push(timer);

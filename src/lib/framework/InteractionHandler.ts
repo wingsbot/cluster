@@ -1,11 +1,11 @@
 import { join } from 'node:path';
 import { Constants, CommandInteraction, UnknownInteraction, ComponentInteraction, AutocompleteInteraction, InteractionDataOptionsWithValue } from 'eris';
 import type { EventListeners, ApplicationCommandStructure } from 'eris';
+import type { Inventory, Shop } from '@prisma/client';
 
 import { Responder } from '../core';
 import { Store } from '../core/fs/Store';
 
-import type { Item } from '../interfaces/Shop';
 import type { Shard } from '../../Shard';
 import { CooldownGuard } from './guards/CooldownGuard';
 import type { CommandBase, CommandData, ComponentData } from '.';
@@ -186,6 +186,8 @@ export class InteractionHandler {
     ctx.data = interaction.data;
     ctx.options = interaction.data.options as CommandData['options'];
 
+    this.client.modules.levels.handleLeveling(interaction);
+
     try {
       await command.exec(ctx);
     } catch (error: any) {
@@ -243,9 +245,9 @@ export class InteractionHandler {
         const userInput = options[0].value as string;
         const userData = await this.client.modules.economy.getUserData(interaction.member.id);
 
-        items = this.client.modules.shop.getShopItems().reduce((oldItem: AutocompleteChoices[], newItem: Item) => {
+        items = this.client.modules.shop.getShopItems().reduce((oldItem: AutocompleteChoices[], newItem: Shop) => {
           if (newItem.name.toLowerCase().includes(userInput.toLowerCase())) {
-            if (newItem.itemId === 'upgradebank') newItem.price = Math.round(userData.bankCap / 3);
+            if (newItem.itemId === 'upgradebank') newItem.price = BigInt(Math.round(Number(userData.bankCap) / 3));
 
             const item = {
               name: `${newItem.name} - ${this.client.modules.economy.parseInt(newItem.price)}`,
@@ -279,7 +281,7 @@ export class InteractionHandler {
 
         items = inventory
           .reverse()
-          .reduce((oldItem: AutocompleteChoices[], newItem: Item) => {
+          .reduce((oldItem: AutocompleteChoices[], newItem: Inventory) => {
             if (newItem.name.toLowerCase().includes(userInput.toLowerCase())) {
               const item = {
                 name: newItem.name,
@@ -303,7 +305,7 @@ export class InteractionHandler {
         items = inventory
           .reverse()
           .filter(item => item.useable)
-          .reduce((oldItem: AutocompleteChoices[], newItem: Item) => {
+          .reduce((oldItem: AutocompleteChoices[], newItem: Inventory) => {
             if (newItem.name.toLowerCase().includes(userInput.toLowerCase())) {
               const item = {
                 name: newItem.name,
@@ -326,7 +328,7 @@ export class InteractionHandler {
 
         items = inventory
           .reverse()
-          .reduce((oldItem: AutocompleteChoices[], newItem: Item) => {
+          .reduce((oldItem: AutocompleteChoices[], newItem: Inventory) => {
             if (newItem.name.toLowerCase().includes(userInput.toLowerCase())) {
               const item = {
                 name: newItem.name,

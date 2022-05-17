@@ -1,5 +1,4 @@
 export interface UserLevelData {
-  id: string;
   exp: number;
   level: number;
   total: number;

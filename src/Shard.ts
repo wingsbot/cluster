@@ -1,8 +1,9 @@
-import { Client } from 'eris';
-import { Db, MongoClient } from 'mongodb';
-import RedisClient, { Redis } from 'ioredis';
 import master from 'node:cluster';
 import { join } from 'node:path';
+
+import { Client } from 'eris';
+import RedisClient, { Redis } from 'ioredis';
+import { Database } from './lib/database';
 
 import { IPC } from './lib/core/IPC';
 
@@ -15,7 +16,6 @@ import { ClientUtil } from './lib/core/utils/Util';
 import { CommandBase, EventBase, InteractionHandler } from './lib/framework';
 import { ModuleHandler, Modules } from './lib/framework/ModuleHandler';
 import type { GameData } from './lib/interfaces/Games';
-import { GRPC } from './lib/core/GRPC';
 
 export class Shard extends Client {
   public clusterId: number;
@@ -25,7 +25,7 @@ export class Shard extends Client {
   public config: Config;
   public util: ClientUtil;
   public botInstance: string;
-  public db: Db;
+  public db: Database;
   public redis: Redis;
 
   public interactionHandler: InteractionHandler;
@@ -34,7 +34,6 @@ export class Shard extends Client {
   public commands: Map<string, CommandBase>;
   public events: Map<string, EventBase>;
   public ipc: IPC;
-  public grpc: GRPC;
   public patreon: Patreon;
 
   public activeGames: Map<string, GameData>;
@@ -89,7 +88,6 @@ export class Shard extends Client {
 
   private async loadFramework() {
     this.ipc = new IPC(this);
-    this.grpc = new GRPC();
 
     this.events = new Store(this, join(__dirname, './lib/core/events'));
     console.log('Loaded Events');
@@ -105,9 +103,8 @@ export class Shard extends Client {
   }
 
   private async connectDatabases() {
-    const mongo = await MongoClient.connect(this.config.mongodb);
-    this.db = mongo.db();
-    console.log('Loaded MongoDB');
+    this.db = new Database();
+    console.log('Loaded Database');
 
     this.redis = new RedisClient();
     console.log('Loaded Redis');

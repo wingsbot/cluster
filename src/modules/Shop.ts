@@ -1,11 +1,11 @@
+import type { Shop as ShopItem } from '@prisma/client';
 import { ModuleBase } from '../lib/framework';
-import type { Item, SpecialItem } from '../lib/interfaces/Shop';
 import { shopItems } from '../lib/core';
 import type { Shard } from '../Shard';
 
 export class Shop extends ModuleBase {
-  private readonly defaultItems: Item[] = shopItems;
-  private readonly shopCache: Map<string, SpecialItem> = new Map();
+  private readonly defaultItems: ShopItem[] = shopItems;
+  private readonly shopCache: Map<string, ShopItem> = new Map();
 
   constructor(client: Shard) {
     super(client);
@@ -20,7 +20,7 @@ export class Shop extends ModuleBase {
   // special items through db, default items are default, Object.assign()
   private async init() {
     if (!this.canLoadShop) return;
-    const specialItems = await this.client.grpc.shop.getSpecialItems();
+    const specialItems = await this.client.db.shop.getAllItems();
 
     if (specialItems.length === 0) return;
     for (const item of specialItems) {
@@ -28,8 +28,8 @@ export class Shop extends ModuleBase {
     }
   }
 
-  public getShopItems(): Item[] {
-    return [...Object.values(this.shopCache), ...this.defaultItems] as Item[];
+  public getShopItems(): ShopItem[] {
+    return [...Object.values(this.shopCache), ...this.defaultItems] as ShopItem[];
   }
 
   public getShopItem(itemId: string | number) {
@@ -39,17 +39,17 @@ export class Shop extends ModuleBase {
   }
 
   // special limited time items
-  public async addSpecialItem(item: Item) {
+  public async addSpecialItem(item: ShopItem) {
     if (this.shopCache.has(item.itemId) || this.defaultItems.find(i => i.itemId === item.itemId)) return;
-    const newItem = await this.client.grpc.shop.addSpecialItem(item);
+    const newItem = await this.client.db.shop.addItem(item);
 
     this.shopCache.set(item.itemId, newItem);
   }
 
-  public async removeSpecialItem(item: Item) {
+  public async removeSpecialItem(item: ShopItem) {
     if (!this.shopCache.has(item.itemId)) return;
 
     this.shopCache.delete(item.itemId);
-    await this.client.grpc.shop.removeSpecialItem(item);
+    await this.client.db.shop.deleteItem(item.id);
   }
 }
