@@ -1,0 +1,18 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "eslint-plugin-unicorn",
+    "eslint-plugin-import"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@eslint-plugin-unicorn/recommended"
+  ],
+  "rules": {
+    "object-curly-spacing": 0
+  }
+}

@@ -1,19 +1,14 @@
 {
   "compilerOptions": {
-    "declaration": false,
-    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
     "module": "commonjs",
-    "outDir": "./build",
-    "target": "es2022",
+    "target": "es2021",
     "esModuleInterop": true,
-    "allowJs": true,
-  },
-  "include": [
-    "./src",
-  ],
-  "exclude": [
-    "./node_modules",
-    "./build"
-  ]
+    "baseUrl": ".",
+    "paths": {
+      "@wings/src": ["services/wings-bot/src"]
+    }
+  }
 }
   

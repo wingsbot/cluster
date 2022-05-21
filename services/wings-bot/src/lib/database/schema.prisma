@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  url      = env("DATABASE_URL")
+  provider = "mysql"
+}
+
+model User {
+  id      String @id
+  balance BigInt @default(0)
+  bank    BigInt @default(0)
+  bankCap BigInt @default(15000)
+
+  inventory   Inventory[]
+  activeItems ActiveItem[]
+
+  levelData Json @default("{}") @db.Json
+  premium   Json @default("{}") @db.Json
+
+  gangId String?
+
+  @@index([id, gangId])
+}
+
+model Inventory {
+  id       Int    @id @default(autoincrement())
+  itemId   String
+  userId   String
+  userData User   @relation(fields: [userId], references: [id])
+
+  name         String
+  description  String
+  price        BigInt
+  quantity     BigInt  @default(1)
+  canBeSold    Boolean @default(true)
+  replyMessage String
+  useable      Boolean @default(false)
+
+  powerUp                 Boolean?
+  cooldownBetweenPurchase BigInt?
+  priceStack              Boolean?
+  durability              Int?
+  maxDurability           Int?
+  maxInInv                BigInt?
+  stock                   BigInt?
+  usageTime               BigInt?
+  timeBought              DateTime?
+  timeUsed                DateTime?
+
+  @@index([id, userId, itemId])
+}
+
+model ActiveItem {
+  id       Int    @id @default(autoincrement())
+  itemId   String
+  userId   String
+  guildId  String
+  userData User   @relation(fields: [userId], references: [id])
+
+  name         String
+  description  String
+  price        BigInt
+  quantity     BigInt  @default(1)
+  canBeSold    Boolean @default(true)
+  replyMessage String
+  useable      Boolean @default(false)
+
+  powerUp                 Boolean?
+  cooldownBetweenPurchase BigInt?
+  priceStack              Boolean?
+  durability              Int?
+  maxDurability           Int?
+  maxInInv                BigInt?
+  stock                   BigInt?
+  usageTime               BigInt?
+  timeBought              DateTime?
+  timeUsed                DateTime?
+
+  @@index([id, userId, guildId, itemId])
+}
+
+model Shop {
+  id     Int    @id @default(autoincrement())
+  itemId String
+
+  name         String
+  description  String
+  price        BigInt
+  quantity     BigInt  @default(1)
+  canBeSold    Boolean @default(true)
+  replyMessage String
+  useable      Boolean @default(false)
+
+  powerUp                 Boolean?
+  cooldownBetweenPurchase BigInt?
+  priceStack              Boolean?
+  durability              Int?
+  maxDurability           Int?
+  maxInInv                BigInt?
+  stock                   BigInt?
+  usageTime               BigInt?
+  timeBought              DateTime?
+  timeUsed                DateTime?
+
+  @@index([id, itemId])
+}
+
+model Events {
+  id      Int     @id @default(autoincrement())
+  time    BigInt
+  type    String
+  guildId String?
+  userId  String?
+  itemId  Int
+
+  @@index([id])
+}

@@ -1,0 +1,28 @@
+{
+  "name": "wings",
+  "version": "1.0.0",
+  "description": "Discord Bot",
+  "private": true,
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wingsbot/cluster.git"
+  },
+  "author": "ShyPianoGuy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wingsbot/cluster/issues"
+  },
+  "homepage": "https://github.com/wingsbot/cluster#readme",
+  "dependencies": {
+    "@prisma/client": "^3.13.0",
+    "canvas": "^2.9.1",
+    "dotenv": "^16.0.1",
+    "eris": "github:DevinThePancake/eris#dev",
+    "fastify": "^3.29.0",
+    "ioredis": "^4.28.5",
+    "prisma": "^3.13.0",
+    "tweetnacl": "^1.0.3",
+    "undici": "^4.16.0"
+  }
+}
