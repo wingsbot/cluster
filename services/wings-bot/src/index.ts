@@ -1,29 +1,32 @@
+import 'dotenv/config';
 import fastify from 'fastify';
 import config from './lib/core/utils/Config';
 import RedisClient, { Redis } from 'ioredis';
-import { Database } from './lib/database';
+import { RouteHandler } from './server/routeHandler';
+// import { Database } from './lib/database';
 
 export class Client {
   public server = fastify({ logger: true });;
+  public routeHandler: RouteHandler;
   public config = config;
-  public db: Database;
+  // public db: Database;
   public redis: Redis;
 
   async init() {
-    await Promise.all([
-      this.loadDatabases(),
-      this.listen()
-    ]);
+    await this.loadDatabases(),
+    await this.startServer()
   }
 
-  listen() {
+  async startServer() {
+    this.routeHandler = new RouteHandler(this);
+
     this.server.listen(this.config.port, this.config.host, (err, address) => {
       console.log(`Listening on port ${this.config.port}\nLink: ${address}`);
    });
   }
 
   private async loadDatabases() {
-    this.db = new Database();
+    // this.db = new Database();
     console.log('Loaded Database');
 
     this.redis = new RedisClient();

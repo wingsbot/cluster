@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "yarn turbo run build",
     "start-bot": "tsc && nodemon --watch 'build/**/*' build/index.js",
     "start-webhook-server": "tsc && nodemon --watch 'build/**/*' build/index.js",
     "update-prisma": "prisma format --schema=./src/lib/database/schema.prisma && prisma generate --schema=./src/lib/database/schema.prisma && prisma db push --schema=./src/lib/database/schema.prisma",
@@ -13,12 +14,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "workspaces":[
+    "services/*"
+  ],
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
     "eslint": "^8.15.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-unicorn": "^42.0.0",
+    "turbo": "^1.2.9",
     "typescript": "^4.5.5"
   }
 }

@@ -1,27 +1,104 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import nacl from 'tweetnacl';
-import { RouteHandler } from './routeHandler';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import { sign } from 'tweetnacl';
+import { APIInteraction, InteractionType, InteractionResponseType, APIApplicationCommandInteraction } from 'discord-api-types/v10';
+
+import type { RawBody, RouteHandler } from './routeHandler';
+import type { Client } from '..';
+
+import { command, ping } from './handlers';
+
+export interface InteractionData<T> {
+  client: Client;
+  interaction: T;
+  reply: FastifyReply;
+}
 
 export class InteractionHandler {
-  public route: RouteHandler;
+  private routeHandler: RouteHandler;
+  private publicKey: Buffer;
 
   constructor(routeHandler: RouteHandler) {
-    this.route = routeHandler;
+    this.routeHandler = routeHandler;
+    this.publicKey = Buffer.from(this.routeHandler.client.config.publicKey, 'hex');
+
+    this.routeHandler.server.post('/api/interactions', {}, this.handleInteraction.bind(this));
   }
 
-  handleInteraction (request: FastifyRequest, reply: FastifyReply) {
-    const signature = request.headers['X-Signature-Ed25519'] as string;
-    const timestamp = request.headers['X-Signature-Timestamp'] as string;
-    const body = request.body; // rawBody is expected to be a string, not raw bytes
-    console.log(body)
+ public async handleInteraction (request: FastifyRequest & { body: RawBody }, reply: FastifyReply) {
+    const { isVerified, body } = this.verifyRequest(request);
 
-    const isVerified = nacl.sign.detached.verify(
-      Buffer.from(timestamp + body),
+    if (!isVerified) return reply.send({ status: 401, error: 'invalid request signature' });
+
+    switch (body.type) {
+      case InteractionType.Ping: {
+        const ctx = {
+          client: this.routeHandler.client,
+          interaction: body,
+          reply,
+        };
+
+        await ping(ctx);
+        break;
+      }
+      
+      case InteractionType.ApplicationCommand: {
+        const ctx = {
+          client: this.routeHandler.client,
+          interaction: body,
+          reply,
+        };
+
+        await command(ctx);
+        break;
+      }
+
+      case InteractionType.MessageComponent: {
+        const ctx = {
+          client: this.routeHandler.client,
+          interaction: body,
+          reply,
+        };
+
+        break;
+      }
+
+      case InteractionType.ApplicationCommandAutocomplete: {
+        const ctx = {
+          client: this.routeHandler.client,
+          interaction: body,
+          reply,
+        };
+
+        break;
+      }
+
+      case InteractionType.ModalSubmit: {
+        const ctx = {
+          client: this.routeHandler.client,
+          interaction: body,
+          reply,
+        };
+
+        break;
+      }
+
+      default: {
+        console.warn(`Unknown interaction type: ${body.type}}`);
+      }
+    }
+  }
+
+  public verifyRequest(request: FastifyRequest & { body: RawBody }) {
+    const signature = request.headers['x-signature-ed25519'] as string;
+    const timestamp = request.headers['x-signature-timestamp'] as string;
+    const body = request.body;
+
+    const isVerified = sign.detached.verify(
+      Buffer.from(timestamp + body.raw.toString()),
       Buffer.from(signature, 'hex'),
-      this.route.publicKey
+      this.publicKey
     );
 
-    if (!isVerified) reply.send({ status: 401, error: 'invalid request signature' });
-    else reply.send({ status: 200, type: 1 });
+    return { isVerified, body: body.parsed as APIInteraction }
   }
 }
