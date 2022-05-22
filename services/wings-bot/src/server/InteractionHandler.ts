@@ -1,11 +1,12 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { sign } from 'tweetnacl';
-import { APIInteraction, InteractionType, InteractionResponseType, APIApplicationCommandInteraction } from 'discord-api-types/v10';
+import { APIInteraction, InteractionType } from 'discord-api-types/v10';
 
 import type { RawBody, RouteHandler } from './routeHandler';
 import type { Client } from '..';
 
 import { sendAutocomplete, sendCommand, sendComponent, sendModalSubmit, sendPing } from './handlers';
+import { CommandInteraction } from '../structures';
 
 export interface InteractionData<T> {
   client: Client;
@@ -27,7 +28,7 @@ export class InteractionHandler {
  public async handleInteraction (request: FastifyRequest & { body: RawBody }, reply: FastifyReply) {
     const { isVerified, body } = this.verifyRequest(request);
 
-    if (!isVerified) return reply.send({ status: 401, error: 'invalid request signature' });
+    if (!isVerified) return reply.status(401).send({ error: 'invalid request signature' });
 
     switch (body.type) {
       case InteractionType.Ping: {
@@ -44,7 +45,7 @@ export class InteractionHandler {
       case InteractionType.ApplicationCommand: {
         const ctx = {
           client: this.routeHandler.client,
-          interaction: body,
+          interaction: new CommandInteraction(body),
           reply,
         };
 

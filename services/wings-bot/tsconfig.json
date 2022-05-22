@@ -8,12 +8,12 @@
   },
 
   "include": [
-    "src/**/*.ts", "Config.ts",
+    "./src/**/*.ts",
   ],
 
   "exclude": [
-    "node_modules",
-    ".turbo",
-    "build",
+    "./node_modules",
+    "./.turbo",
+    "./build",
   ],
 }

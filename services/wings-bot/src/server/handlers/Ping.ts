@@ -2,5 +2,5 @@ import { APIPingInteraction, InteractionResponseType } from "discord-api-types/v
 import type { InteractionData } from "../InteractionHandler";
 
 export default async function({ reply }: InteractionData<APIPingInteraction>) {
-  reply.send({ status: 200, data: { type: InteractionResponseType.Pong } });
+  reply.status(200).send({ type: InteractionResponseType.Pong });
 }

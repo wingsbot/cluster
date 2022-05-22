@@ -1,6 +1,6 @@
-import type { APIApplicationCommandInteraction } from "discord-api-types/v10";
+import type { CommandInteraction } from "../../structures";
 import type { InteractionData } from "../InteractionHandler";
 
-export default async function({ client, interaction, reply }: InteractionData<APIApplicationCommandInteraction>) {
+export default async function({ client, interaction, reply }: InteractionData<CommandInteraction>) {
   console.log(interaction)
 }
