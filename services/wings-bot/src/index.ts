@@ -1,9 +1,9 @@
-import 'dotenv/config';
 import fastify from 'fastify';
-import config from './lib/core/utils/Config';
 import RedisClient, { Redis } from 'ioredis';
 import { RouteHandler } from './server/routeHandler';
 // import { Database } from './lib/database';
+
+import config from './Config';
 
 export class Client {
   public server = fastify({ logger: true });;

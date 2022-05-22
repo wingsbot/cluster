@@ -5,7 +5,7 @@ import { APIInteraction, InteractionType, InteractionResponseType, APIApplicatio
 import type { RawBody, RouteHandler } from './routeHandler';
 import type { Client } from '..';
 
-import { command, ping } from './handlers';
+import { sendAutocomplete, sendCommand, sendComponent, sendModalSubmit, sendPing } from './handlers';
 
 export interface InteractionData<T> {
   client: Client;
@@ -37,7 +37,7 @@ export class InteractionHandler {
           reply,
         };
 
-        await ping(ctx);
+        await sendPing(ctx);
         break;
       }
       
@@ -48,7 +48,7 @@ export class InteractionHandler {
           reply,
         };
 
-        await command(ctx);
+        await sendCommand(ctx);
         break;
       }
 
@@ -59,6 +59,7 @@ export class InteractionHandler {
           reply,
         };
 
+        await sendComponent(ctx);
         break;
       }
 
@@ -69,6 +70,7 @@ export class InteractionHandler {
           reply,
         };
 
+        await sendAutocomplete(ctx);
         break;
       }
 
@@ -79,11 +81,12 @@ export class InteractionHandler {
           reply,
         };
 
+        await sendModalSubmit(ctx);
         break;
       }
 
       default: {
-        console.warn(`Unknown interaction type: ${body.type}}`);
+        console.warn(`Unknown interaction type`);
       }
     }
   }
