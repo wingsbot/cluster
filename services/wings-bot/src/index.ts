@@ -1,4 +1,5 @@
 import fastify from 'fastify';
+import { REST } from '@discordjs/rest';
 import RedisClient, { Redis } from 'ioredis';
 import { RouteHandler } from './server/routeHandler';
 // import { Database } from './lib/database';
@@ -7,6 +8,7 @@ import config from './Config';
 
 export class Client {
   public server = fastify({ logger: true });;
+  public restClient = new REST({ version: config.APIVersion }).setToken(config.botToken);
   public routeHandler: RouteHandler;
   public config = config;
   // public db: Database;

@@ -45,7 +45,7 @@ export class InteractionHandler {
       case InteractionType.ApplicationCommand: {
         const ctx = {
           client: this.routeHandler.client,
-          interaction: new CommandInteraction(body),
+          interaction: new CommandInteraction(this.routeHandler.client.restClient, body),
           reply,
         };
 
