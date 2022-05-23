@@ -40,23 +40,29 @@ export class CommandInteraction {
     if (this.interaction.member) this.member = new Member(this.interaction.member);
   }
 
-  private sendInteraction(type: number, data: RESTPostAPIInteractionFollowupJSONBody) {
-    this.responded = true;
-
-    return this.client.post(
-      Routes.interactionCallback(this.id, this.token),
-      { body: { type, data }, auth: false }
-    ) as Promise<RESTPostAPIInteractionFollowupResult>;
-  }
-
-  public async respond(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {
+  public async send(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {
     const interactionContent = Object.assign({ content }, options);
 
-    if (!this.responded) return this.sendInteraction(InteractionResponseType.ChannelMessageWithSource, interactionContent);
+    if (!this.responded) {
+      this.responded = true;
+
+      return this.client.post(
+        Routes.interactionCallback(this.id, this.token),
+        { 
+          body: {
+          type: InteractionResponseType.ChannelMessageWithSource,
+          data: interactionContent
+          },
+        auth: false
+      }) as Promise<RESTPostAPIInteractionFollowupResult>;
+    }
 
     return this.client.post(
       Routes.webhook(this.applicationId, this.token),
-      { body: interactionContent, auth: false }
+      {
+        body: interactionContent,
+        auth: false
+      }
     ).catch(error => {
       console.error(error);
       return null;

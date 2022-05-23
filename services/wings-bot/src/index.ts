@@ -15,8 +15,10 @@ export class Client {
   public redis: Redis;
 
   async init() {
-    await this.loadDatabases(),
-    await this.startServer()
+    await Promise.all([
+      this.loadDatabases(),
+      this.startServer()
+    ]);
   }
 
   async startServer() {
@@ -36,7 +38,5 @@ export class Client {
   }
 }
 
-if (require.main === module) {
-  const client = new Client();
-  client.init();
-}
+const client = new Client();
+client.init();

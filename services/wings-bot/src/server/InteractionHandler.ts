@@ -22,7 +22,7 @@ export class InteractionHandler {
     this.routeHandler = routeHandler;
     this.publicKey = Buffer.from(this.routeHandler.client.config.publicKey, 'hex');
 
-    this.routeHandler.server.post('/api/interactions', {}, this.handleInteraction.bind(this));
+    this.routeHandler.server.post('/interactions', {}, this.handleInteraction.bind(this));
   }
 
  public async handleInteraction (request: FastifyRequest & { body: RawBody }, reply: FastifyReply) {
@@ -90,6 +90,8 @@ export class InteractionHandler {
         console.warn(`Unknown interaction type`);
       }
     }
+
+    reply.status(200).send({ success: true });
   }
 
   public verifyRequest(request: FastifyRequest & { body: RawBody }) {

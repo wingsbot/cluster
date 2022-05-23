@@ -1,0 +1,2 @@
+find a way to make cloudflare tunnel be easy for other ppl to use as starting up
+the bot or just somehow give them my link or somethin idk yet
