@@ -7,7 +7,7 @@ import { RouteHandler } from './server/routeHandler';
 import config from './Config';
 
 export class Client {
-  public server = fastify({ logger: true });;
+  public server = fastify({ logger: true });
   public restClient = new REST({ version: config.APIVersion }).setToken(config.botToken);
   public routeHandler: RouteHandler;
   public config = config;
@@ -24,7 +24,7 @@ export class Client {
   async startServer() {
     this.routeHandler = new RouteHandler(this);
 
-    this.server.listen(this.config.port, this.config.host, (err, address) => {
+    this.server.listen(this.config.port, this.config.host, (error, address) => {
       console.log(`Listening on port ${this.config.port}\nLink: ${address}`);
    });
   }

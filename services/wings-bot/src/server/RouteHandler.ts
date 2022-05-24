@@ -9,14 +9,14 @@ export interface RawBody {
 }
 
 export class RouteHandler {
-  public client: Client;
+  private client: Client;
   public server: FastifyInstance;
   public interactionHandler: InteractionHandler;
 
   constructor(client: Client) {
     this.client = client;
     this.server = this.client.server;
-    this.interactionHandler = new InteractionHandler(this);
+    this.interactionHandler = new InteractionHandler(this.client);
 
     this.rawBody(this.server);
   }
@@ -31,7 +31,7 @@ export class RouteHandler {
         try {
           defaultParser(request, body as string, (error, parsed) => {
             if (error) {
-              return done(error, null);
+              return done(error, undefined);
             }
   
             done(null, {
@@ -40,7 +40,7 @@ export class RouteHandler {
             });
           });
         } catch (error) {
-          done(error as Error, null);
+          done(error, null);
         }
       },
     );

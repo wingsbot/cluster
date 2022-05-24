@@ -10,9 +10,13 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@eslint-plugin-unicorn/recommended"
+    "plugin:unicorn/recommended"
   ],
   "rules": {
-    "object-curly-spacing": 0
+    "object-curly-spacing": 0,
+    "unicorn/prefer-module": 0,
+    "unicorn/filename-case": 0,
+    "unicorn/no-useless-undefined": 0,
+    "unicorn/no-null": 0
   }
 }

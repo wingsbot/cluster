@@ -1,5 +1,16 @@
-import type { RequestData, REST } from "@discordjs/rest";
-import { APIInteraction, InteractionResponseType, InteractionType, RESTPostAPIApplicationCommandsJSONBody, RESTPostAPIChannelMessageResult, RESTPostAPIInteractionCallbackFormDataBody, RESTPostAPIInteractionCallbackJSONBody, RESTPostAPIInteractionFollowupJSONBody, RESTPostAPIInteractionFollowupResult, RESTPostAPIWebhookWithTokenWaitResult, Routes } from "discord-api-types/v10";
+import type { REST } from "@discordjs/rest";
+import type { Client } from "../..";
+import type { FastifyReply } from "fastify";
+
+import {
+  APIInteraction,
+  InteractionResponseType,
+  InteractionType,
+  RESTPostAPIInteractionCallbackFormDataBody,
+  RESTPostAPIInteractionFollowupJSONBody,
+  RESTPostAPIInteractionFollowupResult,
+  Routes
+} from "discord-api-types/v10";
 
 import { Member } from "../Member";
 import { User } from "../User";
@@ -7,22 +18,24 @@ import { User } from "../User";
 export class CommandInteraction {
   private interaction: APIInteraction;
   private client: REST;
+  private reply : FastifyReply;
 
   private token: string;
   private applicationId: string;
   private id: string;
   private type: InteractionType;
 
-  private responded: boolean = false;
+  private responded = false;
 
   public channelId?: string;
   public data?: APIInteraction["data"];
   public user?: User;
   public member?: Member;
 
-  constructor(restClient: REST, APIInteraction: APIInteraction) {
+  constructor(client: Client, APIInteraction: APIInteraction, reply: FastifyReply) {
     this.interaction = APIInteraction;
-    this.client = restClient;
+    this.client = client.restClient;
+    this.reply = reply;
 
     this.token = APIInteraction.token;
     this.applicationId = this.interaction.application_id;
@@ -40,27 +53,24 @@ export class CommandInteraction {
     if (this.interaction.member) this.member = new Member(this.interaction.member);
   }
 
+  async sendInteraction(type: number, data: RESTPostAPIInteractionCallbackFormDataBody) {
+    this.responded = true;
+
+    return this.reply.status(200).send({
+      type,
+      data
+    });
+  }
+
   public async send(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {
-    const interactionContent = Object.assign({ content }, options);
+    const data = Object.assign({ content }, options);
 
-    if (!this.responded) {
-      this.responded = true;
-
-      return this.client.post(
-        Routes.interactionCallback(this.id, this.token),
-        { 
-          body: {
-          type: InteractionResponseType.ChannelMessageWithSource,
-          data: interactionContent
-          },
-        auth: false
-      }) as Promise<RESTPostAPIInteractionFollowupResult>;
-    }
+    if (!this.responded) return this.sendInteraction(InteractionResponseType.ChannelMessageWithSource, data);
 
     return this.client.post(
       Routes.webhook(this.applicationId, this.token),
       {
-        body: interactionContent,
+        body: data,
         auth: false
       }
     ).catch(error => {

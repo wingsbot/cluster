@@ -15,12 +15,14 @@ export interface InteractionData<T> {
 }
 
 export class InteractionHandler {
+  private client: Client;
   private routeHandler: RouteHandler;
   private publicKey: Buffer;
 
-  constructor(routeHandler: RouteHandler) {
-    this.routeHandler = routeHandler;
-    this.publicKey = Buffer.from(this.routeHandler.client.config.publicKey, 'hex');
+  constructor(client: Client) {
+    this.client = client;
+    this.routeHandler = this.client.routeHandler;
+    this.publicKey = Buffer.from(this.client.config.publicKey, 'hex');
 
     this.routeHandler.server.post('/interactions', {}, this.handleInteraction.bind(this));
   }
@@ -32,57 +34,57 @@ export class InteractionHandler {
 
     switch (body.type) {
       case InteractionType.Ping: {
-        const ctx = {
-          client: this.routeHandler.client,
+        const context = {
+          client: this.client,
           interaction: body,
           reply,
         };
 
-        await sendPing(ctx);
+        await sendPing(context);
         break;
       }
       
       case InteractionType.ApplicationCommand: {
-        const ctx = {
-          client: this.routeHandler.client,
-          interaction: new CommandInteraction(this.routeHandler.client.restClient, body),
+        const context = {
+          client: this.client,
+          interaction: new CommandInteraction(this.client, body, reply),
           reply,
         };
 
-        await sendCommand(ctx);
+        await sendCommand(context);
         break;
       }
 
       case InteractionType.MessageComponent: {
-        const ctx = {
-          client: this.routeHandler.client,
+        const context = {
+          client: this.client,
           interaction: body,
           reply,
         };
 
-        await sendComponent(ctx);
+        await sendComponent(context);
         break;
       }
 
       case InteractionType.ApplicationCommandAutocomplete: {
-        const ctx = {
-          client: this.routeHandler.client,
+        const context = {
+          client: this.client,
           interaction: body,
           reply,
         };
 
-        await sendAutocomplete(ctx);
+        await sendAutocomplete(context);
         break;
       }
 
       case InteractionType.ModalSubmit: {
-        const ctx = {
-          client: this.routeHandler.client,
+        const context = {
+          client: this.client,
           interaction: body,
           reply,
         };
 
-        await sendModalSubmit(ctx);
+        await sendModalSubmit(context);
         break;
       }
 
@@ -90,8 +92,6 @@ export class InteractionHandler {
         console.warn(`Unknown interaction type`);
       }
     }
-
-    reply.status(200).send({ success: true });
   }
 
   public verifyRequest(request: FastifyRequest & { body: RawBody }) {
