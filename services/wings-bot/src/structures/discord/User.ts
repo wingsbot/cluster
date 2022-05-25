@@ -6,7 +6,7 @@ export class User {
   public discriminator: string;
   public tag: string;
   public avatar: string;
-  public bot: boolean;
+  public bot?: boolean;
 
   constructor(APIUser: APIUser) {
     this.id = APIUser.id;

@@ -8,6 +8,7 @@ export default {
   port: Number(process.env.HTTP_PORT || 4000),
   APIVersion: process.env.API_VERSION || '10',
   botToken: process.env.BOT_TOKEN,
+  applicationId: process.env.BOT_APPLICATION_ID,
   publicKey: process.env.BOT_PUBLIC_KEY,
   devServerId: process.env.DEVELOPMENT_SERVER_ID,
 };

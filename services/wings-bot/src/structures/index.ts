@@ -1,1 +1,2 @@
-export * from './interactions/CommandInteraction';
+export * from './discord';
+export * from './bot';

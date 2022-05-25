@@ -1,16 +1,16 @@
-import { Constants, ApplicationCommandOptions } from 'eris';
-import { CommandBase, CommandData } from '../../lib/framework';
+import { ApplicationCommandOptionType } from 'discord-api-types/v10';
+import { Command, CommandData, CommandOptions } from '../../structures';
 
-export default class Balance extends CommandBase {
+export class Balance extends Command {
   public description = 'Check how much wings you got.';
-  public options: ApplicationCommandOptions[] = [{
-    name: 'user',
-    description: 'Select a user',
-    type: Constants.ApplicationCommandOptionTypes.USER,
-    required: false,
-  }];
+  public options = new CommandOptions()
+    .addOption({
+      name: 'user',
+      description: 'The user to check the balance of.',
+      type: ApplicationCommandOptionType.User,
+    });
 
-  public exec = async ({ interaction, options, responder }: CommandData) => {
+  public exec = async ({ interaction, options }: CommandData) => {
     const userId = options?.[0]?.value as string || interaction.member.id;
     const userData = await this.client.modules.economy.getUserData(userId);
     const activeItems = await this.client.modules.economy.getActiveItems(userId);
