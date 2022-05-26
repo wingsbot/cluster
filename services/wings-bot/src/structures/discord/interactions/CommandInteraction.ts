@@ -26,9 +26,7 @@ import { User } from "../User";
 import { APIApplicationCommandOptionBase, APIInteractionDataOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
 
 export class CommandInteraction {
-  private interaction: APIInteraction;
-  private client: REST;
-  private reply : FastifyReply;
+  private restClient: REST;
 
   private token: string;
   private applicationId: string;
@@ -42,21 +40,19 @@ export class CommandInteraction {
   public user?: User;
   public member?: Member;
 
-  constructor(client: Client, APIInteraction: APIInteraction, reply: FastifyReply) {
-    this.interaction = APIInteraction;
-    this.client = client.restClient;
-    this.reply = reply;
+  constructor(client: Client, interaction: APIInteraction, private reply: FastifyReply) {
+    this.restClient = client.restClient;
 
-    this.token = APIInteraction.token;
-    this.applicationId = this.interaction.application_id;
-    this.id = this.interaction.id;
+    this.token = interaction.token;
+    this.applicationId = interaction.application_id;
+    this.id = interaction.id;
 
-    this.type = APIInteraction.type;
+    this.type = interaction.type;
 
-    if (this.interaction.channel_id) this.channelId = this.interaction.channel_id;
-    if (this.interaction.data) this.data = new CommandInteractionData(this.interaction.data as APIChatInputApplicationCommandInteractionData);
-    if (this.interaction.user) this.user = new User(this.interaction.user);
-    if (this.interaction.member) this.member = new Member(this.interaction.member);
+    if (interaction.channel_id) this.channelId = interaction.channel_id;
+    if (interaction.data) this.data = interaction.data;
+    if (interaction.user) this.user = new User(interaction.user);
+    if (interaction.member) this.member = new Member(interaction.member);
   }
 
   async sendInteraction(type: number, data: RESTPostAPIInteractionCallbackFormDataBody) {
@@ -73,7 +69,7 @@ export class CommandInteraction {
 
     if (!this.responded) return this.sendInteraction(InteractionResponseType.ChannelMessageWithSource, data);
 
-    return this.client.post(
+    return this.restClient.post(
       Routes.webhook(this.applicationId, this.token),
       {
         body: data,

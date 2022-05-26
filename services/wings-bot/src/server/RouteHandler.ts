@@ -9,14 +9,12 @@ export interface RawBody {
 }
 
 export class RouteHandler {
-  private client: Client;
   public server: FastifyInstance;
   public interactionHandler: InteractionHandler;
 
   constructor(client: Client) {
-    this.client = client;
-    this.server = this.client.server;
-    this.interactionHandler = new InteractionHandler(this.client);
+    this.server = client.server;
+    this.interactionHandler = new InteractionHandler(client);
 
     this.rawBody(this.server);
   }

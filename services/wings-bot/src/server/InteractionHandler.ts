@@ -15,14 +15,12 @@ export interface InteractionData<T> {
 }
 
 export class InteractionHandler {
-  private client: Client;
   private routeHandler: RouteHandler;
   private publicKey: Buffer;
 
-  constructor(client: Client) {
-    this.client = client;
-    this.routeHandler = this.client.routeHandler;
-    this.publicKey = Buffer.from(this.client.config.publicKey, 'hex');
+  constructor(private client: Client) {
+    this.routeHandler = client.routeHandler;
+    this.publicKey = Buffer.from(client.config.publicKey, 'hex');
 
     this.routeHandler.server.post('/interactions', {}, this.handleInteraction.bind(this));
   }

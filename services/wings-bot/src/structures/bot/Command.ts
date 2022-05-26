@@ -18,18 +18,13 @@ export interface CommandData<T extends Command> {
 }
 
 export class Command {
-  public client: Client;
-  public name: string;
   public description = 'No description implimented.';
   public options?: CommandOptions;
   public allowDM = true;
   public ownerOnly = false;
   public patronOnly = false;
 
-  constructor(client: Client, name: string) {
-    this.client = client;
-    this.name = this.name || name;
-  }
+  constructor(public client: Client, public name: string) {}
 
   public get APIParsedCommand(): RESTPatchAPIApplicationCommandJSONBody {
     return {

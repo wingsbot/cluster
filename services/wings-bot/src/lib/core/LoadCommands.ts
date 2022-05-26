@@ -4,15 +4,13 @@ import type { Client } from "../..";
 import { Command } from "../../structures";
 
 export class LoadCommands {
-  private client: Client;
   private restClient: REST;
   public commands: Map<string, Command> = new Map();
 
-  constructor(client: Client) {
-    this.client = client;
-    this.restClient = this.client.restClient;
+  constructor(public client: Client) {
+    this.restClient = client.restClient;
 
-    this.loadCommands();
+    this.setCacheCommands();
   }
 
   public async loadCommands() {

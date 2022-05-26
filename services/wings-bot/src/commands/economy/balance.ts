@@ -3,7 +3,7 @@ import { Command, CommandData, CommandOptions } from '../../structures';
 
 export class Balance extends Command {
   public description = 'Check how much wings you got.';
-  public options = new CommandOptions('test')
+  public options = new CommandOptions()
     .addOption({
       name: 'user',
       description: 'The user to check the balance of.',
@@ -11,7 +11,7 @@ export class Balance extends Command {
     })
 
   public exec = async ({ interaction, options }: CommandData<Balance>) => {
-    this.options
+    this.options.name
     options.get('test');
     const userId = options?.[0]?.value as string || interaction.member.id;
     const userData = await this.client.modules.economy.getUserData(userId);
