@@ -86,22 +86,15 @@ export class CommandInteraction {
   }
 }
 
-export class CommandInteractionData<T extends APIApplicationCommandOption> {
-  private data: APIChatInputApplicationCommandInteractionData;
-  private options?: DataOptionType<T>[]; 
+export class CommandInteractionOptions<T extends APIApplicationCommandInteractionDataOption> {
+  private options: T[]; 
 
   constructor(data: APIChatInputApplicationCommandInteractionData) {
-    this.data = data;
-    if (data.options) this.options = data.options;
+    this.options = data.options;
   }
 
-  get name() {
-    return this.data.name
-  }
-
-  public getOption(option: string) {
-    this.data.options
-    return this.data.options.find(o => o.name === option);
+  public get<Type extends DataOptionType<T>['name']>(name: Type): { name: Type } {
+    return this.options.find(o => o.name === name);
   }
 }
 

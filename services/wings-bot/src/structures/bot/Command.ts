@@ -4,17 +4,17 @@ import type {
   APIApplicationCommandOption,
   APIApplicationCommandSubcommandGroupOption,
   APIApplicationCommandSubcommandOption,
-  APIApplicationCommandInteractionDataOption
+  APIApplicationCommandInteractionDataOption,
+  ApplicationCommandOptionType
 } from "discord-api-types/v10";
 
 import type { Client } from "../..";
 import type { CommandInteraction } from "..";
-import type { CommandInteractionData } from "../discord/interactions/CommandInteraction";
-import { APIInteractionDataOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
+import type { CommandInteractionOptions} from "../discord/interactions/CommandInteraction";
 
 export interface CommandData<T extends Command> {
   interaction: CommandInteraction;
-  options: CommandInteractionData<T>;
+  options: CommandInteractionOptions<T['options']>;
 }
 
 export class Command {
@@ -46,15 +46,20 @@ export class Command {
   }
 }
 
-export class CommandOptions {
-  options: APIApplicationCommandOption[];
+export class CommandOptions<
+ Name extends string = string,
+ Type extends ApplicationCommandOptionType = ApplicationCommandOptionType,
+ Options extends CommandOptions[] = [],
+ Choices extends Choice<Type> = Choice<Type>,
+> {
+  private subOptions: CommandOptions[] = [];
 
-  constructor() {
-    this.options = [];
+  constructor(public name: Name, private type: Type, private options: Omit<Extract<APIApplicationCommandOption, { type: Type }>, 'name' | 'type' | 'autocomplete'>) {
+    if (typeof options.description === 'function') options.description = 'test';
   }
 
-  public addOption(option: APIApplicationCommandBasicOption) {
-    this.options.push(option);
+  public addOption<T extends CommandOptions>(option: T): CommandOptions<Name, Type, [...Options, T]> {
+    this.subOptions.push(option)
 
     return this;
   }
@@ -71,3 +76,8 @@ export class CommandOptions {
     return this;
   }
 }
+
+type Choice<T extends ApplicationCommandOptionType> =
+  T extends ApplicationCommandOptionType.String ? string :
+  T extends (ApplicationCommandOptionType.Number | ApplicationCommandOptionType.Integer) ? number :
+  never;
