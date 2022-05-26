@@ -13,6 +13,7 @@
     "plugin:unicorn/recommended"
   ],
   "rules": {
+    "semi": [1, "always"],
     "object-curly-spacing": 0,
     "unicorn/prefer-module": 0,
     "unicorn/filename-case": 0,

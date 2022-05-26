@@ -12,7 +12,7 @@ export class Balance extends Command {
 
   public exec = async ({ interaction, options }: CommandData<Balance>) => {
     this.options.name
-    options.get('test');
+    options.get(');
     const userId = options?.[0]?.value as string || interaction.member.id;
     const userData = await this.client.modules.economy.getUserData(userId);
     const activeItems = await this.client.modules.economy.getActiveItems(userId);

@@ -1,20 +1,15 @@
 import type {
   RESTPatchAPIApplicationCommandJSONBody,
-  APIApplicationCommandBasicOption,
-  APIApplicationCommandOption,
-  APIApplicationCommandSubcommandGroupOption,
-  APIApplicationCommandSubcommandOption,
-  APIApplicationCommandInteractionDataOption,
-  ApplicationCommandOptionType
 } from "discord-api-types/v10";
 
 import type { Client } from "../..";
 import type { CommandInteraction } from "..";
-import type { CommandInteractionOptions} from "../discord/interactions/CommandInteraction";
+import { CommandInteractionDataOptions } from "../discord";
+import { CommandOptions } from "./CommandOptions";
 
 export interface CommandData<T extends Command> {
   interaction: CommandInteraction;
-  options: CommandInteractionOptions<T['options']>;
+  options: CommandInteractionDataOptions<T>;
 }
 
 export class Command {
@@ -30,7 +25,7 @@ export class Command {
     return {
       name: this.name,
       description: this.description,
-      ...this.options && { options: this.options.options },
+      ...this.options && { options: this.options.build() },
       dm_permission: this.allowDM
     };
   }
@@ -40,39 +35,3 @@ export class Command {
     throw new Error(`Command ${this.name} has not been implemented.`);
   }
 }
-
-export class CommandOptions<
- Name extends string = string,
- Type extends ApplicationCommandOptionType = ApplicationCommandOptionType,
- Options extends CommandOptions[] = [],
- Choices extends Choice<Type> = Choice<Type>,
-> {
-  private subOptions: CommandOptions[] = [];
-
-  constructor(public name: Name, private type: Type, private options: Omit<Extract<APIApplicationCommandOption, { type: Type }>, 'name' | 'type' | 'autocomplete'>) {
-    if (typeof options.description === 'function') options.description = 'test';
-  }
-
-  public addOption<T extends CommandOptions>(option: T): CommandOptions<Name, Type, [...Options, T]> {
-    this.subOptions.push(option)
-
-    return this;
-  }
-
-  public addSubCommand(subCommand: APIApplicationCommandSubcommandOption) {
-    this.options.push(subCommand);
-
-    return this;
-  }
-
-  public addSubCommandGroup(subCommandGroup: APIApplicationCommandSubcommandGroupOption) {
-    this.options.push(subCommandGroup);
-
-    return this;
-  }
-}
-
-type Choice<T extends ApplicationCommandOptionType> =
-  T extends ApplicationCommandOptionType.String ? string :
-  T extends (ApplicationCommandOptionType.Number | ApplicationCommandOptionType.Integer) ? number :
-  never;

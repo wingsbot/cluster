@@ -1,5 +1,5 @@
 // Interactions
-export * from './interactions/CommandInteraction';
+export * from './interactions';
 
 // Discord
 export * from './Member';

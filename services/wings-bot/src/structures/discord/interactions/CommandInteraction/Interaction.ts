@@ -1,18 +1,10 @@
 import type { REST } from "@discordjs/rest";
-import type { Client } from "../../..";
+import type { Client } from "../../../..";
 import type { FastifyReply } from "fastify";
 
 import {
-  APIApplicationCommandBasicOption,
-  APIApplicationCommandInteractionData,
-  APIApplicationCommandInteractionDataOption,
-  APIApplicationCommandOption,
-  APIApplicationCommandSubcommandGroupOption,
-  APIApplicationCommandSubcommandOption,
+  APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteractionData,
-  APIChatInputApplicationCommandInteractionDataResolved,
-  APIInteraction,
-  ApplicationCommandOptionType,
   InteractionResponseType,
   InteractionType,
   RESTPostAPIInteractionCallbackFormDataBody,
@@ -21,9 +13,9 @@ import {
   Routes
 } from "discord-api-types/v10";
 
-import { Member } from "../Member";
-import { User } from "../User";
-import { APIApplicationCommandOptionBase, APIInteractionDataOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
+import { Member } from "../../Member";
+import { User } from "../../User";
+import { CommandInteractionData } from "./InteractionData";
 
 export class CommandInteraction {
   private restClient: REST;
@@ -40,7 +32,7 @@ export class CommandInteraction {
   public user?: User;
   public member?: Member;
 
-  constructor(client: Client, interaction: APIInteraction, private reply: FastifyReply) {
+  constructor(client: Client, interaction: APIApplicationCommandInteraction, private reply: FastifyReply) {
     this.restClient = client.restClient;
 
     this.token = interaction.token;
@@ -50,7 +42,7 @@ export class CommandInteraction {
     this.type = interaction.type;
 
     if (interaction.channel_id) this.channelId = interaction.channel_id;
-    if (interaction.data) this.data = interaction.data;
+    if (interaction.data) this.data = new CommandInteractionData(interaction.data as APIChatInputApplicationCommandInteractionData);
     if (interaction.user) this.user = new User(interaction.user);
     if (interaction.member) this.member = new Member(interaction.member);
   }
@@ -81,20 +73,3 @@ export class CommandInteraction {
     }) as Promise<RESTPostAPIInteractionFollowupResult>;
   }
 }
-
-export class CommandInteractionOptions<T extends APIApplicationCommandInteractionDataOption> {
-  private options: T[]; 
-
-  constructor(data: APIChatInputApplicationCommandInteractionData) {
-    this.options = data.options;
-  }
-
-  public get<Type extends DataOptionType<T>['name']>(name: Type): { name: Type } {
-    return this.options.find(o => o.name === name);
-  }
-}
-
-type DataOptionType<T extends APIApplicationCommandOption> =
-  T['type'] extends ApplicationCommandOptionType.Subcommand ? APIApplicationCommandSubcommandOption :
-  T['type'] extends ApplicationCommandOptionType.SubcommandGroup ? APIApplicationCommandSubcommandGroupOption :
-  APIApplicationCommandBasicOption; 
