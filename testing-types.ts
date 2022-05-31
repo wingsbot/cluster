@@ -1,5 +1,5 @@
 class CommandTest {
-    public options = new OptionsTest()
+    public options = new OptionsTest(
       .addOption({
         name: 'test',
       })
