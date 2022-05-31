@@ -8,15 +8,12 @@ export class CommandOptions<
 > {
   private subOptions: CommandInteractionDataOptions[] = [];
 
-  constructor(public name: Name, private type: Type, private options: Omit<Extract<APIApplicationCommandOption, { type: Type }>, 'name' | 'type' | 'autocomplete'>) {
-    if (typeof options.description === 'function') options.description = 'test';
-  }
 
   public build(): APIApplicationCommandOption[] {
     return this.options;
   }
 
-  public addOption<T extends CommandInteractionDataOptions>(option: T): CommandInteractionDataOptions<Name, Type, [...Options, T]> {
+  public addOption<T extends CommandInteractionDataOptions>(option: T): CommandInteractionDataOptions<T['name'], Type, [...Options, T]> {
     this.subOptions.push(option)
 
     return this;

@@ -8,11 +8,11 @@ export class Balance extends Command {
       name: 'user',
       description: 'The user to check the balance of.',
       type: ApplicationCommandOptionType.Channel,
-    })
+    });
 
   public exec = async ({ interaction, options }: CommandData<Balance>) => {
     this.options.name
-    options.get(');
+    options.get();
     const userId = options?.[0]?.value as string || interaction.member.id;
     const userData = await this.client.modules.economy.getUserData(userId);
     const activeItems = await this.client.modules.economy.getActiveItems(userId);

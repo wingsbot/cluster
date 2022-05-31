@@ -9,7 +9,7 @@ import { CommandOptions } from "./CommandOptions";
 
 export interface CommandData<T extends Command> {
   interaction: CommandInteraction;
-  options: CommandInteractionDataOptions<T>;
+  options: CommandInteractionDataOptions<T['options']>;
 }
 
 export class Command {
