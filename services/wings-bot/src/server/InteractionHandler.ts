@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import { sign } from 'tweetnacl';
 import { APIInteraction, InteractionType } from 'discord-api-types/v10';
 
-import type { RawBody, RouteHandler } from './routeHandler';
+import type { RawBody } from './RouteHandler';
 import type { Client } from '..';
 
 import { sendAutocomplete, sendCommand, sendComponent, sendModalSubmit, sendPing } from './handlers';
@@ -15,14 +15,12 @@ export interface InteractionData<T> {
 }
 
 export class InteractionHandler {
-  private routeHandler: RouteHandler;
   private publicKey: Buffer;
 
   constructor(private client: Client) {
-    this.routeHandler = client.routeHandler;
     this.publicKey = Buffer.from(client.config.publicKey, 'hex');
 
-    this.routeHandler.server.post('/interactions', {}, this.handleInteraction.bind(this));
+    this.client.server.post('/interactions', {}, this.handleInteraction.bind(this));
   }
 
  public async handleInteraction (request: FastifyRequest & { body: RawBody }, reply: FastifyReply) {
@@ -103,6 +101,6 @@ export class InteractionHandler {
       this.publicKey
     );
 
-    return { isVerified, body: body.parsed as APIInteraction }
+    return { isVerified, body: body.parsed as APIInteraction };
   }
 }
