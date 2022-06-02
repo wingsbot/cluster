@@ -18,11 +18,11 @@ class CommandTest {
 }
 
 class OptionsTest<
-  Options extends OptionsTest[] = [],
+  Options extends option[] = [],
 > {
   public options: Options;
 
-  addOption<T extends OptionsTest>(option: T): OptionsTest<[ ...Options, T]> {
+  addOption<T extends option>(option: T): OptionsTest<[ ...Options, T]> {
     this.options.push(option);
     
     return this as any;
@@ -32,16 +32,9 @@ class OptionsTest<
 class OptionsData<T extends OptionsTest> {
   constructor(public options: T['options']) {}
 
-  get<O extends ExtractValue<T>> (name: O): Extract<ParseOption<T>, { name: O }> {
+  get<O extends ExtractValue<T>['name']> (name: O): Extract<ParseOption<T>, { name: O }> {
     return this.options.find(o => o.name === name);
   }
-}
-
-const testies = [{ name: 'test' }, { name: 'penis' }] as const;
-type oktest = typeof testies[number];
-
-function get<T extends oktest['name']>(name: T): T {
-  return this.options.find(o => o.name === name);
 }
 
 type option = {

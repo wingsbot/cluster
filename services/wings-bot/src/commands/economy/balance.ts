@@ -1,19 +1,15 @@
 import { ApplicationCommandOptionType } from 'discord-api-types/v10';
+import * as Args from '../../structures/bot/Arguments';
 import { Command, CommandData, CommandOptions } from '../../structures';
 
 export class Balance extends Command {
   public description = 'Check how much wings you got.';
   public options = new CommandOptions()
-    .addOption({
-      name: 'user',
-      description: 'The user to check the balance of.',
-      type: ApplicationCommandOptionType.Channel,
-    });
+    .addOption(Args.user('user', 'Check how much Wings somone else has.'));
+
 
   public exec = async ({ interaction, options }: CommandData<Balance>) => {
-    this.options.name
-    options.get();
-    const userId = options?.[0]?.value as string || interaction.member.id;
+    const userId = options.get('') ?? interaction.user.id;
     const userData = await this.client.modules.economy.getUserData(userId);
     const activeItems = await this.client.modules.economy.getActiveItems(userId);
     const user = await this.client.fetchUser(userId);

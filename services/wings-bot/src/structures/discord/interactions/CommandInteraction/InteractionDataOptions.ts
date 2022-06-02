@@ -1,13 +1,16 @@
 import { APIApplicationCommandInteractionDataOption, APIChatInputApplicationCommandInteractionData } from "discord-api-types/v10";
+import { CommandOptions } from "../../../bot";
 
-export class CommandInteractionDataOptions<T extends APIApplicationCommandInteractionDataOption> {
-  private options: T[]; 
+type ExtractOptions<T> = T extends CommandOptions<infer _Name, infer _Type, infer Options> ? Options[number] : never;
+
+export class CommandInteractionDataOptions<T extends CommandOptions> {
+  private options: APIApplicationCommandInteractionDataOption[]; 
 
   constructor(data: APIChatInputApplicationCommandInteractionData) {
     this.options = data.options;
   }
 
-  public get<Type extends T['name']>(name: Type): { name: Type } {
+  public get<O extends ExtractOptions<T>['name']>(name: O): { name: O } {
     return this.options.find(o => o.name === name);
   }
 }
