@@ -1,6 +1,4 @@
-import type { Shop as ShopItem } from '@prisma/client';
 import { ModuleBase } from '../lib/framework';
-import { shopItems } from '../lib/core';
 import type { Shard } from '../Shard';
 
 export class Shop extends ModuleBase {

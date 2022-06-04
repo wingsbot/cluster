@@ -1,10 +1,8 @@
-import { APIInteractionGuildMember } from "discord-api-types/v10";
-import { User } from "./User";
+import { APIInteractionDataResolvedGuildMember, APIUser } from "discord-api-types/v10";
+import { User } from "../../User";
 
-export class Member extends User {
-  public deaf: boolean;
+export class ResolvedMember extends User {
   public joinedAt: string;
-  public mute: boolean;
   public permissions: string;
   public roles: string[];
   public serverAvatar?: string;
@@ -20,13 +18,11 @@ export class Member extends User {
   public avatar: string;
   public bot?: boolean;
 
-  constructor(APIMember: APIInteractionGuildMember) {
-    super(APIMember.user);
+  constructor(APIMember: APIInteractionDataResolvedGuildMember, APIuser: APIUser) {
+    super(APIuser);
 
     // server data
-    this.deaf = APIMember.deaf;
     this.joinedAt = APIMember.joined_at;
-    this.mute = APIMember.mute;
     this.permissions = APIMember.permissions;
     this.roles = APIMember.roles;
     if (APIMember.avatar) this.serverAvatar = APIMember.avatar;

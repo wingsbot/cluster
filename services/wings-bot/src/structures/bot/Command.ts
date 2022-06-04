@@ -9,7 +9,7 @@ import { CommandOptions } from "./CommandOptions";
 
 export interface CommandData<T extends Command> {
   interaction: CommandInteraction;
-  options: CommandInteractionDataOptions<T['options']>;
+  options?: CommandInteractionDataOptions<T['options']>;
 }
 
 export class Command {
@@ -31,7 +31,7 @@ export class Command {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async run(context: CommandData<null>) {
-    throw new Error(`Command ${this.name} has not been implemented.`);
+  public async run(context: CommandData<Command>) {
+    throw new Error(`Command ${this.name} does not have a run function >:(`);
   }
 }

@@ -5,10 +5,12 @@ import { RouteHandler } from './server/routeHandler';
 // import { Database } from './lib/database';
 
 import config from './Config';
+import { LoadCommands } from './lib/core/LoadCommands';
 
 export class Client {
   public server = fastify({ logger: true });
   public restClient = new REST({ version: config.APIVersion }).setToken(config.botToken);
+  public commands = new LoadCommands(this).commands;
   public routeHandler: RouteHandler;
   public config = config;
   // public db: Database;

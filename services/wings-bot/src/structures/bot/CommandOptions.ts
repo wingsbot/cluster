@@ -1,6 +1,8 @@
-import { APIApplicationCommandOptionBase } from "discord-api-types/payloads/v10/_interactions/_applicationCommands/_chatInput/base";
-import { APIApplicationCommandAttachmentOption, APIApplicationCommandBasicOption, APIApplicationCommandOption, ApplicationCommandOptionType } from "discord-api-types/v10";
-import { CommandInteractionDataOptions } from "../discord";
+import {
+  APIApplicationCommandBasicOption,
+  APIApplicationCommandOption,
+  ApplicationCommandOptionType
+} from "discord-api-types/v10";
 
 export class CommandOptions<
  Name extends string = string,
@@ -13,10 +15,11 @@ export class CommandOptions<
     public name?: Name,
     public description?: string,
     public type?: number,
+    // note: make proper types passing correct type through
     public options: Omit<APIApplicationCommandOption, 'name' | 'type' | 'description'> = {},
   ) {}
 
-  public build(): APIApplicationCommandBasicOption {
+  private buildOption(): APIApplicationCommandBasicOption {
     return {
       name: this.name,
       description: this.description,
@@ -25,26 +28,13 @@ export class CommandOptions<
     };
   }
 
+  public build() {
+    return this.subOptions;
+  }
+
   public addOption<T extends CommandOptions>(option: T): CommandOptions<Name, Type, [...Options, T]> {
-    this.subOptions.push(option.build());
-
-    return this;
-  }
-
-  public addSubCommand(subCommand: APIApplicationCommandSubcommandOption) {
-    this.options.push(subCommand);
-
-    return this;
-  }
-
-  public addSubCommandGroup(subCommandGroup: APIApplicationCommandSubcommandGroupOption) {
-    this.options.push(subCommandGroup);
+    this.subOptions.push(option.buildOption());
 
     return this;
   }
 }
-
-type Choice<T extends ApplicationCommandOptionType> =
-  T extends ApplicationCommandOptionType.String ? string :
-  T extends (ApplicationCommandOptionType.Number | ApplicationCommandOptionType.Integer) ? number :
-  never;

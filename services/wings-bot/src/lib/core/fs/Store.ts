@@ -20,7 +20,7 @@ export class Store extends Map {
   private async getFiles(directory = this.directory, subDirectories = this.subDirectories) {
     if (subDirectories) {
       const dirents: Dirent[] = await new Promise((resolve, reject) => {
-        readdir(directory, { withFileTypes: true }, (error: Error | null, files: Dirent[]) => {
+        readdir(directory, { withFileTypes: true }, (error, files: Dirent[]) => {
           if (error) {
             reject(error);
           } else {

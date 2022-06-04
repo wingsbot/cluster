@@ -16,4 +16,11 @@ export class User {
     this.avatar = APIUser.avatar;
     this.bot = APIUser.bot;
   }
+
+  get avatarURL() {
+    if (!this.avatar) return `https://cdn.discordapp.com/avatars/${this.id}/${this.discriminator % 5}.png`;
+
+    const format = this.avatar.includes("a_") ? "gif" : 'png';
+    return `https://cdn.discordapp.com/avatars/${this.id}/${this.avatar}.${format}`;
+  }
 }
