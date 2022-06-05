@@ -1,9 +1,5 @@
-import type { Shard } from '../../../Shard';
+import type { Client } from '../../..';
 
 export class ModuleBase {
-  readonly client: Shard;
-
-  constructor(client: Shard) {
-    this.client = client;
-  }
+  constructor(public client: Client) {}
 }

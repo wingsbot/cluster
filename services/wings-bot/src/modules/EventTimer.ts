@@ -1,14 +1,14 @@
 
 import type { Events } from '@prisma/client';
-import type { Shard } from '../Shard';
 
 import { ModuleBase, EventManager } from '../lib/framework';
+import { Client } from '..';
 
 export class EventTimer extends ModuleBase {
   private readonly eventManager: EventManager = new EventManager();
   private readonly timers: Events[] = [];
 
-  constructor(client: Shard) {
+  constructor(client: Client) {
     super(client);
 
     this.eventManager.on('eventExpire', this.handleEvent.bind(this));

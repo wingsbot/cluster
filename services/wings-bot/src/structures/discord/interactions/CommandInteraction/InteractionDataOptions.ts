@@ -7,12 +7,13 @@ import {
   ApplicationCommandOptionType
 } from "discord-api-types/v10";
 import { CommandOptions } from "../../../bot";
-import { User } from "../../User";
 import { ResolvedMember } from "../ResolvedData/ResolvedMember";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ExtractOptions<T> = T extends CommandOptions<infer _Name, infer _Type, infer Options> ? Options[number] : never;
 
 type ParseOption<C extends CommandOptions> =
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   C extends CommandOptions<infer Name, infer Type, infer _O>
     ? {
       name: Name;
@@ -23,17 +24,17 @@ type ParseOption<C extends CommandOptions> =
 type ValueOf<ObjectType, ValueType extends keyof ObjectType = keyof ObjectType> = ObjectType[ValueType];
 
 type OptionTypes<C extends CommandOptions = CommandOptions> = {
-  [ApplicationCommandOptionType.Boolean]: boolean;
-  [ApplicationCommandOptionType.Channel]: APIInteractionDataResolvedChannel;
-  [ApplicationCommandOptionType.Integer]: number;
-  [ApplicationCommandOptionType.Mentionable]: string;
-  [ApplicationCommandOptionType.Number]: number;
-  [ApplicationCommandOptionType.Role]: APIRole;
-  [ApplicationCommandOptionType.String]: string;
-  [ApplicationCommandOptionType.User]: User;
-  [ApplicationCommandOptionType.Attachment]: APIAttachment;
   [ApplicationCommandOptionType.Subcommand]: CommandInteractionDataOptions<C>;
   [ApplicationCommandOptionType.SubcommandGroup]: CommandInteractionDataOptions<C>;
+  [ApplicationCommandOptionType.String]: string;
+  [ApplicationCommandOptionType.Integer]: number;
+  [ApplicationCommandOptionType.Boolean]: boolean;
+  [ApplicationCommandOptionType.User]: ResolvedMember;
+  [ApplicationCommandOptionType.Channel]: APIInteractionDataResolvedChannel;
+  [ApplicationCommandOptionType.Role]: APIRole;
+  [ApplicationCommandOptionType.Mentionable]: string;
+  [ApplicationCommandOptionType.Number]: number;
+  [ApplicationCommandOptionType.Attachment]: APIAttachment;
 };
 
 export class CommandInteractionDataOptions<T extends CommandOptions = CommandOptions> {
@@ -65,13 +66,13 @@ export class CommandInteractionDataOptions<T extends CommandOptions = CommandOpt
       case ApplicationCommandOptionType.User: {
         const member = this.resolved?.members?.[option.value];
         const user = this.resolved?.users?.[option.value];
-        return member ? new ResolvedMember(member, user) : new User(user);
+        return new ResolvedMember(member, user);
       }
 
-      case ApplicationCommandOptionType.Role:
+      case ApplicationCommandOptionType.Role: // todo: make role structure class
         return this.resolved?.roles?.[option.value];
 
-      case ApplicationCommandOptionType.Channel:
+      case ApplicationCommandOptionType.Channel: // todo: make channel structure class
         return this.resolved?.channels?.[option.value];
 
       case ApplicationCommandOptionType.Mentionable: {

@@ -6,15 +6,19 @@ import { RouteHandler } from './server/routeHandler';
 
 import config from './Config';
 import { LoadCommands } from './lib/core/LoadCommands';
+import { ModuleHandler } from './lib/framework/ModuleHandler';
 
 export class Client {
   public server = fastify({ logger: true });
   public restClient = new REST({ version: config.APIVersion }).setToken(config.botToken);
-  public commands = new LoadCommands(this).commands;
   public routeHandler: RouteHandler;
+
   public config = config;
   // public db: Database;
   public redis: Redis;
+
+  // public modules = new ModuleHandler(this);
+  public commands = new LoadCommands(this).commands;
 
   async init() {
     await Promise.all([

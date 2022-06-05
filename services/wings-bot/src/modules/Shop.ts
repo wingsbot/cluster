@@ -1,11 +1,11 @@
+import { Client } from '..';
 import { ModuleBase } from '../lib/framework';
-import type { Shard } from '../Shard';
 
 export class Shop extends ModuleBase {
   private readonly defaultItems: ShopItem[] = shopItems;
   private readonly shopCache: Map<string, ShopItem> = new Map();
 
-  constructor(client: Shard) {
+  constructor(client: Client) {
     super(client);
 
     this.init();
@@ -38,7 +38,7 @@ export class Shop extends ModuleBase {
 
   // special limited time items
   public async addSpecialItem(item: ShopItem) {
-    if (this.shopCache.has(item.itemId) || this.defaultItems.find(i => i.itemId === item.itemId)) return;
+    if (this.shopCache.has(item.itemId) || this.defaultItems.find(index => index.itemId === item.itemId)) return;
     const newItem = await this.client.db.shop.addItem(item);
 
     this.shopCache.set(item.itemId, newItem);

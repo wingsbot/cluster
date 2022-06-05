@@ -3,22 +3,16 @@ import { Shop } from '../../modules/Shop';
 import type { Shard } from '../../Shard';
 import { Levels } from '../../modules/Levels';
 import { EventTimer } from '../../modules/EventTimer';
+import { Client } from '../..';
 // import { Gangs } from '../../modules/Gangs.disabled';
 
-export interface Modules {
-  economy: Economy;
-  eventTimer: EventTimer;
-  // gangs: Gangs;
-  levels: Levels;
-  shop: Shop;
-}
-
 export class ModuleHandler {
-  private readonly client: Shard;
+  public economy: Economy;
+  public eventTimer: EventTimer;
+  public levels: Levels;
+  public shop: Shop;
 
-  constructor(client: Shard) {
-    this.client = client;
-
+  constructor(public client: Client) {
     this.loadAllModules();
   }
 
@@ -60,14 +54,13 @@ export class ModuleHandler {
     }
   }
 
-  private loadAllModules() {
-    this.client.modules = {
-      economy: new Economy(this.client),
-      eventTimer: new EventTimer(this.client),
-      // gangs: new Gangs(this.client),
-      levels: new Levels(this.client),
-      shop: new Shop(this.client),
-    };
+  private async loadAllModules() {
+    await Promise.all([
+      this.economy = new Economy(this.client),
+      this.eventTimer = new EventTimer(this.client),
+      this.levels = new Levels(this.client),
+      this.shop = new Shop(this.client),
+    ]);
   }
 
   public reloadAllModules() {

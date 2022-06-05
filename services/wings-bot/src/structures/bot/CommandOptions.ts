@@ -1,9 +1,9 @@
 import {
-  APIApplicationCommandBasicOption,
   APIApplicationCommandOption,
   ApplicationCommandOptionType
 } from "discord-api-types/v10";
 
+// todo: add choices through here
 export class CommandOptions<
  Name extends string = string,
  Type extends ApplicationCommandOptionType = ApplicationCommandOptionType,
@@ -14,18 +14,19 @@ export class CommandOptions<
   constructor(
     public name?: Name,
     public description?: string,
-    public type?: number,
+    public type?: Type,
     // note: make proper types passing correct type through
-    public options: Omit<APIApplicationCommandOption, 'name' | 'type' | 'description'> = {},
+    public options?: Omit<Extract<APIApplicationCommandOption, { type: Type }>, 'name' | 'type' | 'description'>,
   ) {}
 
-  private buildOption(): APIApplicationCommandBasicOption {
+  // todo: proper build for subcmds and sub groups
+  private buildOption(): APIApplicationCommandOption {
     return {
       name: this.name,
       description: this.description,
       type: this.type,
       ...this.options,
-    };
+    } as APIApplicationCommandOption;
   }
 
   public build() {
