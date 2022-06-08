@@ -10,11 +10,11 @@ import { CommandOptions } from '../../../bot';
 import { ResolvedMember } from '../';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type ExtractOptions<T> = T extends CommandOptions<infer _Name, infer _Type, infer Options> ? Options[number] : never;
+type ExtractOptions<T> = T extends CommandOptions<infer _Name, infer _Type, infer Options, infer _Choices> ? Options[number] : never;
 
 type ParseOption<C extends CommandOptions> =
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  C extends CommandOptions<infer Name, infer Type, infer _O>
+  C extends CommandOptions<infer Name, infer Type, infer _O, infer _Choices>
     ? {
       name: Name;
       valueType: OptionTypes<C>[Type]
@@ -41,8 +41,10 @@ export class CommandInteractionDataOptions<T extends CommandOptions = CommandOpt
   constructor(public options: APIApplicationCommandInteractionDataOption[], private resolved: APIChatInputApplicationCommandInteractionDataResolved) {}
 
   get<O extends ExtractOptions<T>['name']>(name: O): Extract<ParseOption<ExtractOptions<T>>, { name: O }>['valueType'] {
+    console.log(this.options);
     const option = name ? this.options.find(o => o.name === name) : this.options[0];
 
+    if (!option) return null;
     return this.parseOption(option);
   }
 

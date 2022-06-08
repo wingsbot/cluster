@@ -26,7 +26,7 @@ export class LoadCommands {
         ownerCommands.push(command.APIParsedCommand);
         continue;
       }
-      
+
       globalCommands.push(command.APIParsedCommand);
     }
 
@@ -38,7 +38,7 @@ export class LoadCommands {
 
   async setCacheCommands() {
     const files = await this.getCommandFiles();
-    
+
     for (const file of files) {
       if (!file.endsWith('.js')) continue;
 
@@ -81,7 +81,7 @@ export class LoadCommands {
     });
 
     const names: string[] = [];
-  
+
     for (const folder of files.filter(dirent => dirent.isDirectory())) {
       const files = await this.getCommandFiles(`${directory || this.commandsDir}/${folder.name}`);
 

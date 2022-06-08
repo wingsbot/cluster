@@ -1,6 +1,7 @@
 import type { Units } from '../../interfaces/Utility';
 
 
+
 interface AwaitOptions {
   time?: number;
   strict?: boolean;
@@ -9,6 +10,19 @@ interface AwaitOptions {
 // <t:${Math.floor(new Date() / 1000)}:R> <- got a unix timestamp from
 export class ClientUtil {
   readonly units: Units;
+
+  emojis = {
+    check: '<a:check:771153653091401738>',
+    xmark: '<a:xmark:769512912808443924>',
+    loading: '<a:loading:769061423732883466>',
+  };
+
+  colors = {
+    green: 7_593_264,
+    red: 16_736_352,
+    blue: 2_527_999,
+    default: 0xFF_16_00,
+  };
 
   msDuration(milliseconds: number, verbose = true, ms = false): string {
     const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
@@ -116,7 +130,7 @@ export class ClientUtil {
 
     return (neg ? '-' : '') + numberString + ' ' + unit;
   }
-// todo: Put these elsewhere or do something better with this 
+  // todo: Put these elsewhere or do something better with this 
 /*
   async awaitComponent(interaction: CommandInteraction, responder: Responder, id: string, options: AwaitOptions = {}): Promise<ComponentInteraction & AwaitComponentReturn> {
     if (!options.time) options.time = 1000 * 60;

@@ -5,8 +5,10 @@ import type { FastifyReply } from 'fastify';
 import {
   APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteractionData,
+  APIEmbed,
   InteractionResponseType,
   InteractionType,
+  MessageFlags,
   RESTPostAPIInteractionCallbackFormDataBody,
   RESTPostAPIInteractionFollowupJSONBody,
   RESTPostAPIInteractionFollowupResult,
@@ -32,7 +34,7 @@ export class CommandInteraction {
   user?: User;
   member?: Member;
 
-  constructor(client: Client, interaction: APIApplicationCommandInteraction, private reply: FastifyReply) {
+  constructor(private client: Client, interaction: APIApplicationCommandInteraction, private reply: FastifyReply) {
     this.restClient = client.restClient;
 
     this.token = interaction.token;
@@ -48,12 +50,20 @@ export class CommandInteraction {
   }
 
   async sendInteraction(type: number, data: RESTPostAPIInteractionCallbackFormDataBody) {
-    this.responded = true;
+    let body: RESTPostAPIInteractionFollowupJSONBody;
 
-    return this.reply.status(200).send({
-      type,
-      data,
-    });
+    try {
+      body = await this.reply.status(200).send({
+        type,
+        data,
+      });
+
+      this.responded = true;
+    } catch (error) {
+      console.log(error);
+    }
+
+    return body;
   }
 
   async send(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {
@@ -71,5 +81,18 @@ export class CommandInteraction {
       console.error(error);
       return null;
     }) as Promise<RESTPostAPIInteractionFollowupResult>;
+  }
+
+  async sendEmbed(embeds: APIEmbed[] | APIEmbed) {
+    if (Array.isArray(embeds)) return this.send('', { embeds });
+    return this.send('', { embeds: [embeds] });
+  }
+
+  async success(content: string, ephemeral = false) {
+    return this.send(`${this.client.utils.emojis.check} ${content}`, { ...ephemeral && { flags: MessageFlags.Ephemeral } });
+  }
+
+  async error(content: string, ephemeral = false) {
+    return this.send(`${this.client.utils.emojis.xmark} ${content}`, { ...ephemeral && { flags: MessageFlags.Ephemeral } });
   }
 }
