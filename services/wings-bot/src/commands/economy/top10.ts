@@ -2,9 +2,9 @@ import type { User } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Top10 extends CommandBase {
-  public description = 'Grabs the top 10 best players';
+  description = 'Grabs the top 10 best players';
 
-  public exec = async ({ responder }: CommandData) => {
+  exec = async ({ responder }: CommandData) => {
     const topTen = await this.client.modules.economy.getTopTen();
     const parsedMembers = await Promise.all(topTen.map(async (user, i) => {
       let userInfo: User;

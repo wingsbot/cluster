@@ -1,6 +1,6 @@
-import type { APIApplicationCommandAutocompleteInteraction } from "discord-api-types/v10";
-import type { InteractionData } from "../InteractionHandler";
+import type { APIApplicationCommandAutocompleteInteraction } from 'discord-api-types/v10';
+import type { InteractionData } from '../InteractionHandler';
 
 export default async function({ client, interaction }: InteractionData<APIApplicationCommandAutocompleteInteraction>) {
-  console.log(interaction)
+  console.log(interaction);
 }

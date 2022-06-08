@@ -35,7 +35,7 @@ const decktemp = suits.map((suit: string) => ranks.concat(ranks)
 export class BlackjackUtil extends EventEmitter {
   private readonly client: Shard;
   private readonly deck: string[];
-  public gameData: GameData;
+  gameData: GameData;
 
   constructor(client: Shard, gameData: GameData) {
     super();
@@ -44,25 +44,25 @@ export class BlackjackUtil extends EventEmitter {
     this.deck = this.shuffle(decktemp);
   }
 
-  public startGame() {
+  startGame() {
     const info = this.getCards();
 
     this.emit('initiateGame', info);
   }
 
-  public endGame() {
+  endGame() {
     this.removeAllListeners();
 
     if (!this.client.activeGames.has(`${this.gameData.userId}:blackjack`)) return;
     this.client.activeGames.delete(`${this.gameData.userId}:blackjack`);
   }
 
-  public hit(hand: string[]) {
+  hit(hand: string[]) {
     hand.push(this.deck.pop());
     return hand;
   }
 
-  public cardValue(card: string) {
+  cardValue(card: string) {
     const index = ranks.indexOf(card.slice(2, -21));
 
     if (index === 0) return 11;
@@ -71,7 +71,7 @@ export class BlackjackUtil extends EventEmitter {
   }
 
   // checks if the current hand has an ace (11 or 1)
-  public isSoft(deck: Hand) {
+  isSoft(deck: Hand) {
     let value = 0;
     let aces = 0;
 
@@ -91,7 +91,7 @@ export class BlackjackUtil extends EventEmitter {
   }
 
   // gets the value from the hand array
-  public handValue(deck: Hand) {
+  handValue(deck: Hand) {
     let value = 0;
     let aces = 0;
 
@@ -110,7 +110,7 @@ export class BlackjackUtil extends EventEmitter {
     return value;
   }
 
-  public gameResult(playerValue: number | 'blackjack', dealerValue: number | 'blackjack') {
+  gameResult(playerValue: number | 'blackjack', dealerValue: number | 'blackjack') {
     if (playerValue > 21) return 'bust';
     if (dealerValue > 21) return 'dealer bust';
     if (playerValue === dealerValue) return 'push';
@@ -155,7 +155,7 @@ export class BlackjackUtil extends EventEmitter {
     return value;
   }
 
-  public sendAnswer(selection: string, cards: BlackjackData) {
+  sendAnswer(selection: string, cards: BlackjackData) {
     const { hands, playerDeck } = cards;
 
     const nextHand = () => {

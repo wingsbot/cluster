@@ -3,11 +3,11 @@ import { freemem, totalmem } from 'node:os';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Status extends CommandBase {
-  public description = 'get the bot statistics';
-  public ownerOnly = true;
-  public guildOnly = true;
+  description = 'get the bot statistics';
+  ownerOnly = true;
+  guildOnly = true;
 
-  public exec = async ({ interaction, responder }: CommandData) => {
+  exec = async ({ interaction, responder }: CommandData) => {
     const botStats = await this.client.ipc.getBotStats();
     const channel = interaction.channel as TextChannel;
 

@@ -3,8 +3,8 @@ import { CommandBase, CommandData, InteractionTimeoutError, AwaitComponentReturn
 import { MessageComponent } from '../../lib/framework/utils';
 
 export default class Snacks extends CommandBase {
-  public description = 'Runnin low? I\'ll hook you up!';
-  public cooldown = 1000 * 60;
+  description = 'Runnin low? I\'ll hook you up!';
+  cooldown = 1000 * 60;
 
   private readonly snacks = [
     { name: 'Doritos', emoji: '<:chips:775545724846866462>' },
@@ -32,7 +32,7 @@ export default class Snacks extends CommandBase {
     { name: 'Wings Special Bag', emoji: '🍖' },
   ];
 
-  public exec = async ({ cooldown, interaction, responder }: CommandData) => {
+  exec = async ({ cooldown, interaction, responder }: CommandData) => {
     const snacks = this.snacks.sort(() => Math.random() - 0.5).slice(0, 5);
     const id = this.client.util.generateId();
 

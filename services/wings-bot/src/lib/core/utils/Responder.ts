@@ -5,15 +5,15 @@ import type { Shard } from '../../../Shard';
 
 export class Responder {
   readonly client: Shard;
-  public interaction: CommandInteraction | ComponentInteraction | AutocompleteInteraction;
+  interaction: CommandInteraction | ComponentInteraction | AutocompleteInteraction;
 
-  public emojis = {
+  emojis = {
     check: '<a:check:771153653091401738>',
     xmark: '<a:xmark:769512912808443924>',
     loading: '<a:loading:769061423732883466>',
   };
 
-  public colors = {
+  colors = {
     green: 7593264,
     red: 16736352,
     blue: 2527999,
@@ -25,14 +25,14 @@ export class Responder {
     this.interaction = interaction;
   }
 
-  public async send(content: string, ephermal = false) {
+  async send(content: string, ephermal = false) {
     const interaction = this.interaction as CommandInteraction | ComponentInteraction;
 
     if (interaction.acknowledged) return interaction.createFollowup({ content, flags: ephermal ? Constants.MessageFlags.EPHEMERAL : null });
     return interaction.createMessage({ content, flags: ephermal ? Constants.MessageFlags.EPHEMERAL : null });
   }
 
-  public async edit(content: string, messageId?: string) {
+  async edit(content: string, messageId?: string) {
     const interaction = this.interaction as CommandInteraction | ComponentInteraction;
 
     if (interaction instanceof ComponentInteraction) {
@@ -44,7 +44,7 @@ export class Responder {
     return interaction.editMessage(messageId, content);
   }
 
-  public async sendEmbed(embed: EmbedOptions, content = '', ephermal = false) {
+  async sendEmbed(embed: EmbedOptions, content = '', ephermal = false) {
     const interaction = this.interaction as CommandInteraction | ComponentInteraction;
 
     if (!embed.color) embed.color = this.colors.default;
@@ -52,20 +52,20 @@ export class Responder {
     return interaction.createMessage({ embeds: [embed], content, flags: ephermal ? Constants.MessageFlags.EPHEMERAL : null });
   }
 
-  public async sendRaw(data: string | InteractionContent, file?: FileContent | FileContent[]) {
+  async sendRaw(data: string | InteractionContent, file?: FileContent | FileContent[]) {
     const interaction = this.interaction as CommandInteraction | ComponentInteraction;
 
     if (interaction.acknowledged) return interaction.createFollowup(data, file);
     return interaction.createMessage(data, file);
   }
 
-  public sendChoices(data: ApplicationCommandOptionChoice[]) {
+  sendChoices(data: ApplicationCommandOptionChoice[]) {
     const interaction = this.interaction as AutocompleteInteraction;
 
     interaction.result(data);
   }
 
-  public async editRaw(data: string | InteractionContent, messageId?: string, file?: FileContent | FileContent[]) {
+  async editRaw(data: string | InteractionContent, messageId?: string, file?: FileContent | FileContent[]) {
     const interaction = this.interaction as CommandInteraction | ComponentInteraction;
 
     if (interaction instanceof ComponentInteraction) {
@@ -77,15 +77,15 @@ export class Responder {
     return interaction.editMessage(messageId, data, file);
   }
 
-  public async success(message: string, ephermal = false) {
+  async success(message: string, ephermal = false) {
     return this.send(`${this.emojis.check} ${message}`, ephermal);
   }
 
-  public async error(message: string, ephermal = false) {
+  async error(message: string, ephermal = false) {
     return this.send(`${this.emojis.xmark} ${message}`, ephermal);
   }
 
-  public async confirm(content: string, ephermal = false): Promise<ComponentInteraction & AwaitComponentReturn> {
+  async confirm(content: string, ephermal = false): Promise<ComponentInteraction & AwaitComponentReturn> {
     const interaction = this.interaction as CommandInteraction;
     const id = this.client.util.generateId();
 

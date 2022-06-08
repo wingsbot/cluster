@@ -1,6 +1,6 @@
-import type { REST } from "@discordjs/rest";
-import type { Client } from "../../../..";
-import type { FastifyReply } from "fastify";
+import type { REST } from '@discordjs/rest';
+import type { Client } from '../../../..';
+import type { FastifyReply } from 'fastify';
 
 import {
   APIApplicationCommandInteraction,
@@ -10,12 +10,12 @@ import {
   RESTPostAPIInteractionCallbackFormDataBody,
   RESTPostAPIInteractionFollowupJSONBody,
   RESTPostAPIInteractionFollowupResult,
-  Routes
-} from "discord-api-types/v10";
+  Routes,
+} from 'discord-api-types/v10';
 
-import { Member } from "../../Member";
-import { User } from "../../User";
-import { CommandInteractionData } from "./InteractionData";
+import { Member } from '../../Member';
+import { User } from '../../User';
+import { CommandInteractionData } from './InteractionData';
 
 export class CommandInteraction {
   private restClient: REST;
@@ -27,10 +27,10 @@ export class CommandInteraction {
 
   private responded = false;
 
-  public channelId?: string;
-  public data?: CommandInteractionData;
-  public user?: User;
-  public member?: Member;
+  channelId?: string;
+  data?: CommandInteractionData;
+  user?: User;
+  member?: Member;
 
   constructor(client: Client, interaction: APIApplicationCommandInteraction, private reply: FastifyReply) {
     this.restClient = client.restClient;
@@ -52,11 +52,11 @@ export class CommandInteraction {
 
     return this.reply.status(200).send({
       type,
-      data
+      data,
     });
   }
 
-  public async send(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {
+  async send(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {
     const data = Object.assign({ content }, options);
 
     if (!this.responded) return this.sendInteraction(InteractionResponseType.ChannelMessageWithSource, data);
@@ -65,8 +65,8 @@ export class CommandInteraction {
       Routes.webhook(this.applicationId, this.token),
       {
         body: data,
-        auth: false
-      }
+        auth: false,
+      },
     ).catch(error => {
       console.error(error);
       return null;

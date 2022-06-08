@@ -17,7 +17,7 @@ export class CooldownGuard {
     this.identifier = `${responder.interaction.member.id}:${command.name}`;
   }
 
-  public async getCooldown() {
+  async getCooldown() {
     if (!await this.client.redis.exists(this.identifier)) return null;
     const timeInMs = await this.client.redis.pttl(this.identifier);
     const timeLeft = this.client.util.msDuration(timeInMs) || '1 Second';
@@ -28,11 +28,11 @@ export class CooldownGuard {
     return this.client.redis.exists(this.identifier);
   }
 
-  public setCooldown() {
+  setCooldown() {
     this.client.redis.set(this.identifier, 'true', 'PX', this.cooldown);
   }
 
-  public async handleMessage() {
+  async handleMessage() {
     const onCooldown = await this.getCooldown();
 
     this.responder.send(`You must wait \`${onCooldown}\` to do \`/${this.name}\` again!`, true);

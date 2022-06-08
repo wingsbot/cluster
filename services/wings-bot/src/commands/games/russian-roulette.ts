@@ -7,16 +7,16 @@ import { GameData } from '../../lib/interfaces/Games';
 const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default class RussianRoulette extends CommandBase {
-  public description = 'Be the last one standing.';
+  description = 'Be the last one standing.';
 
-  public options: ApplicationCommandOptions[] = [{
+  options: ApplicationCommandOptions[] = [{
     type: Constants.ApplicationCommandOptionTypes.INTEGER,
     name: 'amount',
     description: 'Amount to be put in the pot.',
     required: true,
   }];
 
-  public exec = async ({ interaction, responder, options }: CommandData) => {
+  exec = async ({ interaction, responder, options }: CommandData) => {
     const userGame = this.client.activeGames.get(`${interaction.guildID}:russian`);
 
     if (userGame) {

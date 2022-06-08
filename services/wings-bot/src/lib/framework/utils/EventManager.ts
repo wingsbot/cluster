@@ -27,7 +27,7 @@ export class EventManager extends EventEmitter {
     }
   }
 
-  public setupTimer(timer: Events) {
+  setupTimer(timer: Events) {
     const { type } = timer;
 
     switch (type) {
@@ -42,7 +42,7 @@ export class EventManager extends EventEmitter {
     }
   }
 
-  public queueEvent(timer: Events) {
+  queueEvent(timer: Events) {
     if (Number(timer.time) - Date.now() <= this.cutOff) {
       this.setupTimer(timer);
     } else {

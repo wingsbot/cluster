@@ -22,19 +22,19 @@ export interface Choices {
   value: string | number;
 }
 export class CommandBase {
-  public client: Shard;
-  public store: Store;
-  public name: string;
-  public description: string;
-  public type: 1 | 2 | 3;
-  public cooldown?: number;
-  public options?: ApplicationCommandOptions[];
-  public premiumOnly?: boolean;
-  public ownerOnly?: boolean;
-  public testing?: boolean;
-  public guildOnly?: boolean;
-  public componentExec?: ({ interaction, data, responder }: ComponentData) => Promise<void>;
-  public exec: ({ interaction, data, options, responder }: CommandData) => Promise<void>;
+  client: Shard;
+  store: Store;
+  name: string;
+  description: string;
+  type: 1 | 2 | 3;
+  cooldown?: number;
+  options?: ApplicationCommandOptions[];
+  premiumOnly?: boolean;
+  ownerOnly?: boolean;
+  testing?: boolean;
+  guildOnly?: boolean;
+  componentExec?: ({ interaction, data, responder }: ComponentData) => Promise<void>;
+  exec: ({ interaction, data, options, responder }: CommandData) => Promise<void>;
 
   constructor(client: Shard, name: string, store: Store) {
     this.client = client;

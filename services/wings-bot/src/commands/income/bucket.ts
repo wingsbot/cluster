@@ -3,10 +3,10 @@ import { CommandBase, CommandData, InteractionTimeoutError, AwaitComponentReturn
 import { MessageComponent } from '../../lib/framework/utils';
 
 export default class Bucket extends CommandBase {
-  public description = 'Choose a bucket, get some Wings.';
-  public cooldown = 1000 * 60 * 60;
+  description = 'Choose a bucket, get some Wings.';
+  cooldown = 1000 * 60 * 60;
 
-  public exec = async ({ cooldown, interaction, responder }: CommandData) => {
+  exec = async ({ cooldown, interaction, responder }: CommandData) => {
     const id = this.client.util.generateId();
     const componentBase = new MessageComponent()
       .addActionRow()

@@ -1,7 +1,7 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance } from 'fastify';
 
-import { Client } from "..";
-import { InteractionHandler } from "./InteractionHandler";
+import { Client } from '..';
+import { InteractionHandler } from './InteractionHandler';
 
 export interface RawBody {
   parsed: unknown;
@@ -9,8 +9,8 @@ export interface RawBody {
 }
 
 export class RouteHandler {
-  public server: FastifyInstance;
-  public interactionHandler: InteractionHandler;
+  server: FastifyInstance;
+  interactionHandler: InteractionHandler;
 
   constructor(client: Client) {
     this.server = client.server;

@@ -4,9 +4,9 @@ import { CommandBase, CommandData, ComponentData } from '../../lib/framework';
 import { MessageComponent } from '../../lib/framework/utils';
 
 export default class Inventory extends CommandBase {
-  public description = 'Check the items you have!';
+  description = 'Check the items you have!';
 
-  public exec = async ({ interaction, responder }: CommandData) => {
+  exec = async ({ interaction, responder }: CommandData) => {
     const inventory = await this.client.modules.economy.getUserInventory(interaction.member.id);
 
     if (inventory.length === 0) {
@@ -103,7 +103,7 @@ export default class Inventory extends CommandBase {
     });
   };
 
-  public componentExec = async ({ interaction, data, responder }: ComponentData) => {
+  componentExec = async ({ interaction, data, responder }: ComponentData) => {
     const [actionName, pageId, userId] = data.custom_id.split(':');
 
     if (!userId || interaction.member.id !== userId) {

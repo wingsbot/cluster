@@ -3,8 +3,8 @@ import { TextChannel } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Fish extends CommandBase {
-  public description = 'Go fishin for Wings!';
-  public cooldown = 1000 * 60;
+  description = 'Go fishin for Wings!';
+  cooldown = 1000 * 60;
 
   private readonly fishingItems = {
     trashItems: ['🗞', '🥥', '👙', '🧦', '👽', '👟', '🤖', '⚰️'],
@@ -322,7 +322,7 @@ export default class Fish extends CommandBase {
     return { item, message: 'You casted out a line... You caught a **Diamond** 💎\n> *This item was added to your inventory.*' };
   }
 
-  public exec = async ({ cooldown, interaction, responder }: CommandData) => {
+  exec = async ({ cooldown, interaction, responder }: CommandData) => {
     const userFishingRod = await this.client.modules.economy.getInventoryItem(interaction.member.id, 'easyfishingrod');
 
     if (!userFishingRod) {

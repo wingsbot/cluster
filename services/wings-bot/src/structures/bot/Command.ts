@@ -1,11 +1,11 @@
 import type {
   RESTPatchAPIApplicationCommandJSONBody,
-} from "discord-api-types/v10";
+} from 'discord-api-types/v10';
 
-import type { Client } from "../..";
-import type { CommandInteraction } from "..";
-import { CommandInteractionDataOptions } from "../discord";
-import { CommandOptions } from "./CommandOptions";
+import type { Client } from '../..';
+import type { CommandInteraction } from '..';
+import { CommandInteractionDataOptions } from '../discord';
+import { CommandOptions } from './CommandOptions';
 
 export interface CommandData<T extends Command> {
   interaction: CommandInteraction;
@@ -13,25 +13,25 @@ export interface CommandData<T extends Command> {
 }
 
 export class Command {
-  public description = 'No description implimented.';
-  public options?: CommandOptions;
-  public allowDM = true;
-  public ownerOnly = false;
-  public patronOnly = false;
+  description = 'No description implimented.';
+  options?: CommandOptions;
+  allowDM = true;
+  ownerOnly = false;
+  patronOnly = false;
 
   constructor(public client: Client, public name: string) {}
 
-  public get APIParsedCommand(): RESTPatchAPIApplicationCommandJSONBody {
+  get APIParsedCommand(): RESTPatchAPIApplicationCommandJSONBody {
     return {
       name: this.name,
       description: this.description,
       ...this.options && { options: this.options.build() },
-      dm_permission: this.allowDM
+      dm_permission: this.allowDM,
     };
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async run(context: CommandData<Command>) {
+  async run(context: CommandData<Command>) {
     throw new Error(`Command ${this.name} does not have a run function >:(`);
   }
 }

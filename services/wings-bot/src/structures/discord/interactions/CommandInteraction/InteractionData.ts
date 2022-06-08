@@ -1,16 +1,16 @@
 import type {
   APIChatInputApplicationCommandInteractionData,
-  APIChatInputApplicationCommandInteractionDataResolved
-} from "discord-api-types/v10";
-import { CommandInteractionDataOptions } from "./";
+  APIChatInputApplicationCommandInteractionDataResolved,
+} from 'discord-api-types/v10';
+import { CommandInteractionDataOptions } from './';
 
 export class CommandInteractionData {
-  public id: string;
-  public name: string;
-  public type: number;
-  public guildId?: string;
-  public options?: CommandInteractionDataOptions;
-  public resolved?: APIChatInputApplicationCommandInteractionDataResolved;
+  id: string;
+  name: string;
+  type: number;
+  guildId?: string;
+  options?: CommandInteractionDataOptions;
+  resolved?: APIChatInputApplicationCommandInteractionDataResolved;
 
   constructor(private data: APIChatInputApplicationCommandInteractionData) {
     this.id = data.id;

@@ -66,7 +66,7 @@ export class IPC {
     }
   }
 
-  public async request(op: string, data = {}) {
+  async request(op: string, data = {}) {
     const id = this.client.util.generateId();
 
     return new Promise(resolve => {
@@ -75,7 +75,7 @@ export class IPC {
     });
   }
 
-  public async getClusterId(clusterId: number) {
+  async getClusterId(clusterId: number) {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.client.removeAllListeners('clusterInfo');
@@ -91,12 +91,12 @@ export class IPC {
     });
   }
 
-  public async globalEval(code: string) {
+  async globalEval(code: string) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.request('INCOMING_EVAL', { target: 'all', input: code }) as any;
   }
 
-  public async getBotStats(): Promise<clustersEval> {
+  async getBotStats(): Promise<clustersEval> {
     const clustersEval = await this.globalEval(`(async => { return {
       guilds: this.client.guilds.size,
       channels: Object.values(this.client.channelGuildMap).length,

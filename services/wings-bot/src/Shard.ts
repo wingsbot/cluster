@@ -18,28 +18,28 @@ import { ModuleHandler, Modules } from './lib/framework/ModuleHandler';
 import type { GameData } from './lib/interfaces/Games';
 
 export class Shard extends Client {
-  public clusterId: number;
-  public totalShards: number;
-  public firstShardId: number;
+  clusterId: number;
+  totalShards: number;
+  firstShardId: number;
 
-  public config: Config;
-  public util: ClientUtil;
-  public botInstance: string;
-  public db: Database;
-  public redis: Redis;
+  config: Config;
+  util: ClientUtil;
+  botInstance: string;
+  db: Database;
+  redis: Redis;
 
-  public interactionHandler: InteractionHandler;
-  public moduleHandler: ModuleHandler;
+  interactionHandler: InteractionHandler;
+  moduleHandler: ModuleHandler;
 
-  public commands: Map<string, CommandBase>;
-  public events: Map<string, EventBase>;
-  public ipc: IPC;
-  public patreon: Patreon;
+  commands: Map<string, CommandBase>;
+  events: Map<string, EventBase>;
+  ipc: IPC;
+  patreon: Patreon;
 
-  public activeGames: Map<string, GameData>;
-  public decks: Map<string, string[]>;
+  activeGames: Map<string, GameData>;
+  decks: Map<string, string[]>;
 
-  public modules: Modules;
+  modules: Modules;
 
   constructor({ shards, clusterId, totalShards }: StartMessage) {
     super(config.token, {
@@ -80,7 +80,7 @@ export class Shard extends Client {
     this.decks = new Map();
   }
 
-  public async fetchUser(userId: string) {
+  async fetchUser(userId: string) {
     if (this.users.has(userId)) return this.users.get(userId);
 
     return this.getRESTUser(userId);
@@ -110,7 +110,7 @@ export class Shard extends Client {
     console.log('Loaded Redis');
   }
 
-  public async start() {
+  async start() {
     await this.connect();
     await this.connectDatabases();
     await this.loadFramework();

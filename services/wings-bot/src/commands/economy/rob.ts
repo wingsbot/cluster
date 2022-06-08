@@ -2,17 +2,17 @@ import { ApplicationCommandOptions, Constants } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Rob extends CommandBase {
-  public description = 'Take someones Wings... If you can 👀';
-  public cooldown = 1000 * 60 * 60 * 4;
+  description = 'Take someones Wings... If you can 👀';
+  cooldown = 1000 * 60 * 60 * 4;
 
-  public options: ApplicationCommandOptions[] = [{
+  options: ApplicationCommandOptions[] = [{
     type: Constants.ApplicationCommandOptionTypes.USER,
     name: 'user',
     description: 'Select a user',
     required: true,
   }];
 
-  public exec = async ({ cooldown, interaction, responder, options }: CommandData) => {
+  exec = async ({ cooldown, interaction, responder, options }: CommandData) => {
     const userId = options[0].value as string;
     const user = await this.client.fetchUser(userId);
 

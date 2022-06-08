@@ -1,29 +1,32 @@
 import fastify from 'fastify';
 import { REST } from '@discordjs/rest';
-import RedisClient, { Redis } from 'ioredis';
+import RedisClient from 'ioredis';
 import { RouteHandler } from './server/routeHandler';
 // import { Database } from './lib/database';
 
 import config from './Config';
 import { LoadCommands } from './lib/core/LoadCommands';
 import { ModuleHandler } from './lib/framework/ModuleHandler';
+import { Database } from './database';
+import { ClientUtil } from './lib/core/utils/Util';
 
 export class Client {
-  public server = fastify({ logger: true });
-  public restClient = new REST({ version: config.APIVersion }).setToken(config.botToken);
-  public routeHandler: RouteHandler;
+  server = fastify({ logger: true });
+  restClient = new REST({ version: config.APIVersion }).setToken(config.botToken);
+  routeHandler: RouteHandler;
 
-  public config = config;
-  // public db: Database;
-  public redis: Redis;
+  config = config;
+  db = new Database();
+  redis = new RedisClient();
 
-  // public modules = new ModuleHandler(this);
-  public commands = new LoadCommands(this).commands;
+  modules = new ModuleHandler(this);
+  commands = new LoadCommands(this).commands;
+
+  utils = new ClientUtil();
 
   async init() {
     await Promise.all([
-      this.loadDatabases(),
-      this.startServer()
+      this.startServer(),
     ]);
   }
 
@@ -32,16 +35,9 @@ export class Client {
 
     this.server.listen(this.config.port, this.config.host, (error, address) => {
       console.log(`Listening on port ${this.config.port}\nLink: ${address}`);
-   });
+    });
   }
 
-  private async loadDatabases() {
-    // this.db = new Database();
-    console.log('Loaded Database');
-
-    this.redis = new RedisClient();
-    console.log('Loaded Redis');
-  }
 }
 
 const client = new Client();

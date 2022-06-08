@@ -2,8 +2,8 @@ import { ApplicationCommandOptions, Constants } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Withdraw extends CommandBase {
-  public description = 'Take your money out of the bank!';
-  public options: ApplicationCommandOptions[] = [{
+  description = 'Take your money out of the bank!';
+  options: ApplicationCommandOptions[] = [{
     name: 'custom',
     description: 'Input the amount of Wings you want to withdraw.',
     type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
@@ -27,7 +27,7 @@ export default class Withdraw extends CommandBase {
     options: [],
   }];
 
-  public exec = async ({ interaction, responder, options }: CommandData) => {
+  exec = async ({ interaction, responder, options }: CommandData) => {
     const userData = await this.client.modules.economy.getUserData(interaction.member.id);
     let amount: number;
 

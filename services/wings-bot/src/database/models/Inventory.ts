@@ -1,13 +1,7 @@
-import { Inventory, PrismaClient } from '@prisma/client';
+import type { Inventory, PrismaClient } from '@prisma/client';
 
 export class InventoryDatabase {
-  readonly client: PrismaClient;
-  readonly database: PrismaClient['inventory'];
-
-  constructor(client: PrismaClient, inventory: PrismaClient['inventory']) {
-    this.client = client;
-    this.database = inventory;
-  }
+  constructor(private client: PrismaClient, private database: PrismaClient['inventory']) {}
 
   async getUserInventory(userId: string): Promise<Inventory[]> {
     return this.database.findMany({

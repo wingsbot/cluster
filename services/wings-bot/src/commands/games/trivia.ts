@@ -13,9 +13,9 @@ interface TriviaQuestion {
 }
 
 export default class Trivia extends CommandBase {
-  public description = 'Play some trivia and earn some Wings!';
-  public cooldown = 1000 * 60 * 5;
-  public options: ApplicationCommandOptions[] = [{
+  description = 'Play some trivia and earn some Wings!';
+  cooldown = 1000 * 60 * 5;
+  options: ApplicationCommandOptions[] = [{
     name: 'difficulty',
     type: Constants.ApplicationCommandOptionTypes.STRING,
     description: 'Difficulty of the game!',
@@ -34,7 +34,7 @@ export default class Trivia extends CommandBase {
     required: true,
   }];
 
-  public exec = async ({ cooldown, interaction, responder, options }: CommandData) => {
+  exec = async ({ cooldown, interaction, responder, options }: CommandData) => {
     const choice = options[0].value as string;
     const componentBase = new MessageComponent()
       .addActionRow();

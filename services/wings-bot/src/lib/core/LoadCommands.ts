@@ -1,15 +1,15 @@
 import { readdir, Dirent } from 'node:fs';
 import { join, resolve, parse } from 'node:path';
 
-import type { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v10";
-import type { Client } from "../..";
-import { Command } from "../../structures";
+import type { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v10';
+import type { Client } from '../..';
+import type { Command } from '../../structures';
 
 export class LoadCommands {
   private restClient: REST;
   private commandsDir = join(__dirname ,'../../commands');
-  public commands: Map<string, Command> = new Map();
+  commands: Map<string, Command> = new Map();
 
   constructor(public client: Client) {
     this.restClient = client.restClient;
@@ -17,7 +17,7 @@ export class LoadCommands {
     this.setCacheCommands();
   }
 
-  public async loadCommands() {
+  async loadCommands() {
     const globalCommands = [];
     const ownerCommands = [];
 
@@ -32,41 +32,41 @@ export class LoadCommands {
 
     await Promise.all([
       this.postGuildCommands(ownerCommands),
-      this.postGlobalCommands(globalCommands)
+      this.postGlobalCommands(globalCommands),
     ]);
   }
 
-  public async setCacheCommands() {
-   const files = await this.getCommandFiles();
+  async setCacheCommands() {
+    const files = await this.getCommandFiles();
     
-   for (const file of files) {
-    if (!file.endsWith('.js')) continue;
+    for (const file of files) {
+      if (!file.endsWith('.js')) continue;
 
-    const filepath = resolve(this.commandsDir, file);
-    const name = parse(filepath).name;
-    const commandFile = await import(filepath);
+      const filepath = resolve(this.commandsDir, file);
+      const name = parse(filepath).name;
+      const commandFile = await import(filepath);
 
-    const newCommands: Command[] = [];
+      const newCommands: typeof Command[] = [];
 
-    if (commandFile.__esModule) {
-      if (typeof commandFile === 'function' && typeof commandFile.prototype === 'object') {
-        newCommands.push(commandFile.default);
-      } else {
-        for (const fileExport of Object.keys(commandFile)) {
-          if (!fileExport.endsWith('Command')) continue;
-          newCommands.push(commandFile[fileExport]);
+      if (commandFile.__esModule) {
+        if (typeof commandFile === 'function' && typeof commandFile.prototype === 'object') {
+          newCommands.push(commandFile.default);
+        } else {
+          for (const fileExport of Object.keys(commandFile)) {
+            if (!fileExport.endsWith('Command')) continue;
+            newCommands.push(commandFile[fileExport]);
+          }
         }
+      } else {
+        newCommands.push(commandFile);
       }
-    } else {
-      newCommands.push(commandFile);
-    }
 
-    if (newCommands.length === 0) continue;
+      if (newCommands.length === 0) continue;
 
-    for (const FileCommand of newCommands) {
-      this.commands.set(name, new FileCommand(this.client, name));
+      for (const FileCommand of newCommands) {
+        this.commands.set(name, new FileCommand(this.client, name));
+      }
     }
-   }
   }
 
   private async getCommandFiles(directory?: string) {
@@ -100,14 +100,14 @@ export class LoadCommands {
   private async postGlobalCommands(globalCommands: Command['APIParsedCommand'][]) {
     await this.restClient.put(
       Routes.applicationCommands(this.client.config.applicationId),
-      { body: globalCommands }
+      { body: globalCommands },
     );
   }
 
   private async postGuildCommands(guildCommands: Command['APIParsedCommand'][]) {
     await this.restClient.put(
       Routes.applicationGuildCommands(this.client.config.applicationId, this.client.config.devServerId),
-      { body: guildCommands }
+      { body: guildCommands },
     );
   }
 }

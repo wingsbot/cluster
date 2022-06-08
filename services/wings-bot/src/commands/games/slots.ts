@@ -2,9 +2,9 @@ import { ApplicationCommandOptions, Constants } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Slots extends CommandBase {
-  public description = 'Are you lucky? Play some slots and find out!';
+  description = 'Are you lucky? Play some slots and find out!';
 
-  public options: ApplicationCommandOptions[] = [{
+  options: ApplicationCommandOptions[] = [{
     name: 'bet',
     description: 'Amount of Wings you want to bet',
     type: Constants.ApplicationCommandOptionTypes.INTEGER,
@@ -42,7 +42,7 @@ export default class Slots extends CommandBase {
     return roll as string[];
   }
 
-  public exec = async ({ interaction, options, responder }: CommandData) => {
+  exec = async ({ interaction, options, responder }: CommandData) => {
     const userData = await this.client.modules.economy.getUserData(interaction.member.id);
     const amount = options[0].value as number;
 

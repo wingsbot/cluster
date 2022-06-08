@@ -3,10 +3,10 @@ import { CommandBase, CommandData, InteractionTimeoutError, AwaitComponentReturn
 import { MessageComponent } from '../../lib/framework/utils';
 
 export default class HighLow extends CommandBase {
-  public description = 'Guess if the next number is higher or lower.';
-  public cooldown = 1000 * 30;
+  description = 'Guess if the next number is higher or lower.';
+  cooldown = 1000 * 30;
 
-  public exec = async ({ cooldown, interaction, responder }: CommandData) => {
+  exec = async ({ cooldown, interaction, responder }: CommandData) => {
     const id = this.client.util.generateId();
     const componentBase = new MessageComponent()
       .addActionRow()

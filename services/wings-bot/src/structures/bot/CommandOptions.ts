@@ -1,7 +1,7 @@
 import {
   APIApplicationCommandOption,
-  ApplicationCommandOptionType
-} from "discord-api-types/v10";
+  ApplicationCommandOptionType,
+} from 'discord-api-types/v10';
 
 // todo: add choices through here
 export class CommandOptions<
@@ -29,11 +29,11 @@ export class CommandOptions<
     } as APIApplicationCommandOption;
   }
 
-  public build() {
+  build() {
     return this.subOptions;
   }
 
-  public addOption<T extends CommandOptions>(option: T): CommandOptions<Name, Type, [...Options, T]> {
+  addOption<T extends CommandOptions>(option: T): CommandOptions<Name, Type, [...Options, T]> {
     this.subOptions.push(option.buildOption());
 
     return this;

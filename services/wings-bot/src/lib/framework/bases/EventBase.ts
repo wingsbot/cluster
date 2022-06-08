@@ -2,9 +2,9 @@ import type { Shard } from '../../../Shard';
 import { Store } from '../../core/fs/Store';
 
 export class EventBase {
-  public client: Shard;
-  public name: string;
-  public store: Store;
+  client: Shard;
+  name: string;
+  store: Store;
 
   constructor(client: Shard, name: string, store: Store) {
     this.client = client;

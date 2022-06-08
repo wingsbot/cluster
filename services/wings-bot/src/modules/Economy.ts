@@ -2,11 +2,11 @@ import type { ActiveItem, Inventory, User } from '@prisma/client';
 import { ModuleBase } from '../lib/framework';
 
 export class Economy extends ModuleBase {
-  public readonly userCache: Map<string, User> = new Map();
-  public readonly inventoryCache: Map<string, Inventory[]> = new Map();
-  public readonly activeItemsCache: Map<string, ActiveItem[]> = new Map();
+  readonly userCache: Map<string, User> = new Map();
+  readonly inventoryCache: Map<string, Inventory[]> = new Map();
+  readonly activeItemsCache: Map<string, ActiveItem[]> = new Map();
 
-  public async getUserData(userId: string): Promise<User> {
+  async getUserData(userId: string): Promise<User> {
     const userCache = this.userCache.get(userId);
     if (userCache) return userCache;
 
@@ -16,12 +16,12 @@ export class Economy extends ModuleBase {
     return userData;
   }
 
-  public parseInt(amount?: number | bigint) {
+  parseInt(amount?: number | bigint) {
     if (!amount && Number(amount) !== 0) return '🍖';
     return `🍖${amount.toLocaleString()}`;
   }
 
-  public async editBalance(userId: string, balance: number | bigint) {
+  async editBalance(userId: string, balance: number | bigint) {
     const userData = await this.getUserData(userId);
 
     userData.balance += BigInt(balance);
@@ -29,7 +29,7 @@ export class Economy extends ModuleBase {
     await this.client.db.user.editUserBalance(userId, BigInt(balance));
   }
 
-  public async editBank(userId: string, bank: number | bigint) {
+  async editBank(userId: string, bank: number | bigint) {
     const userData = await this.getUserData(userId);
 
     userData.bank += BigInt(bank);
@@ -37,7 +37,7 @@ export class Economy extends ModuleBase {
     await this.client.db.user.editUserBank(userId, BigInt(bank));
   }
 
-  public async editBankCap(userId: string, bankCap: number | bigint) {
+  async editBankCap(userId: string, bankCap: number | bigint) {
     const userData = await this.getUserData(userId);
 
     userData.bankCap += BigInt(bankCap);
@@ -46,7 +46,7 @@ export class Economy extends ModuleBase {
   }
 
   // inventory
-  public async getUserInventory(userId: string) {
+  async getUserInventory(userId: string) {
     let userInventory = this.inventoryCache.get(userId);
 
     if (!userInventory) {
@@ -57,15 +57,15 @@ export class Economy extends ModuleBase {
     return userInventory;
   }
 
-  public async getInventoryItem(userId: string, itemId: string) {
+  async getInventoryItem(userId: string, itemId: string) {
     const userInventory = await this.getUserInventory(userId);
 
     return userInventory.find(item => item.itemId === itemId);
   }
 
-  public async addInventoryItem(userId: string, item: Inventory) {
+  async addInventoryItem(userId: string, item: Inventory) {
     const userItems = await this.getUserInventory(userId);
-    const existingItem = userItems.find(i => i.id === item.id);
+    const existingItem = userItems.find(index => index.id === item.id);
 
     if (existingItem) {
       Object.assign(existingItem, item);
@@ -80,9 +80,9 @@ export class Economy extends ModuleBase {
     }
   }
 
-  public async updateInventoryItem(userId: string, item: Inventory) {
+  async updateInventoryItem(userId: string, item: Inventory) {
     const userItems = await this.getUserInventory(userId);
-    const existingItem = userItems.find(i => i.id === item.id);
+    const existingItem = userItems.find(index => index.id === item.id);
 
     if (!existingItem) return;
     await this.client.db.inventory.updateItem(item);
@@ -90,9 +90,9 @@ export class Economy extends ModuleBase {
     Object.assign(existingItem, item);
   }
 
-  public async removeInventoryItem(userId: string, item: Inventory) {
+  async removeInventoryItem(userId: string, item: Inventory) {
     const userItems = await this.getUserInventory(userId);
-    const existingItem = userItems.find(i => i.id === item.id);
+    const existingItem = userItems.find(index => index.id === item.id);
 
     if (existingItem) {
       existingItem.quantity -= item.quantity;
@@ -100,7 +100,7 @@ export class Economy extends ModuleBase {
       if (existingItem.quantity <= 0) {
         await this.client.db.inventory.deleteItem(existingItem.id);
 
-        userItems.splice(userItems.findIndex(i => i.id === item.id), 1);
+        userItems.splice(userItems.findIndex(index => index.id === item.id), 1);
         return;
       }
 
@@ -113,7 +113,7 @@ export class Economy extends ModuleBase {
     await this.client.db.inventory.deleteItem(item.id);
   }
 
-  public async removeInventoryItems(userId: string, excludeList: string[]) {
+  async removeInventoryItems(userId: string, excludeList: string[]) {
     const userItems = await this.getUserInventory(userId);
     const newInventory = userItems.filter(item => excludeList.includes(item.itemId) || !item.canBeSold);
     this.inventoryCache.set(userId, newInventory);
@@ -122,7 +122,7 @@ export class Economy extends ModuleBase {
   }
 
   // Active Item bullshit
-  public async getActiveItems(userId: string) {
+  async getActiveItems(userId: string) {
     let userActiveItems = this.activeItemsCache.get(userId);
 
     if (!userActiveItems) {
@@ -133,13 +133,13 @@ export class Economy extends ModuleBase {
     return userActiveItems;
   }
 
-  public async getActiveItem(userId: string, itemId: number | string) {
+  async getActiveItem(userId: string, itemId: number | string) {
     const activeItems = await this.getActiveItems(userId);
 
     return activeItems.find(item => typeof itemId === 'string' ? item.itemId === itemId : item.id === itemId);
   }
 
-  public async setActiveItem(userId: string, guildId: string, item: Inventory) {
+  async setActiveItem(userId: string, guildId: string, item: Inventory) {
     const activeItems = await this.getActiveItems(userId);
 
     const newActiveItem = await this.client.db.activeItems.addItem(Object.assign(item, { guildId }));
@@ -162,7 +162,7 @@ export class Economy extends ModuleBase {
     }
   }
 
-  public async removeActiveItem(userId: string, item: ActiveItem) {
+  async removeActiveItem(userId: string, item: ActiveItem) {
     const userActiveItems = await this.getActiveItems(userId);
 
     userActiveItems.splice(userActiveItems.findIndex(uItem => uItem.id === item.id), 1);
@@ -172,7 +172,7 @@ export class Economy extends ModuleBase {
     await this.client.db.activeItems.deleteItem(item.id);
   }
 
-  public async getMultiplier(userId: string) {
+  async getMultiplier(userId: string) {
     const x2 = await this.getActiveItem(userId, 'x2wings');
 
     let multiplier = 1;
@@ -182,16 +182,16 @@ export class Economy extends ModuleBase {
   }
 
   // leaderboard
-  public async getTopTen() {
+  async getTopTen() {
     return this.client.db.user.getTopTen();
   }
 
   // gang shit thats all im on
-  public async joinGang(userId: string, gangId: string) {
+  async joinGang(userId: string, gangId: string) {
     await this.client.db.user.setGangId(userId, gangId);
   }
 
-  public async leaveGang(userId: string) {
+  async leaveGang(userId: string) {
     await this.client.db.user.setGangId(userId, '');
   }
 }

@@ -25,7 +25,7 @@ export class WorkUtil {
     this.tasks = [this.simonSays.bind(this), this.passcode.bind(this)];
   }
 
-  public fetchRandomTask() {
+  fetchRandomTask() {
     return this.tasks[Math.floor(Math.random() * this.tasks.length)]();
   }
 

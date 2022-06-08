@@ -22,15 +22,15 @@ interface ProgressBar {
 }
 
 export default class Level extends CommandBase {
-  public description = 'Get your level status here';
+  description = 'Get your level status here';
 
-  public options: ApplicationCommandOptions[] = [{
+  options: ApplicationCommandOptions[] = [{
     name: 'user',
     type: Constants.ApplicationCommandOptionTypes.USER,
     description: 'Input a user, or press send for yourself.',
   }];
 
-  public exec = async ({ interaction, responder, options }: CommandData) => {
+  exec = async ({ interaction, responder, options }: CommandData) => {
     const userId = options?.[0]?.value as string || interaction.member.id;
     const user = await this.client.fetchUser(userId);
 

@@ -5,16 +5,16 @@ import { BlackjackUtil, MessageComponent } from '../../lib/framework/utils';
 import type { BlackjackData, GameData } from '../../lib/interfaces/Games';
 
 export default class Blackjack extends CommandBase {
-  public description = 'Play blackjack against Wings.';
+  description = 'Play blackjack against Wings.';
 
-  public options: ApplicationCommandOptions[] = [{
+  options: ApplicationCommandOptions[] = [{
     name: 'amount',
     description: 'How many wings do you want to bet?',
     type: Constants.ApplicationCommandOptionTypes.INTEGER,
     required: true,
   }];
 
-  public exec = async ({ interaction, responder, options }: CommandData) => {
+  exec = async ({ interaction, responder, options }: CommandData) => {
     const userGame = this.client.activeGames.get(`${interaction.member.id}:blackjack`);
     if (userGame) {
       responder.sendEmbed({

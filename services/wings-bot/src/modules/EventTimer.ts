@@ -12,18 +12,13 @@ export class EventTimer extends ModuleBase {
     super(client);
 
     this.eventManager.on('eventExpire', this.handleEvent.bind(this));
-    this.client.once('ready', this.setup.bind(this));
+    this.setup();
   }
 
   private async setup() {
     const timers = await this.client.db.events.getAllEvents();
 
     for (const timer of timers) {
-      if (timer.guildId) {
-        const shardId = (Number(timer.guildId) >> 22) % this.client.totalShards;
-        if (!this.client.shards.find(s => s.id === shardId)) continue;
-      }
-
       this.eventManager.queueEvent(timer);
       this.timers.push(timer);
     }
@@ -33,23 +28,23 @@ export class EventTimer extends ModuleBase {
     if (!timer) return;
 
     switch (timer.type) {
-      case 'activeItemTimer': {
-        const item = await this.client.modules.economy.getActiveItem(timer.userId, timer.itemId);
+    case 'activeItemTimer': {
+      const item = await this.client.modules.economy.getActiveItem(timer.userId, timer.itemId);
 
-        this.client.modules.economy.removeActiveItem(timer.userId, item);
-        break;
-      }
+      this.client.modules.economy.removeActiveItem(timer.userId, item);
+      break;
+    }
 
-      case 'limitedItemTimer': {
-        const item = this.client.modules.shop.getShopItem(timer.itemId);
+    case 'limitedItemTimer': {
+      const item = this.client.modules.shop.getShopItem(timer.itemId);
 
-        this.client.modules.shop.removeSpecialItem(item);
-        break;
-      }
+      this.client.modules.shop.removeSpecialItem(item);
+      break;
+    }
 
-      default: {
-        throw new Error(`Unhandled timedAction ${timer.type}`);
-      }
+    default: {
+      throw new Error(`Unhandled timedAction ${timer.type}`);
+    }
     }
 
     this.expireEvent(timer);
@@ -63,7 +58,7 @@ export class EventTimer extends ModuleBase {
     this.client.db.events.deleteEvent(timer.id);
   }
 
-  public async setupTimer(timer: Events) {
+  async setupTimer(timer: Events) {
     const timerData = await this.client.db.events.addEvent(timer);
 
     timer.id = timerData.id;

@@ -4,7 +4,7 @@ import { GameData } from '../../interfaces/Games';
 
 export class RussianUtil extends EventEmitter {
   private readonly client: Shard;
-  public gameData: GameData;
+  gameData: GameData;
 
   constructor(client: Shard, gameData: GameData) {
     super();
@@ -16,30 +16,30 @@ export class RussianUtil extends EventEmitter {
     this.emit('initiateGame', this.gameData);
   }
 
-  public startRound() {
+  startRound() {
     this.emit('startRound', this.gameData);
   }
 
-  public endGame() {
+  endGame() {
     this.removeAllListeners();
 
     if (!this.client.activeGames.has(`${this.gameData.guildId}:russian`)) return;
     this.client.activeGames.delete(`${this.gameData.guildId}:russian`);
   }
 
-  public refund() {
+  refund() {
     for (const userId of this.gameData.data.membersInGame) {
       this.client.modules.economy.editBalance(userId, this.gameData.data.price);
     }
   }
 
-  public eliminate(userId: string) {
+  eliminate(userId: string) {
     const userIndex = this.gameData.data.membersInGame.indexOf(userId);
 
     this.gameData.data.membersInGame.splice(userIndex, 1);
   }
 
-  public addPlayer(userId: string) {
+  addPlayer(userId: string) {
     this.client.modules.economy.editBalance(userId, -this.gameData.data.price);
     this.gameData.data.pot += this.gameData.data.price;
     this.gameData.data.membersInGame.push(userId);
@@ -48,7 +48,7 @@ export class RussianUtil extends EventEmitter {
     this.startGame();
   }
 
-  public removePlayer(userId: string) {
+  removePlayer(userId: string) {
     this.client.modules.economy.editBalance(userId, this.gameData.data.price);
     this.gameData.data.pot += this.gameData.data.price;
     this.gameData.data.membersInGame.splice(this.gameData.data.membersInGame.indexOf(userId), 1);

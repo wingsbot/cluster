@@ -1,6 +1,6 @@
 import { request } from 'undici';
 import type { Shard } from '../../Shard';
-import type { UserDatabase } from '../database/models';
+import type { UserDatabase } from '../../database/models';
 import type { TokenRefreshData, PatreonData, UserPatronData } from '../interfaces/Patreons';
 
 export class Patreon {
@@ -133,11 +133,11 @@ export class Patreon {
     return body as TokenRefreshData;
   }
 
-  public async getData(userId: string) {
+  async getData(userId: string) {
     return this.db.getUser(userId);
   }
 
-  public async hasPremium(userId: string) {
+  async hasPremium(userId: string) {
     if (this.client.config.owners.includes(userId)) return true;
     // fetch staff team
 

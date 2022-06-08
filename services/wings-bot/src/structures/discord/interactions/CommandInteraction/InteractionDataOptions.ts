@@ -4,10 +4,10 @@ import {
   APIChatInputApplicationCommandInteractionDataResolved,
   APIInteractionDataResolvedChannel,
   APIRole,
-  ApplicationCommandOptionType
-} from "discord-api-types/v10";
-import { CommandOptions } from "../../../bot";
-import { ResolvedMember } from "../ResolvedData/ResolvedMember";
+  ApplicationCommandOptionType,
+} from 'discord-api-types/v10';
+import { CommandOptions } from '../../../bot';
+import { ResolvedMember } from '../';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ExtractOptions<T> = T extends CommandOptions<infer _Name, infer _Type, infer Options> ? Options[number] : never;
@@ -40,7 +40,7 @@ type OptionTypes<C extends CommandOptions = CommandOptions> = {
 export class CommandInteractionDataOptions<T extends CommandOptions = CommandOptions> {
   constructor(public options: APIApplicationCommandInteractionDataOption[], private resolved: APIChatInputApplicationCommandInteractionDataResolved) {}
 
-  public get<O extends ExtractOptions<T>['name']>(name: O): Extract<ParseOption<ExtractOptions<T>>, { name: O }>['valueType'] {
+  get<O extends ExtractOptions<T>['name']>(name: O): Extract<ParseOption<ExtractOptions<T>>, { name: O }>['valueType'] {
     const option = name ? this.options.find(o => o.name === name) : this.options[0];
 
     return this.parseOption(option);
@@ -54,35 +54,35 @@ export class CommandInteractionDataOptions<T extends CommandOptions = CommandOpt
 
   private parseDiscordOption(option: APIApplicationCommandInteractionDataOption): ValueOf<OptionTypes> {
     switch (option.type) {
-      case ApplicationCommandOptionType.Boolean:
-      case ApplicationCommandOptionType.String:
-      case ApplicationCommandOptionType.Integer:
-      case ApplicationCommandOptionType.Number:
-        return option.value;
+    case ApplicationCommandOptionType.Boolean:
+    case ApplicationCommandOptionType.String:
+    case ApplicationCommandOptionType.Integer:
+    case ApplicationCommandOptionType.Number:
+      return option.value;
 
-      case ApplicationCommandOptionType.Attachment:
-        return this.resolved?.attachments?.[option.value];
+    case ApplicationCommandOptionType.Attachment:
+      return this.resolved?.attachments?.[option.value];
 
-      case ApplicationCommandOptionType.User: {
-        const member = this.resolved?.members?.[option.value];
-        const user = this.resolved?.users?.[option.value];
-        return new ResolvedMember(member, user);
-      }
+    case ApplicationCommandOptionType.User: {
+      const member = this.resolved?.members?.[option.value];
+      const user = this.resolved?.users?.[option.value];
+      return new ResolvedMember(member, user);
+    }
 
-      case ApplicationCommandOptionType.Role: // todo: make role structure class
-        return this.resolved?.roles?.[option.value];
+    case ApplicationCommandOptionType.Role: // todo: make role structure class
+      return this.resolved?.roles?.[option.value];
 
-      case ApplicationCommandOptionType.Channel: // todo: make channel structure class
-        return this.resolved?.channels?.[option.value];
+    case ApplicationCommandOptionType.Channel: // todo: make channel structure class
+      return this.resolved?.channels?.[option.value];
 
-      case ApplicationCommandOptionType.Mentionable: {
-        const role = this.resolved?.roles?.[option.value];
-        return role ? role : this.parseOption({ ...option, type: ApplicationCommandOptionType.User });
-      }
+    case ApplicationCommandOptionType.Mentionable: {
+      const role = this.resolved?.roles?.[option.value];
+      return role ? role : this.parseOption({ ...option, type: ApplicationCommandOptionType.User });
+    }
 
-      case ApplicationCommandOptionType.Subcommand:
-      case ApplicationCommandOptionType.SubcommandGroup:
-        return new CommandInteractionDataOptions(option.options, this.resolved);
+    case ApplicationCommandOptionType.Subcommand:
+    case ApplicationCommandOptionType.SubcommandGroup:
+      return new CommandInteractionDataOptions(option.options, this.resolved);
     }
   }
 }

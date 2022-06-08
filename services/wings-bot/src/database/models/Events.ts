@@ -1,13 +1,7 @@
-import { Events, PrismaClient } from '@prisma/client';
+import type { Events, PrismaClient } from '@prisma/client';
 
 export class EventsDatabase {
-  readonly client: PrismaClient;
-  readonly database: PrismaClient['events'];
-
-  constructor(client: PrismaClient, events: PrismaClient['events']) {
-    this.client = client;
-    this.database = events;
-  }
+  constructor(private client: PrismaClient, private database: PrismaClient['events']) {}
 
   async getEvent(id: number): Promise<Events> {
     return this.database.findUnique({

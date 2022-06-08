@@ -11,9 +11,9 @@ interface TaskCompletion {
 const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export default class Work extends CommandBase {
-  public description = 'You look poor, work and get some Wings';
+  description = 'You look poor, work and get some Wings';
 
-  public exec = async ({ interaction, responder, cooldown }: CommandData) => {
+  exec = async ({ interaction, responder, cooldown }: CommandData) => {
     const workUtil = new WorkUtil(this.client);
     const workTask = workUtil.fetchRandomTask();
 

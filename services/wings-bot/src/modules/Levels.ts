@@ -26,7 +26,7 @@ export class Levels extends ModuleBase {
     backgroundH: null,
   };
 
-  public async handleLeveling(interaction: CommandInteraction) {
+  async handleLeveling(interaction: CommandInteraction) {
     if (!interaction.member) return;
     const cachedUser = this.levelCache.get(interaction.member.id) ?? { ...this.defaultLevelData };
     if (Date.now() - cachedUser.cooldown < 1000 * 60) return;
@@ -35,7 +35,7 @@ export class Levels extends ModuleBase {
     const xpTillNextLevel = this.xpRequiredForLevel(cachedUser.level + 1);
     let xpToFinishLevel = this.xpToFinishLevel(cachedUser.level);
 
-    const amount = this.client.util.getRandomInt(10, 15);
+    const amount = this.client.utils.getRandomInt(10, 15);
 
     cachedUser.total += amount;
     cachedUser.exp = cachedUser.total - xpFromLastLevel;
@@ -56,22 +56,22 @@ export class Levels extends ModuleBase {
     await this.client.db.user.updateLevel(interaction.member.id, cachedUser);
   }
 
-  public xpRequiredForLevel(level: number) {
+  xpRequiredForLevel(level: number) {
     return Math.round(5 / 6 * level * ((2 * level * level) + (27 * level) + 91));
   }
 
-  public xpToFinishLevel(level: number) {
+  xpToFinishLevel(level: number) {
     return Math.round((5 * (level ** 2)) + (50 * level) + 100);
   }
 
-  public async getUserData(userId: string) {
+  async getUserData(userId: string) {
     if (this.levelCache.has(userId)) return this.levelCache.get(userId);
 
     const data = await this.client.db.user.getUser(userId);
     return JSON.parse(JSON.stringify(data.levelData)) as UserLevelData ?? this.defaultLevelData;
   }
 
-  public async getUserRank(userId: string) {
+  async getUserRank(userId: string) {
     const users = await this.client.db.user.getAllUsersLevel();
     return users.findIndex(user => user.id === userId) + 1;
   }

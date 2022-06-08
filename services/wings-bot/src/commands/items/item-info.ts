@@ -2,8 +2,8 @@ import { Constants, ApplicationCommandOptions } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class ItemInfo extends CommandBase {
-  public description = 'Get info on an item in your inventory.';
-  public options: ApplicationCommandOptions[] = [{
+  description = 'Get info on an item in your inventory.';
+  options: ApplicationCommandOptions[] = [{
     name: 'item',
     description: 'Select an item from your inventory.',
     type: Constants.ApplicationCommandOptionTypes.STRING,
@@ -11,7 +11,7 @@ export default class ItemInfo extends CommandBase {
     required: true,
   }];
 
-  public exec = async ({ interaction, responder, options }: CommandData) => {
+  exec = async ({ interaction, responder, options }: CommandData) => {
     const itemId = options[0].value as string;
     const userItem = await this.client.modules.economy.getInventoryItem(interaction.member.id, itemId);
 

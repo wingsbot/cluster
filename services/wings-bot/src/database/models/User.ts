@@ -1,15 +1,9 @@
-import { User, PrismaClient } from '@prisma/client';
-import type { UserLevelData } from '../../interfaces/Levels';
-import type { UserPatronData } from '../../interfaces/Patreons';
+import type { User, PrismaClient } from '@prisma/client';
+import type { UserLevelData } from '../../lib/interfaces/Levels';
+import type { UserPatronData } from '../../lib/interfaces/Patreons';
 
 export class UserDatabase {
-  readonly client: PrismaClient;
-  readonly database: PrismaClient['user'];
-
-  constructor(client: PrismaClient, user: PrismaClient['user']) {
-    this.client = client;
-    this.database = user;
-  }
+  constructor(private client: PrismaClient, private database: PrismaClient['user']) {}
 
   async getUser(userId: string) {
     const userData = await this.database.findUnique({
@@ -19,11 +13,10 @@ export class UserDatabase {
     });
 
     if (!userData) return this.getDefaultUserData(userId, {});
-    console.log(userData);
     return userData;
   }
 
-  private async getDefaultUserData(id: string, { balance = 0n, bank = 0n, bankCap = 15000n, gangId = undefined }): Promise<User> {
+  private async getDefaultUserData(id: string, { balance = 0n, bank = 0n, bankCap = 15_000n, gangId = undefined }): Promise<User> {
     const user: User & { levelData: UserLevelData; premium: UserPatronData } = {
       id,
       balance,

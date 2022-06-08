@@ -2,12 +2,12 @@ import { PrismaClient } from '@prisma/client';
 import { ActiveItemsDatabase, EventsDatabase, InventoryDatabase, ShopDatabase, UserDatabase } from './models';
 
 export class Database {
-  public client: PrismaClient;
-  public activeItems: ActiveItemsDatabase;
-  public events: EventsDatabase;
-  public inventory: InventoryDatabase;
-  public shop: ShopDatabase;
-  public user: UserDatabase;
+  client: PrismaClient;
+  activeItems: ActiveItemsDatabase;
+  events: EventsDatabase;
+  inventory: InventoryDatabase;
+  shop: ShopDatabase;
+  user: UserDatabase;
 
   constructor() {
     this.client = new PrismaClient();

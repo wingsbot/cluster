@@ -4,9 +4,9 @@ import { request } from 'undici';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Eval extends CommandBase {
-  public description = 'yuh owner time';
-  public ownerOnly = true;
-  public options: ApplicationCommandOptions[] = [{
+  description = 'yuh owner time';
+  ownerOnly = true;
+  options: ApplicationCommandOptions[] = [{
     name: 'message',
     description: 'code input',
     type: Constants.ApplicationCommandOptionTypes.STRING,
@@ -24,7 +24,7 @@ export default class Eval extends CommandBase {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public exec = async ({ interaction, responder, options }: CommandData) => {
+  exec = async ({ interaction, responder, options }: CommandData) => {
     try {
       const userResponse = options[0].value as string;
       let output: string = await eval(`(async () => {${userResponse}})()`);

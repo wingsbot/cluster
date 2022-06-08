@@ -4,9 +4,9 @@ import { CommandBase, CommandData, ComponentData } from '../../lib/framework';
 import { MessageComponent } from '../../lib/framework/utils';
 
 export default class Shop extends CommandBase {
-  public description = 'Fishing Rods, Pickaxes, Robber Stopper, and more!';
+  description = 'Fishing Rods, Pickaxes, Robber Stopper, and more!';
 
-  public exec = async ({ interaction, responder }: CommandData) => {
+  exec = async ({ interaction, responder }: CommandData) => {
     const componentBase = new MessageComponent()
       .addActionRow()
       .addButton({
@@ -55,7 +55,7 @@ export default class Shop extends CommandBase {
     });
   };
 
-  public componentExec = async ({ interaction, data, responder }: ComponentData) => {
+  componentExec = async ({ interaction, data, responder }: ComponentData) => {
     const [actionName, pageId, userId] = data.custom_id.split(':');
 
     if (!userId || interaction.member.id !== userId) {

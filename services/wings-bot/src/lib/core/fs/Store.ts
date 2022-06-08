@@ -4,9 +4,9 @@ import { readdir, Dirent } from 'node:fs';
 import type { Shard } from '../../../Shard';
 
 export class Store extends Map {
-  public client: Shard;
-  public directory: string;
-  public subDirectories: boolean;
+  client: Shard;
+  directory: string;
+  subDirectories: boolean;
 
   constructor(client: Shard, directory: string, subDirectories = false) {
     super();
@@ -56,7 +56,7 @@ export class Store extends Map {
     return names;
   }
 
-  public async load() {
+  async load() {
     const files = await this.getFiles();
 
     for (const file of files) {

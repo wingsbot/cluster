@@ -2,9 +2,9 @@ import { ApplicationCommandOptions, Constants } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Buy extends CommandBase {
-  public description = 'Buy an item from the shop!';
+  description = 'Buy an item from the shop!';
 
-  public options: ApplicationCommandOptions[] = [{
+  options: ApplicationCommandOptions[] = [{
     name: 'item',
     description: 'Buy an item in the shop',
     type: Constants.ApplicationCommandOptionTypes.STRING,
@@ -12,7 +12,7 @@ export default class Buy extends CommandBase {
     required: true,
   }];
 
-  public exec = async ({ interaction, responder, options }: CommandData) => {
+  exec = async ({ interaction, responder, options }: CommandData) => {
     const itemId = options[0].value as string;
     const shopItem = this.client.modules.shop.getShopItem(itemId);
 

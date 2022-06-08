@@ -1,24 +1,24 @@
-import { APIInteractionGuildMember } from "discord-api-types/v10";
-import { User } from "./User";
+import { APIInteractionGuildMember } from 'discord-api-types/v10';
+import { User } from './User';
 
 export class Member extends User {
-  public deaf: boolean;
-  public joinedAt: string;
-  public mute: boolean;
-  public permissions: string;
-  public roles: string[];
-  public serverAvatar?: string;
-  public userTimedoutUntil?: string;
-  public nick?: string;
-  public pending?: boolean;
-  public boostingServerSince?: string;
+  deaf: boolean;
+  joinedAt: string;
+  mute: boolean;
+  permissions: string;
+  roles: string[];
+  serverAvatar?: string;
+  userTimedoutUntil?: string;
+  nick?: string;
+  pending?: boolean;
+  boostingServerSince?: string;
 
-  public id: string;
-  public username: string;
-  public discriminator: string;
-  public tag: string;
-  public avatar: string;
-  public bot?: boolean;
+  id: string;
+  username: string;
+  discriminator: string;
+  tag: string;
+  avatar: string;
+  bot?: boolean;
 
   constructor(APIMember: APIInteractionGuildMember) {
     super(APIMember.user);

@@ -1,13 +1,13 @@
 import { ActionRow, Constants, InteractionButton, SelectMenu } from 'eris';
 
 export class MessageComponent {
-  public components: ActionRow[];
+  components: ActionRow[];
 
   constructor(data?: ActionRow[]) {
     this.components = data || [];
   }
 
-  public addActionRow() {
+  addActionRow() {
     this.components.push({
       type: Constants.ComponentTypes.ACTION_ROW,
       components: [],
@@ -16,17 +16,17 @@ export class MessageComponent {
     return this;
   }
 
-  public addButton(data: InteractionButton) {
+  addButton(data: InteractionButton) {
     this.components[this.components.length - 1].components.push(data);
     return this;
   }
 
-  public addMenu(data: SelectMenu) {
+  addMenu(data: SelectMenu) {
     this.components[this.components.length - 1].components.push(data);
     return this;
   }
 
-  public enableAllComponents() {
+  enableAllComponents() {
     for (const component of this.components) {
       for (const c of component.components) {
         c.disabled = false;
@@ -34,7 +34,7 @@ export class MessageComponent {
     }
   }
 
-  public disableAllComponents() {
+  disableAllComponents() {
     for (const component of this.components) {
       for (const c of component.components) {
         c.disabled = true;

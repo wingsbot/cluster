@@ -32,9 +32,9 @@ export interface AutocompleteChoices {
 
 export class InteractionHandler {
   readonly client: Shard;
-  public awaits: Map<string, AwaitComponent> = new Map();
-  public activeAwaits: Map<string, string> = new Map();
-  public components: Map<string, AwaitComponent> = new Map();
+  awaits: Map<string, AwaitComponent> = new Map();
+  activeAwaits: Map<string, string> = new Map();
+  components: Map<string, AwaitComponent> = new Map();
 
   constructor(client: Shard) {
     this.client = client;
@@ -52,7 +52,7 @@ export class InteractionHandler {
     return this.client.firstShardId === 0;
   }
 
-  public getCommand(name: string): CommandBase {
+  getCommand(name: string): CommandBase {
     return this.client.commands.get(name);
   }
 
@@ -195,7 +195,7 @@ export class InteractionHandler {
     }
   }
 
-  public async handleComponent(interaction: ComponentInteraction) {
+  async handleComponent(interaction: ComponentInteraction) {
     const ctx: ComponentData = {
       interaction: null,
       data: null,

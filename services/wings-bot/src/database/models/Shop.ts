@@ -1,13 +1,7 @@
-import { Shop, PrismaClient } from '@prisma/client';
+import type { Shop, PrismaClient } from '@prisma/client';
 
 export class ShopDatabase {
-  readonly client: PrismaClient;
-  readonly database: PrismaClient['shop'];
-
-  constructor(client: PrismaClient, shop: PrismaClient['shop']) {
-    this.client = client;
-    this.database = shop;
-  }
+  constructor(private client: PrismaClient, private database: PrismaClient['shop']) {}
 
   async getItem(id: number): Promise<Shop> {
     return this.database.findUnique({

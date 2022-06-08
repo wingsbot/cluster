@@ -23,74 +23,74 @@ export class InteractionHandler {
     this.client.server.post('/interactions', {}, this.handleInteraction.bind(this));
   }
 
- public async handleInteraction (request: FastifyRequest & { body: RawBody }, reply: FastifyReply) {
+  async handleInteraction (request: FastifyRequest & { body: RawBody }, reply: FastifyReply) {
     const { isVerified, body } = this.verifyRequest(request);
 
     if (!isVerified) return reply.status(401).send({ error: 'invalid request signature' });
 
     switch (body.type) {
-      case InteractionType.Ping: {
-        const context = {
-          client: this.client,
-          interaction: body,
-          reply,
-        };
+    case InteractionType.Ping: {
+      const context = {
+        client: this.client,
+        interaction: body,
+        reply,
+      };
 
-        await sendPing(context);
-        break;
-      }
+      await sendPing(context);
+      break;
+    }
       
-      case InteractionType.ApplicationCommand: {
-        const context = {
-          client: this.client,
-          interaction: new CommandInteraction(this.client, body, reply),
-          reply,
-        };
+    case InteractionType.ApplicationCommand: {
+      const context = {
+        client: this.client,
+        interaction: new CommandInteraction(this.client, body, reply),
+        reply,
+      };
 
-        await sendCommand(context);
-        break;
-      }
+      await sendCommand(context);
+      break;
+    }
 
-      case InteractionType.MessageComponent: {
-        const context = {
-          client: this.client,
-          interaction: body,
-          reply,
-        };
+    case InteractionType.MessageComponent: {
+      const context = {
+        client: this.client,
+        interaction: body,
+        reply,
+      };
 
-        await sendComponent(context);
-        break;
-      }
+      await sendComponent(context);
+      break;
+    }
 
-      case InteractionType.ApplicationCommandAutocomplete: {
-        const context = {
-          client: this.client,
-          interaction: body,
-          reply,
-        };
+    case InteractionType.ApplicationCommandAutocomplete: {
+      const context = {
+        client: this.client,
+        interaction: body,
+        reply,
+      };
 
-        await sendAutocomplete(context);
-        break;
-      }
+      await sendAutocomplete(context);
+      break;
+    }
 
-      case InteractionType.ModalSubmit: {
-        const context = {
-          client: this.client,
-          interaction: body,
-          reply,
-        };
+    case InteractionType.ModalSubmit: {
+      const context = {
+        client: this.client,
+        interaction: body,
+        reply,
+      };
 
-        await sendModalSubmit(context);
-        break;
-      }
+      await sendModalSubmit(context);
+      break;
+    }
 
-      default: {
-        console.warn(`Unknown interaction type`);
-      }
+    default: {
+      console.warn('Unknown interaction type');
+    }
     }
   }
 
-  public verifyRequest(request: FastifyRequest & { body: RawBody }) {
+  verifyRequest(request: FastifyRequest & { body: RawBody }) {
     const signature = request.headers['x-signature-ed25519'] as string;
     const timestamp = request.headers['x-signature-timestamp'] as string;
     const body = request.body;
@@ -98,7 +98,7 @@ export class InteractionHandler {
     const isVerified = sign.detached.verify(
       Buffer.from(timestamp + body.raw.toString()),
       Buffer.from(signature, 'hex'),
-      this.publicKey
+      this.publicKey,
     );
 
     return { isVerified, body: body.parsed as APIInteraction };

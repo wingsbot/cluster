@@ -1,49 +1,45 @@
-import { Economy } from '../../modules/Economy';
-import { Shop } from '../../modules/Shop';
-import type { Shard } from '../../Shard';
-import { Levels } from '../../modules/Levels';
-import { EventTimer } from '../../modules/EventTimer';
-import { Client } from '../..';
+import type { Client } from '../..';
+import { Economy, EventTimer, Levels, Shop } from '../../modules';
 // import { Gangs } from '../../modules/Gangs.disabled';
 
 export class ModuleHandler {
-  public economy: Economy;
-  public eventTimer: EventTimer;
-  public levels: Levels;
-  public shop: Shop;
+  economy: Economy;
+  eventTimer: EventTimer;
+  levels: Levels;
+  shop: Shop;
 
   constructor(public client: Client) {
     this.loadAllModules();
   }
 
-  public reloadModule(name: string) {
+  reloadModule(name: string) {
     switch (name.toLowerCase()) {
       case 'economy': {
-        this.client.modules.economy = new Economy(this.client);
+        this.economy = new Economy(this.client);
 
         break;
       }
 
       case 'eventtimer': {
-        this.client.modules.eventTimer = new EventTimer(this.client);
+        this.eventTimer = new EventTimer(this.client);
 
         break;
       }
 
       case 'gangs': {
-        // this.client.modules.gangs = new Gangs(this.client);
+        // this.gangs = new Gangs(this.client);
 
         break;
       }
 
       case 'levels': {
-        this.client.modules.levels = new Levels(this.client);
+        this.levels = new Levels(this.client);
 
         break;
       }
 
       case 'shop': {
-        this.client.modules.shop = new Shop(this.client);
+        this.shop = new Shop(this.client);
 
         break;
       }
@@ -63,7 +59,7 @@ export class ModuleHandler {
     ]);
   }
 
-  public reloadAllModules() {
+  reloadAllModules() {
     this.loadAllModules();
   }
 }

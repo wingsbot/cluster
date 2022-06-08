@@ -1,5 +1,5 @@
 export class InteractionTimeoutError extends Error {
-  public name = 'interactionTimeoutError';
+  name = 'interactionTimeoutError';
 
   constructor(message: string) {
     super(message);

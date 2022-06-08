@@ -2,9 +2,9 @@ import { ApplicationCommandOptions, Constants } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 
 export default class Sell extends CommandBase {
-  public description = 'Sell an item from your inventory!';
+  description = 'Sell an item from your inventory!';
 
-  public options: ApplicationCommandOptions[] = [{
+  options: ApplicationCommandOptions[] = [{
     name: 'item',
     description: 'Sell an item in your inventory',
     type: Constants.ApplicationCommandOptionTypes.STRING,
@@ -12,7 +12,7 @@ export default class Sell extends CommandBase {
     required: true,
   }];
 
-  public exec = async ({ interaction, responder, options }: CommandData) => {
+  exec = async ({ interaction, responder, options }: CommandData) => {
     const itemId = options[0].value as string;
     const userInventory = await this.client.modules.economy.getUserInventory(interaction.member.id);
     let totalWingGain = 0;
