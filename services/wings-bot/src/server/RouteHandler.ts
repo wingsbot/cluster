@@ -21,7 +21,7 @@ export class RouteHandler {
 
   private rawBody(app: FastifyInstance): void {
     const defaultParser = app.getDefaultJsonParser('ignore', 'ignore');
-  
+
     app.addContentTypeParser(
       'application/json',
       { parseAs: 'buffer' },
@@ -31,7 +31,7 @@ export class RouteHandler {
             if (error) {
               return done(error, undefined);
             }
-  
+
             done(null, {
               parsed,
               raw: body as Buffer,

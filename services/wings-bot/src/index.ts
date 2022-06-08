@@ -13,19 +13,22 @@ import { ClientUtil } from './lib/core/utils/Util';
 export class Client {
   server = fastify({ logger: true });
   restClient = new REST({ version: config.APIVersion }).setToken(config.botToken);
+
   routeHandler: RouteHandler;
+  commandHandler = new LoadCommands(this);
 
   config = config;
   db = new Database();
   redis = new RedisClient();
 
   modules = new ModuleHandler(this);
-  commands = new LoadCommands(this).commands;
+  commands = this.commandHandler.commands;
 
   utils = new ClientUtil();
 
   async init() {
     await Promise.all([
+      this.commandHandler.loadCommands(),
       this.startServer(),
     ]);
   }
@@ -41,4 +44,8 @@ export class Client {
 }
 
 const client = new Client();
-client.init();
+
+setTimeout(() => {
+  client.init();
+}, 100);
+

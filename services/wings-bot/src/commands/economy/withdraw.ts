@@ -1,58 +1,41 @@
-import { ApplicationCommandOptions, Constants } from 'eris';
-import { CommandBase, CommandData } from '../../lib/framework';
+import { Command, CommandOptions, Args, CommandData } from '../../structures';
 
-export default class Withdraw extends CommandBase {
+export class WithdrawCommand extends Command {
   description = 'Take your money out of the bank!';
-  options: ApplicationCommandOptions[] = [{
-    name: 'custom',
-    description: 'Input the amount of Wings you want to withdraw.',
-    type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-    options: [{
-      name: 'amount',
-      description: 'The amount of Wings you want to withdraw',
-      type: Constants.ApplicationCommandOptionTypes.INTEGER,
-      required: true,
-    }],
-  },
-  {
-    name: 'all',
-    description: 'Withdraws all the Wings in your balance.',
-    type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-    options: [],
-  },
-  {
-    name: 'half',
-    description: 'Withdraws half of the Wings in your balance.',
-    type: Constants.ApplicationCommandOptionTypes.SUB_COMMAND,
-    options: [],
-  }];
+  options = new CommandOptions()
+    .addOption(Args.subCommand('custom', 'Input the amount of Wings you want to withdraw.')
+      .addOption(Args.number('amount', 'The amount of Wings you want to withdraw', { required: true })),
+    )
+    .addOption(Args.subCommand('all', 'Withdraws all the Wings in your bank.'))
+    .addOption(Args.subCommand('half', 'Withdraws half of the Wings in your bank.'));
 
-  exec = async ({ interaction, responder, options }: CommandData) => {
+
+  async run({ interaction, options }: CommandData<WithdrawCommand>) {
     const userData = await this.client.modules.economy.getUserData(interaction.member.id);
     let amount: number;
 
-    if (options[0].name === 'all') amount = Number(userData.bank);
-    else if (options[0].name === 'half') amount = Math.round(Number(userData.bank) / 2);
-    else amount = options[0].options[0].value as number;
+    if (options.get('all')) amount = Number(userData.bank);
+    else if (options.get('half')) amount = Math.floor(Number(userData.bank) / 2);
+    else amount = options.get('custom').get('amount');
 
     if (amount === 0 && userData.bank === 0n) {
-      responder.error('You don\'t have any Wings in your bank!', true);
+      interaction.error('You don\'t have any Wings in your bank!', true);
       return;
     }
 
     if (amount <= 0) {
-      responder.error('You specified an invalid amount', true);
+      interaction.error('You specified an invalid amount', true);
       return;
     }
 
     if (userData.bank < amount) {
-      responder.error(`You don't have **${this.client.modules.economy.parseInt(amount)}** to withdraw.`, true);
+      interaction.error(`You don't have **${this.client.modules.economy.parseInt(amount)}** to withdraw.`, true);
       return;
     }
 
     await this.client.modules.economy.editBank(interaction.member.id, -amount);
     await this.client.modules.economy.editBalance(interaction.member.id, amount);
 
-    responder.success(`Withdrew **${this.client.modules.economy.parseInt(amount)}** from Wings Bank.`);
-  };
+    interaction.success(`Withdrew **${this.client.modules.economy.parseInt(amount)}** from Wings Bank.`);
+  }
 }

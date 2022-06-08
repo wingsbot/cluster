@@ -39,7 +39,7 @@ export class InteractionHandler {
       await sendPing(context);
       break;
     }
-      
+
     case InteractionType.ApplicationCommand: {
       const context = {
         client: this.client,
