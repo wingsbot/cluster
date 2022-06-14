@@ -1,20 +1,15 @@
-import { ApplicationCommandOptions, Constants } from 'eris';
 import { inspect } from 'node:util';
 import { request } from 'undici';
-import { CommandBase, CommandData } from '../../lib/framework';
+import { Args, Command, CommandOptions, CommandData } from '../../structures';
 
-export default class Eval extends CommandBase {
+export class EvalCommand extends Command {
   description = 'yuh owner time';
   ownerOnly = true;
-  options: ApplicationCommandOptions[] = [{
-    name: 'message',
-    description: 'code input',
-    type: Constants.ApplicationCommandOptionTypes.STRING,
-    required: true,
-  }];
+  options = new CommandOptions()
+    .addOption(Args.string('code', 'The code to evaluate', { required: true }));
 
   private censorOutput(output: string) {
-    const toCensor = [this.client.config.token];
+    const toCensor = [this.client.config.botToken];
 
     for (const censor of toCensor) {
       output = output.replace(new RegExp(censor, 'g'), '-- snip --');
@@ -23,10 +18,9 @@ export default class Eval extends CommandBase {
     return output;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  exec = async ({ interaction, responder, options }: CommandData) => {
+  async run({ interaction, options }: CommandData<EvalCommand>) {
     try {
-      const userResponse = options[0].value as string;
+      const userResponse = options.get('code');
       let output: string = await eval(`(async () => {${userResponse}})()`);
       output = this.censorOutput(inspect(output));
 
@@ -37,14 +31,14 @@ export default class Eval extends CommandBase {
         });
         const body = await response.body.json();
         const url = `https://hastebin.com/${body.key}.js`;
-        responder.send(`Output too large: ${url}`);
+        interaction.send(`Output too large: ${url}`);
         return;
       }
 
-      responder.send(`\`\`\`js\n${output}\`\`\``);
+      interaction.send(`\`\`\`js\n${output}\`\`\``);
     } catch (error: unknown) {
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
-      responder.send(`**Error:**\n\`\`\`js\n${error.toString()}\`\`\``);
+      interaction.send(`**Error:**\n\`\`\`js\n${error.toString()}\`\`\``);
     }
-  };
+  }
 }

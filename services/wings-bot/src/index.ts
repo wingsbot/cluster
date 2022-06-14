@@ -24,7 +24,7 @@ export class Client {
   modules = new ModuleHandler(this);
   commands = this.commandHandler.commands;
 
-  utils = new ClientUtil();
+  utils = new ClientUtil(this);
 
   async init() {
     await Promise.all([

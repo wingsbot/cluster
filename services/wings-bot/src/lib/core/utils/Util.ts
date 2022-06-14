@@ -1,3 +1,6 @@
+import { APIUser, Routes } from 'discord-api-types/v10';
+import { Client } from '../../..';
+import { User } from '../../../structures';
 import type { Units } from '../../interfaces/Utility';
 
 
@@ -23,6 +26,17 @@ export class ClientUtil {
     blue: 2_527_999,
     default: 0xFF_16_00,
   };
+
+  constructor(private client: Client) {}
+
+  async fetchUser(userId: string): Promise<User> {
+    try {
+      const user = await this.client.restClient.get(Routes.user(userId)) as APIUser;
+      return new User(user);
+    } catch {
+      return null;
+    }
+  }
 
   msDuration(milliseconds: number, verbose = true, ms = false): string {
     const roundTowardsZero = milliseconds > 0 ? Math.floor : Math.ceil;
@@ -130,7 +144,7 @@ export class ClientUtil {
 
     return (neg ? '-' : '') + numberString + ' ' + unit;
   }
-  // todo: Put these elsewhere or do something better with this 
+  // todo: Put these elsewhere or do something better with this
 /*
   async awaitComponent(interaction: CommandInteraction, responder: Responder, id: string, options: AwaitOptions = {}): Promise<ComponentInteraction & AwaitComponentReturn> {
     if (!options.time) options.time = 1000 * 60;

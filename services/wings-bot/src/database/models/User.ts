@@ -1,61 +1,62 @@
 import type { User, PrismaClient } from '@prisma/client';
 import type { UserLevelData } from '../../lib/interfaces/Levels';
-import type { UserPatronData } from '../../lib/interfaces/Patreons';
+import { UserPatronData } from '../structures/UserData';
 
 export class UserDatabase {
   constructor(private client: PrismaClient, private database: PrismaClient['user']) {}
 
   async getUser(userId: string) {
-    const userData = await this.database.findUnique({
+    let userData = await this.database.findUnique({
       where: {
         id: userId,
       },
     });
-
-    if (!userData) return this.getDefaultUserData(userId, {});
+    console.log(userData);
+    if (!userData) userData = await this.getDefaultUserData(userId, {});
     return userData;
   }
 
-  private async getDefaultUserData(id: string, { balance = 0n, bank = 0n, bankCap = 15_000n, gangId = undefined }): Promise<User> {
-    const user: User & { levelData: UserLevelData; premium: UserPatronData } = {
-      id,
-      balance,
-      bank,
-      bankCap,
-      gangId,
-      premium: {
-        discordId: id,
-        patronId: null,
-        activeTiers: [],
-        hasPremium: false,
+  private async getDefaultUserData(id: string, { balance = 0, bank = 0, bankCap = 15_000, gangId = null }) {
+    const user = await this.database.create({
+      data: {
+        id,
+        balance: BigInt(balance),
+        bank: BigInt(bank),
+        bankCap: BigInt(bankCap),
+        gangId,
+        premium: {
+          discordId: id,
+          patronId: null,
+          activeTiers: [],
+          hasPremium: false,
+        },
+        levelData: {
+          exp: 0,
+          level: 1,
+          total: 100,
+          percent: 0,
+          cooldown: 0,
+          usernameColor: '#000000',
+          bigSquareColor: '#d3d3d3',
+          bigSquareOpacity: 0.6,
+          levelColor: '#000000',
+          xpColor: '#606060',
+          rankColor: '#000000',
+          filledDotsColor: '#606060',
+          emptyDotsColor: '#d6d6d6',
+          backgroundURL: 'https://i.imgur.com/FydJyTs.png',
+          backgroundX: 0,
+          backgroundY: 0,
+          backgroundW: null,
+          backgroundH: null,
+        },
       },
-      levelData: {
-        exp: 0,
-        level: 1,
-        total: 100,
-        percent: 0,
-        cooldown: 0,
-        usernameColor: '#000000',
-        bigSquareColor: '#d3d3d3',
-        bigSquareOpacity: 0.6,
-        levelColor: '#000000',
-        xpColor: '#606060',
-        rankColor: '#000000',
-        filledDotsColor: '#606060',
-        emptyDotsColor: '#d6d6d6',
-        backgroundURL: 'https://i.imgur.com/FydJyTs.png',
-        backgroundX: 0,
-        backgroundY: 0,
-        backgroundW: null,
-        backgroundH: null,
-      },
-    };
+    });
 
-    await this.database.create({ data: user });
     return user;
   }
 
-  async editUserBalance(userId: string, balance: bigint): Promise<User> {
+  async editUserBalance(userId: string, balance: number) {
     let userData: User;
 
     try {
@@ -65,7 +66,7 @@ export class UserDatabase {
         },
         data: {
           balance: {
-            increment: balance,
+            increment: BigInt(balance),
           },
         },
       });
@@ -76,7 +77,7 @@ export class UserDatabase {
     return userData;
   }
 
-  async editUserBank(userId: string, bank: bigint): Promise<User> {
+  async editUserBank(userId: string, bank: number) {
     let userData: User;
 
     try {
@@ -86,7 +87,7 @@ export class UserDatabase {
         },
         data: {
           bank: {
-            increment: bank,
+            increment: BigInt(bank),
           },
         },
       });
@@ -97,7 +98,7 @@ export class UserDatabase {
     return userData;
   }
 
-  async editUserBankCap(userId: string, bankCap: bigint): Promise<User> {
+  async editUserBankCap(userId: string, bankCap: number) {
     let userData: User;
 
     try {
@@ -107,7 +108,7 @@ export class UserDatabase {
         },
         data: {
           bankCap: {
-            increment: bankCap,
+            increment: BigInt(bankCap),
           },
         },
       });
@@ -133,7 +134,7 @@ export class UserDatabase {
     return this.client.$queryRawUnsafe('SELECT CONVERT(balance, UNSIGNED INTEGER) + CONVERT(bank, UNSIGNED INTEGER) as summed,id FROM user ORDER BY summed DESC LIMIT 10;');
   }
 
-  async updateLevel(userId: string, levelObject: UserLevelData): Promise<User> {
+  async updateLevel(userId: string, levelObject: UserLevelData) {
     let userData: User;
 
     try {
@@ -154,7 +155,7 @@ export class UserDatabase {
     return userData;
   }
 
-  async updatePremium(premiumObject: UserPatronData[]) {
+  async updatePremium(premiumObject: UserPatronData[]) { // todo: change this to sql query instead (more efficient probably)
     for (const user of premiumObject) {
       await this.database.update({
         where: {

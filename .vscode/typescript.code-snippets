@@ -1,0 +1,19 @@
+{
+	"New Command": {
+		"scope": "typescript",
+		"prefix": "newcommand",
+		"body": [
+			"import { Command, CommandData } from '../../structures';",
+			"",
+			"export class $1Command extends Command {",
+			"  description = '$2';",
+			"",
+			"  async run({ interaction }: CommandData<$1Command>) {",
+			"",
+			"  }",
+			"}",
+			"",
+		],
+		"description": "Create a new Application Command"
+	}
+}

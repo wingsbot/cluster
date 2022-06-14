@@ -1,48 +1,50 @@
-import type { ActiveItem, Inventory, User } from '@prisma/client';
+import type { ActiveItem, Inventory } from '@prisma/client';
+import { UserData } from '../database/structures/UserData';
 import { ModuleBase } from '../lib/framework';
 
 export class Economy extends ModuleBase {
-  readonly userCache: Map<string, User> = new Map();
+  readonly userCache: Map<string, UserData> = new Map();
   readonly inventoryCache: Map<string, Inventory[]> = new Map();
   readonly activeItemsCache: Map<string, ActiveItem[]> = new Map();
 
-  async getUserData(userId: string): Promise<User> {
+  async getUserData(userId: string): Promise<UserData> {
     const userCache = this.userCache.get(userId);
     if (userCache) return userCache;
 
     const userData = await this.client.db.user.getUser(userId);
-    this.userCache.set(userId, userData);
+    const user = new UserData(userData);
+    this.userCache.set(userId, user);
 
-    return userData;
+    return user;
   }
 
-  parseInt(amount?: number | bigint) {
+  parseInt(amount?: number) {
     if (!amount && Number(amount) !== 0) return '🍖';
     return `🍖${amount.toLocaleString()}`;
   }
 
-  async editBalance(userId: string, balance: number | bigint) {
+  async editBalance(userId: string, balance: number) {
     const userData = await this.getUserData(userId);
 
-    userData.balance += BigInt(balance);
+    userData.balance += balance;
 
-    await this.client.db.user.editUserBalance(userId, BigInt(balance));
+    await this.client.db.user.editUserBalance(userId, balance);
   }
 
-  async editBank(userId: string, bank: number | bigint) {
+  async editBank(userId: string, bank: number) {
     const userData = await this.getUserData(userId);
 
-    userData.bank += BigInt(bank);
+    userData.bank += bank;
 
-    await this.client.db.user.editUserBank(userId, BigInt(bank));
+    await this.client.db.user.editUserBank(userId, bank);
   }
 
-  async editBankCap(userId: string, bankCap: number | bigint) {
+  async editBankCap(userId: string, bankCap: number) {
     const userData = await this.getUserData(userId);
 
-    userData.bankCap += BigInt(bankCap);
+    userData.bankCap += bankCap;
 
-    await this.client.db.user.editUserBankCap(userId, BigInt(bankCap));
+    await this.client.db.user.editUserBankCap(userId, bankCap);
   }
 
   // inventory
@@ -154,7 +156,7 @@ export class Economy extends ModuleBase {
         userId,
         guildId,
         type: 'activeItemTimer',
-        time: BigInt(item.timeUsed.getTime()) + item.usageTime,
+        time: item.timeUsed.getTime() + item.usageTime,
         itemId: newActiveItem.id,
       };
 

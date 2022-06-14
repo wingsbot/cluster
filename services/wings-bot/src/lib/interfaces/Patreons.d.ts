@@ -48,9 +48,4 @@ export interface Tiers {
   id: string;
 }
 
-export interface UserPatronData {
-  discordId: string;
-  patronId: string;
-  activeTiers: string[];
-  hasPremium: boolean;
-}
+

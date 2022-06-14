@@ -18,7 +18,7 @@ export class WithdrawCommand extends Command {
     else if (options.get('half')) amount = Math.floor(Number(userData.bank) / 2);
     else amount = options.get('custom').get('amount');
 
-    if (amount === 0 && userData.bank === 0n) {
+    if (amount === 0 && userData.bank === 0) {
       interaction.error('You don\'t have any Wings in your bank!', true);
       return;
     }

@@ -18,7 +18,7 @@ export class DepositCommand extends Command {
     else if (options.get('half')) amount = Math.floor(Number(userData.balance) / 2);
     else amount = options.get('custom').get('amount');
 
-    if (amount === 0 && userData.balance === 0n) {
+    if (amount === 0 && userData.balance === 0) {
       interaction.error('You don\'t have any Wings in your wallet! Collect some and try again.', true);
       return;
     }
