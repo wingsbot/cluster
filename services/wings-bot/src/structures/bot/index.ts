@@ -1,3 +1,2 @@
-export * as Args from './Arguments';
-export * from './Command';
-export * from './CommandOptions';
+export * from './Commands';
+export * from './Components';

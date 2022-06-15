@@ -1,4 +1,4 @@
-import { CommandInteraction, CommandInteractionData, CommandInteractionDataOptions } from '../../structures';
+import { CommandInteraction } from '../../structures';
 import type { InteractionData } from '../InteractionHandler';
 
 export default async function({ client, interaction }: InteractionData<CommandInteraction>) {

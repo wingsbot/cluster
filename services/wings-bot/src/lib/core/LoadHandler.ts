@@ -4,17 +4,18 @@ import { join, resolve, parse } from 'node:path';
 import type { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import type { Client } from '../..';
-import type { Command } from '../../structures';
+import type { Command, Components } from '../../structures';
 
-export class LoadCommands {
+export class LoadHandler {
   private restClient: REST;
   private commandsDir = join(__dirname ,'../../commands');
   commands: Map<string, Command> = new Map();
+  components: Map<string, Components> = new Map();
 
   constructor(public client: Client) {
     this.restClient = client.restClient;
 
-    this.setCacheCommands();
+    this.setCaches();
   }
 
   async loadCommands() {
@@ -30,13 +31,15 @@ export class LoadCommands {
       globalCommands.push(command.APIParsedCommand);
     }
 
+    this.client.commands = this.commands;
+
     await Promise.all([
       this.postGuildCommands(ownerCommands),
       this.postGlobalCommands(globalCommands),
     ]);
   }
 
-  async setCacheCommands() {
+  async setCaches() {
     const files = await this.getCommandFiles();
 
     for (const file of files) {
@@ -46,26 +49,27 @@ export class LoadCommands {
       const name = parse(filepath).name;
       const commandFile = await import(filepath);
 
+      const newComponents: typeof Components[] = [];
       const newCommands: typeof Command[] = [];
 
       if (commandFile.__esModule) {
-        if (typeof commandFile === 'function' && typeof commandFile.prototype === 'object') {
-          newCommands.push(commandFile.default);
-        } else {
-          for (const fileExport of Object.keys(commandFile)) {
-            if (!fileExport.endsWith('Command')) continue;
-            newCommands.push(commandFile[fileExport]);
-          }
+        for (const fileExport of Object.keys(commandFile)) {
+          if (fileExport.endsWith('Command')) newCommands.push(commandFile[fileExport]);
+          if (fileExport.endsWith('Component')) newComponents.push(commandFile[fileExport]);
+
+          continue;
         }
-      } else {
-        newCommands.push(commandFile);
       }
 
-      if (newCommands.length === 0) continue;
-
-      for (const FileCommand of newCommands) {
-        this.commands.set(name, new FileCommand(this.client, name));
-      }
+      if (newCommands.length > 0) {
+        for (const FileCommand of newCommands) {
+          this.commands.set(name, new FileCommand(this.client, name));
+        }
+      } else if (newComponents.length > 0) {
+        for (const FileCommand of newComponents) {
+          this.components.set(name, new FileCommand(this.client, name));
+        }
+      } else continue;
     }
   }
 

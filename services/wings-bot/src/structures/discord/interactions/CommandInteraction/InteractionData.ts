@@ -12,7 +12,7 @@ export class CommandInteractionData {
   options?: CommandInteractionDataOptions;
   resolved?: APIChatInputApplicationCommandInteractionDataResolved;
 
-  constructor(private data: APIChatInputApplicationCommandInteractionData) {
+  constructor(data: APIChatInputApplicationCommandInteractionData) {
     this.id = data.id;
     this.name = data.name;
     this.type = data.type;

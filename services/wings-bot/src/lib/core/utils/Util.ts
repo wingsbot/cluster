@@ -3,14 +3,6 @@ import { Client } from '../../..';
 import { User } from '../../../structures';
 import type { Units } from '../../interfaces/Utility';
 
-
-
-interface AwaitOptions {
-  time?: number;
-  strict?: boolean;
-}
-
-// <t:${Math.floor(new Date() / 1000)}:R> <- got a unix timestamp from
 export class ClientUtil {
   readonly units: Units;
 
@@ -144,38 +136,4 @@ export class ClientUtil {
 
     return (neg ? '-' : '') + numberString + ' ' + unit;
   }
-  // todo: Put these elsewhere or do something better with this
-/*
-  async awaitComponent(interaction: CommandInteraction, responder: Responder, id: string, options: AwaitOptions = {}): Promise<ComponentInteraction & AwaitComponentReturn> {
-    if (!options.time) options.time = 1000 * 60;
-    if (options.strict) {
-      const message = await interaction.getOriginalMessage();
-
-      this.client.interactionHandler.activeAwaits.set(interaction.member.id, message.jumpLink);
-    }
-
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        this.client.interactionHandler.awaits.delete(id);
-        if (options.strict) this.client.interactionHandler.activeAwaits.delete(interaction.member.id);
-
-        reject(new InteractionTimeoutError('Prompt timed out!'));
-      }, options.time);
-
-      this.client.interactionHandler.awaits.set(id, { strict: options.strict, timeout, resolve, interaction, responder });
-    });
-  }
-
-  async awaitGlobalComponent(interaction: CommandInteraction, responder: Responder, id: string, time = 60000): Promise<ComponentInteraction & AwaitComponentReturn> {
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        this.client.interactionHandler.awaits.delete(id);
-
-        reject(new InteractionTimeoutError('Prompt timed out!'));
-      }, time);
-
-      this.client.interactionHandler.awaits.set(id, { global: true, timeout, resolve, interaction, responder });
-    });
-  }
-  */
 }

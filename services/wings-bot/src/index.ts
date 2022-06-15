@@ -5,7 +5,7 @@ import { RouteHandler } from './server/routeHandler';
 // import { Database } from './lib/database';
 
 import config from './Config';
-import { LoadCommands } from './lib/core/LoadCommands';
+import { LoadHandler } from './lib/core/LoadHandler';
 import { ModuleHandler } from './lib/framework/ModuleHandler';
 import { Database } from './database';
 import { ClientUtil } from './lib/core/utils/Util';
@@ -15,20 +15,22 @@ export class Client {
   restClient = new REST({ version: config.APIVersion }).setToken(config.botToken);
 
   routeHandler: RouteHandler;
-  commandHandler = new LoadCommands(this);
+  loadHandler = new LoadHandler(this);
 
   config = config;
   db = new Database();
   redis = new RedisClient();
 
+  commands = this.loadHandler.commands;
+  components = this.loadHandler.components;
   modules = new ModuleHandler(this);
-  commands = this.commandHandler.commands;
 
   utils = new ClientUtil(this);
 
   async init() {
     await Promise.all([
-      this.commandHandler.loadCommands(),
+      this.loadHandler.loadCommands(),
+      this.loadHandler.loadComponents(),
       this.startServer(),
     ]);
   }

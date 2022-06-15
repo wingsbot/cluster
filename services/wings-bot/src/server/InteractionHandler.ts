@@ -6,7 +6,7 @@ import type { RawBody } from './RouteHandler';
 import type { Client } from '..';
 
 import { sendAutocomplete, sendCommand, sendComponent, sendModalSubmit, sendPing } from './handlers';
-import { CommandInteraction } from '../structures';
+import { CommandInteraction, ComponentInteraction } from '../structures';
 
 export interface InteractionData<T> {
   client: Client;
@@ -14,8 +14,15 @@ export interface InteractionData<T> {
   reply: FastifyReply;
 }
 
+export interface PendingComponents {
+  resolve: (value: unknown) => void;
+  timer: NodeJS.Timeout;
+  memberId?: string;
+}
+
 export class InteractionHandler {
   private publicKey: Buffer;
+  public pendingComponents: Map<string, PendingComponents>;
 
   constructor(private client: Client) {
     this.publicKey = Buffer.from(client.config.publicKey, 'hex');
@@ -30,57 +37,52 @@ export class InteractionHandler {
 
     switch (body.type) {
     case InteractionType.Ping: {
-      const context = {
+      await sendPing({
         client: this.client,
         interaction: body,
         reply,
-      };
+      });
 
-      await sendPing(context);
       break;
     }
 
     case InteractionType.ApplicationCommand: {
-      const context = {
+      await sendCommand({
         client: this.client,
         interaction: new CommandInteraction(this.client, body, reply),
         reply,
-      };
+      });
 
-      await sendCommand(context);
       break;
     }
 
     case InteractionType.MessageComponent: {
-      const context = {
+      await sendComponent({
         client: this.client,
-        interaction: body,
+        interaction: new ComponentInteraction(this.client, body, reply),
         reply,
-      };
+      });
 
-      await sendComponent(context);
       break;
     }
 
     case InteractionType.ApplicationCommandAutocomplete: {
-      const context = {
+      await sendAutocomplete({
         client: this.client,
         interaction: body,
         reply,
-      };
+      });
 
-      await sendAutocomplete(context);
       break;
     }
 
     case InteractionType.ModalSubmit: {
-      const context = {
+      await sendModalSubmit({
         client: this.client,
         interaction: body,
         reply,
-      };
+      });
 
-      await sendModalSubmit(context);
       break;
     }
 

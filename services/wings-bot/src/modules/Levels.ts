@@ -5,30 +5,13 @@ import type { UserLevelData } from '../lib/interfaces/Levels';
 
 export class Levels extends ModuleBase {
   private readonly levelCache: Map<string, UserLevelData> = new Map();
-  private readonly defaultLevelData: UserLevelData = {
-    exp: 0,
-    level: 1,
-    total: 100,
-    percent: 0,
-    cooldown: 0,
-    usernameColor: '#000000',
-    bigSquareColor: '#d3d3d3',
-    bigSquareOpacity: 0.6,
-    levelColor: '#000000',
-    xpColor: '#606060',
-    rankColor: '#000000',
-    filledDotsColor: '#606060',
-    emptyDotsColor: '#d6d6d6',
-    backgroundURL: 'https://i.imgur.com/FydJyTs.png',
-    backgroundX: 0,
-    backgroundY: 0,
-    backgroundW: null,
-    backgroundH: null,
-  };
 
   async handleLeveling(interaction: CommandInteraction) {
     if (!interaction.member) return;
-    const cachedUser = this.levelCache.get(interaction.member.id) ?? { ...this.defaultLevelData };
+
+    let cachedUser = this.levelCache.get(interaction.member.id);
+    if (!cachedUser) cachedUser = await this.getUserData(interaction.member.id);
+
     if (Date.now() - cachedUser.cooldown < 1000 * 60) return;
 
     const xpFromLastLevel = this.xpRequiredForLevel(cachedUser.level);
@@ -64,11 +47,12 @@ export class Levels extends ModuleBase {
     return Math.round((5 * (level ** 2)) + (50 * level) + 100);
   }
 
-  async getUserData(userId: string) {
+  async getUserData(userId: string): Promise<UserLevelData> {
     if (this.levelCache.has(userId)) return this.levelCache.get(userId);
 
     const data = await this.client.db.user.getUser(userId);
-    return JSON.parse(JSON.stringify(data.levelData)) as UserLevelData ?? this.defaultLevelData;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return data.levelData as any;
   }
 
   async getUserRank(userId: string) {

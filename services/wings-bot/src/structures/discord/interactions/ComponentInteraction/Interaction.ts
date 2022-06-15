@@ -1,57 +1,58 @@
-import type { REST } from '@discordjs/rest';
-import type { Client } from '../../../..';
-import type { FastifyReply } from 'fastify';
-
 import {
-  APIApplicationCommandInteraction,
-  APIChatInputApplicationCommandInteractionData,
   APIEmbed,
-  APIMessage,
   InteractionResponseType,
-  InteractionType,
   MessageFlags,
   RESTPostAPIInteractionCallbackFormDataBody,
   RESTPostAPIInteractionFollowupJSONBody,
   RESTPostAPIInteractionFollowupResult,
   Routes,
+  APIBaseInteraction,
+  APIMessage,
+  APIMessageComponentInteraction,
+  APIMessageComponentInteractionData,
+  InteractionType,
 } from 'discord-api-types/v10';
-
+import type { FastifyReply } from 'fastify';
+import type { Client } from '../../../..';
 import { Member, User } from '../../';
-import { CommandInteractionData } from './InteractionData';
-import { InteractionTimeoutError } from '../../../../lib/framework';
+import type { REST } from '@discordjs/rest';
 
-export class CommandInteraction {
+export class ComponentInteraction {
   private restClient: REST;
 
-  private token: string;
   private applicationId: string;
-  private id: string;
-  private type: InteractionType;
+  private token: string;
 
+  private id: string;
+  private type: number;
+
+  data: APIMessageComponentInteractionData;
   responded = false;
+  message: APIMessage;
+  channelId: string;
+  locale: APIBaseInteraction<InteractionType.MessageComponent, APIMessageComponentInteractionData>['locale'];
 
   guildId?: string;
-  channelId?: string;
-  data?: CommandInteractionData;
   user?: User;
   member?: Member;
-  message?: APIMessage;
 
-  constructor(private client: Client, interaction: APIApplicationCommandInteraction, private reply: FastifyReply) {
+  constructor(private client: Client, interaction: APIMessageComponentInteraction, private reply: FastifyReply) {
     this.restClient = client.restClient;
 
-    this.token = interaction.token;
     this.applicationId = interaction.application_id;
-    this.id = interaction.id;
+    this.token = interaction.token;
 
+    this.id = interaction.id;
     this.type = interaction.type;
+    this.data = interaction.data;
+
+    this.message = interaction.message;
+    this.channelId = interaction.channel_id;
+    this.locale = interaction.locale;
 
     if (interaction.guild_id) this.guildId = interaction.guild_id;
-    if (interaction.channel_id) this.channelId = interaction.channel_id;
-    if (interaction.data) this.data = new CommandInteractionData(interaction.data as APIChatInputApplicationCommandInteractionData);
     if (interaction.user) this.user = new User(interaction.user);
     if (interaction.member) this.member = new Member(interaction.member);
-    if (interaction.message) this.message = interaction.message;
   }
 
   async sendInteraction(type: number, data: RESTPostAPIInteractionCallbackFormDataBody) {
@@ -88,6 +89,17 @@ export class CommandInteraction {
     }) as Promise<RESTPostAPIInteractionFollowupResult>;
   }
 
+  async edit(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {
+    const data = Object.assign({ content }, options);
+
+    return this.sendInteraction(InteractionResponseType.UpdateMessage, data);
+  }
+
+  async editEmbed(embeds: APIEmbed[] | APIEmbed, ephemeral = false) {
+    if (Array.isArray(embeds)) return this.edit('', { embeds, ...ephemeral && { flags: MessageFlags.Ephemeral } });
+    return this.send('', { embeds: [embeds] });
+  }
+
   async sendEmbed(embeds: APIEmbed[] | APIEmbed, ephemeral = false) {
     if (Array.isArray(embeds)) return this.send('', { embeds, ...ephemeral && { flags: MessageFlags.Ephemeral } });
     return this.send('', { embeds: [embeds] });
@@ -99,21 +111,5 @@ export class CommandInteraction {
 
   async error(content: string, ephemeral = false) {
     return this.send(`${this.client.utils.emojis.xmark} ${content}`, { ...ephemeral && { flags: MessageFlags.Ephemeral } });
-  }
-
-  async awaitComponent(uniqueId: string, timeout = 60_000, memberId?: string) {
-    return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
-        this.client.routeHandler.interactionHandler.pendingComponents.delete(uniqueId);
-
-        reject(new InteractionTimeoutError('Prompt timed out!'));
-      }, timeout);
-
-      this.client.routeHandler.interactionHandler.pendingComponents.set(uniqueId, {
-        resolve,
-        timer,
-        memberId,
-      });
-    });
   }
 }

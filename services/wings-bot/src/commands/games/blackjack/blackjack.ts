@@ -1,51 +1,47 @@
 import { ApplicationCommandOptions, Constants } from 'eris';
-import type { Responder } from '../../lib/core';
-import { CommandBase, CommandData, InteractionTimeoutError, AwaitComponentReturn } from '../../lib/framework';
-import { BlackjackUtil, MessageComponent } from '../../lib/framework/utils';
-import type { BlackjackData, GameData } from '../../lib/interfaces/Games';
+import type { Responder } from '../../../lib/core';
+import { BlackjackUtil, MessageComponent } from '../../../lib/framework/utils';
+import type { BlackjackData, GameData } from '../../../lib/interfaces/Games';
+import { Args, Command, CommandData, CommandOptions } from '../../../structures';
 
-export default class Blackjack extends CommandBase {
+export default class BlackjackCommand extends Command {
   description = 'Play blackjack against Wings.';
+  options = new CommandOptions()
+    .addOption(Args.number('amount', 'How many wings do you want to bet?', { required: true }));
 
-  options: ApplicationCommandOptions[] = [{
-    name: 'amount',
-    description: 'How many wings do you want to bet?',
-    type: Constants.ApplicationCommandOptionTypes.INTEGER,
-    required: true,
-  }];
 
-  exec = async ({ interaction, responder, options }: CommandData) => {
+  async run({ interaction, options }: CommandData<BlackjackCommand>) {
     const userGame = this.client.activeGames.get(`${interaction.member.id}:blackjack`);
     if (userGame) {
-      responder.sendEmbed({
+      interaction.sendEmbed({
         author: {
           name: interaction.member.tag,
           icon_url: interaction.member.avatarURL,
         },
         title: 'You already have an active blackjack game!',
         description: `[Press me to go to game](${userGame.messageLink})`,
-        color: responder.colors.red,
-      }, '', true);
+        color: this.client.utils.colors.red,
+      }, true);
 
       return;
     }
 
     const userData = await this.client.modules.economy.getUserData(interaction.member.id);
-    const amount = options[0].value as number;
+    const amount = options.get('amount');
     let totalBet = amount;
 
-    if (amount === 0 && userData.balance === 0n) {
-      responder.error('You don\'t have any Wings in your wallet! Collect some and try again.', true);
+    if (amount === 0 && userData.balance === 0) {
+      interaction.error('You don\'t have any Wings in your wallet! Collect some and try again.', true);
       return;
     }
 
     if (amount <= 0) {
-      responder.error('You specified an invalid amount', true);
+      interaction.error('You specified an invalid amount', true);
       return;
     }
 
     if (userData.balance < amount) {
-      responder.error(`You don't have **${this.client.modules.economy.parseInt(amount)}** to deposit.`, true);
+      interaction.error(`You don't have **${this.client.modules.economy.parseInt(amount)}** to bet.`, true);
       return;
     }
 
@@ -67,8 +63,8 @@ export default class Blackjack extends CommandBase {
       id: `${interaction.member.id}:blackjack`,
       type: 'blackjack',
       userId: interaction.member.id,
-      guildId: interaction.guildID,
-      channelId: interaction.channel.id,
+      guildId: interaction.guildId,
+      channelId: interaction.channelId,
       messageId: '',
       messageLink: '',
     };
@@ -94,7 +90,7 @@ export default class Blackjack extends CommandBase {
       if (playerDeck.hand.length === 1) blackjack.hit(playerDeck.hand);
 
       if (blackjack.handValue(playerDeck) === 'blackjack') {
-        if (this.client.util.arraysEqual(playerDeck.hand, hands[hands.length - 1].hand)) {
+        if (this.client.utils.arraysEqual(playerDeck.hand, hands[hands.length - 1].hand)) {
           blackjack.sendAnswer('end', cards);
           return;
         }
@@ -104,7 +100,7 @@ export default class Blackjack extends CommandBase {
       }
 
       if (blackjack.handValue(playerDeck) >= 21) {
-        if (this.client.util.arraysEqual(playerDeck.hand, hands[hands.length - 1].hand)) {
+        if (this.client.utils.arraysEqual(playerDeck.hand, hands[hands.length - 1].hand)) {
           blackjack.sendAnswer('end', cards);
           return;
         }
@@ -178,7 +174,7 @@ export default class Blackjack extends CommandBase {
         inline: true,
       }];
 
-      if (interaction.acknowledged) {
+      if (interaction.responded) {
         await component.editRaw({ embeds: [embed], components: componentBase.components });
       } else {
         await responder.sendRaw({ embeds: [embed], components: componentBase.components });
@@ -303,5 +299,5 @@ export default class Blackjack extends CommandBase {
     });
 
     blackjack.startGame();
-  };
+  }
 }

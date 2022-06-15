@@ -1,11 +1,10 @@
 import { Client } from '..';
 import { ModuleBase } from '../lib/framework';
-import { Item, shopItems } from '../lib/economy';
+import { ShopItems } from '../lib/economy';
 
 export class Shop extends ModuleBase {
-  private readonly defaultItems = shopItems;
-  private readonly shopCache: Map<string, Item> = new Map();
-
+  private readonly defaultItems = ShopItems;
+  private specialItems: 
   constructor(client: Client) {
     super(client);
 
@@ -18,9 +17,7 @@ export class Shop extends ModuleBase {
     const specialItems = await this.client.db.shop.getAllItems();
     if (specialItems.length === 0) return;
 
-    for (const item of specialItems) {
-      this.shopCache.set(item.itemId, new Item(item));
-    }
+    this.specialItems = specialItems;
   }
 
   getShopItems(): Item[] {
