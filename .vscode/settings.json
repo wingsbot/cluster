@@ -3,5 +3,6 @@
     "source.fixAll.eslint": true
   },
   "typescript.preferences.quoteStyle": "single",
-  "javascript.preferences.quoteStyle": "single"
+  "enableTelemetry": false,
+  "enabledCodeActions": false,
 }
