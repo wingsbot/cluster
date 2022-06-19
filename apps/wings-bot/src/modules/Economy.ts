@@ -1,5 +1,5 @@
 import type { ActiveItem, Inventory } from '@prisma/client';
-import { UserData } from '../database/structures/UserData';
+import { UserData } from '@database/structures';
 import { ModuleBase } from '../lib/framework';
 
 export class Economy extends ModuleBase {

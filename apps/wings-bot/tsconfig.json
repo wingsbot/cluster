@@ -1,19 +1,14 @@
 {
+  "extends": "../../packages/tsconfig/base.json",
   "compilerOptions": {
-  "skipLibCheck": true,
-  "module": "commonjs",
-  "target": "es2021",
-  "outDir": "build",
-  "esModuleInterop": true,
+    "outDir": "build",
+    "baseUrl": ".",
+    "paths": {
+      "@database/*": ["../../packages/database/*"],
+    },
   },
 
   "include": [
-    "./src/**/*.ts", "../commands/economy/balance.ts",
-  ],
-
-  "exclude": [
-    "./node_modules",
-    "./.turbo",
-    "./build",
+    "./src/**/*.ts",
   ],
 }
