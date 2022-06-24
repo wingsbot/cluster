@@ -32,6 +32,7 @@
     "undici": "^4.16.0"
   },
   "_moduleAliases": {
-    "@database": "../../packages/database"
+    "@database": "../../packages/database",
+    "@economy": "../../packages/economy"
   }
 }

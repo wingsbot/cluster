@@ -13,7 +13,7 @@ import {
   InteractionType,
 } from 'discord-api-types/v10';
 import type { FastifyReply } from 'fastify';
-import type { Client } from '../../../..';
+import type { Client } from '../../../../Client';
 import { Member, User } from '../..';
 import type { REST } from '@discordjs/rest';
 

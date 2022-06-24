@@ -3,7 +3,7 @@ import { join, resolve, parse } from 'node:path';
 
 import type { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
-import type { Client } from '../..';
+import type { Client } from '../../Client';
 import type { Command, Components } from '../../structures';
 
 export class LoadHandler {

@@ -1,6 +1,6 @@
-import { Client } from '..';
+import { Client } from '../Client';
 import { ModuleBase } from '../lib/framework';
-import { ShopItems } from '../lib/economy';
+import { ShopItems } from '@economy';
 
 export class Shop extends ModuleBase {
   private readonly defaultItems = ShopItems;

@@ -3,7 +3,6 @@ import {
   APIButtonComponentWithCustomId,
   APIButtonComponentWithURL,
   APIMessageActionRowComponent,
-  APIMessageComponent,
   APIMessageComponentEmoji,
   APISelectMenuComponent,
   APISelectMenuOption,
@@ -15,7 +14,7 @@ type ButtonStyles = 'blue' | 'green' | 'red' | 'grey';
 type MenuOptions = Omit<APISelectMenuComponent, 'custom_id' | 'type' | 'options'>;
 
 export class MessageComponent {
-  components: APIMessageComponent[] = [{
+  components: APIActionRowComponent<APIMessageActionRowComponent>[] = [{
     type: ComponentType.ActionRow,
     components: [],
   }];
@@ -29,13 +28,13 @@ export class MessageComponent {
     });
   }
 
-  addButton(label: string | APIMessageComponentEmoji, customId: string, style?: ButtonStyles, required?: boolean) {
+  addButton(label: string | APIMessageComponentEmoji, customId: string, style?: ButtonStyles, disabled?: boolean) {
     const button: APIButtonComponentWithCustomId = {
       ...(typeof label === 'string' ? { label: label } : { emoji: label }),
       custom_id: `${customId}${this.uniqueId ? `:${this.uniqueId}` : ''}`,
       style: this.getButtonStyle(style),
       type: ComponentType.Button,
-      ...(required && { required: true }),
+      ...(disabled && { disabled: true }),
     };
 
     (this.components[this.components.length - 1] as APIActionRowComponent<APIMessageActionRowComponent>).components.push(button);

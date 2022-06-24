@@ -3,7 +3,7 @@ import { sign } from 'tweetnacl';
 import { APIInteraction, InteractionType } from 'discord-api-types/v10';
 
 import type { RawBody } from './RouteHandler';
-import type { Client } from '..';
+import type { Client } from '../Client';
 
 import { sendAutocomplete, sendCommand, sendComponent, sendModalSubmit, sendPing } from './handlers';
 import { CommandInteraction, ComponentInteraction } from '../structures';
@@ -19,10 +19,23 @@ export interface ResolvedComponent {
   customId: string[];
 }
 
+export type ComponentCallback = (
+  interaction: ComponentInteraction,
+  customId: string[],
+  end: () => void,
+) => void;
+
 export interface PendingComponents {
   resolve: (value: ResolvedComponent) => void;
   timer: NodeJS.Timeout;
   memberId?: string;
+  collector?: {
+    callback: ComponentCallback;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    reject: (reason?: any) => void;
+    timeout: number;
+    ended: boolean;
+  }
 }
 
 export class InteractionHandler {

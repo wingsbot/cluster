@@ -2,7 +2,7 @@ import type {
   RESTPatchAPIApplicationCommandJSONBody,
 } from 'discord-api-types/v10';
 
-import type { Client } from '../../..';
+import type { Client } from '../../../Client';
 import type { CommandInteraction } from '../..';
 import { CommandInteractionDataOptions } from '../../discord';
 import { CommandOptions } from './CommandOptions';

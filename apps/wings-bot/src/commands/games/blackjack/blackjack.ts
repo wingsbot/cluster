@@ -1,5 +1,6 @@
 import { BlackjackUtil } from './util';
-import { Args, Command, CommandData, CommandOptions } from '../../../structures';
+import { Args, Command, CommandData, CommandOptions, MessageComponent } from '../../../structures';
+import { InteractionTimeoutError } from 'src/lib/framework';
 
 export default class BlackjackCommand extends Command {
   description = 'Play blackjack against Wings.';
@@ -25,7 +26,7 @@ export default class BlackjackCommand extends Command {
 
     const userData = await this.client.modules.economy.getUserData(interaction.member.id);
     const amount = options.get('amount');
-    let totalBet = amount;
+    const totalBet = amount;
 
     if (amount === 0 && userData.balance === 0) {
       interaction.error('You don\'t have any Wings in your wallet! Collect some and try again.', true);
@@ -42,6 +43,18 @@ export default class BlackjackCommand extends Command {
       return;
     }
 
+    const blackjack = new BlackjackUtil();
+    const { playersHand, dealersHand, playersHands } = blackjack.initiate();
+    const uniqueId = this.client.utils.generateId();
+
+    await this.client.modules.economy.editBalance(interaction.member.id, -amount);
+
+    let canDoubleDown = userData.balance >= totalBet + amount && playersHand.hand.length === 2;
+    let canSplit = userData.balance >= totalBet + amount
+    && playersHand.hand[0].value === playersHand.hand[1].value
+    && playersHand.hand.length === 2;
+
+    let components = this.generateComponents(uniqueId, canDoubleDown, canSplit);
     const embed = {
       author: {
         name: interaction.member.tag,
@@ -49,110 +62,145 @@ export default class BlackjackCommand extends Command {
       },
       description: undefined,
       color: undefined,
-      fields: [],
+      fields: [{
+        name: playersHands.length === 1
+          ? '**Your hand**'
+          : `**Hand ${playersHands.findIndex(player => this.client.utils.arraysEqual(player.hand, playersHand.hand)) + 1}**`,
+        value: `${playersHand.hand.map(c => c.emoji).join(' ')}\nTotal: \`${blackjack.isSoft(playersHand.hand) ? 'Soft ' : ''}${playersHand.handValue}\``,
+        inline: true,
+      },
+      {
+        name: '\u200B',
+        value: '\u200B',
+        inline: true,
+      },
+      {
+        name: '**Dealer hand**',
+        value: `${dealersHand.hand[0].emoji} <:whatCardIsThis:777729431899996220>\nTotal: \`${blackjack.isSoft(dealersHand.hand) ? 'Soft ' : ''}${(dealersHand.handValue as number) - dealersHand.hand[1].value}\``,
+        inline: true,
+      }],
       footer: {
         text: `Your bet: ${this.client.modules.economy.parseInt(amount)}`,
       },
       timestamp: new Date().toISOString(),
     };
 
-    const blackjack = new BlackjackUtil(this.client, {
-      id: `${interaction.member.id}:blackjack`,
+    const message = await interaction.send('', { embeds: [embed], components });
+    // TODO: message link
+    this.client.activeGames.set(`${interaction.member.id}:blackjack`,  {
       type: 'blackjack',
       userId: interaction.member.id,
-      messageLink: '',
+      messageLink: message.messageLink,
     });
 
-    await this.client.modules.economy.editBalance(interaction.member.id, -amount);
+    interaction.collectComponents(uniqueId, { memberId: interaction.member.id }, async (component, customId, end) => {
+      switch(customId[0]) {
+      case 'hit': {
+        playersHand.hit();
 
-    blackjack.on('initiateGame', async (cards: BlackjackData) => {
-      const { playerDeck } = cards;
-
-      if (blackjack.handValue(playerDeck) !== 'blackjack') {
-        blackjack.emit('runHands', cards);
-        return;
+        break;
       }
 
-      blackjack.emit('endGame', cards);
-    });
+      case 'stand': {
+        playersHand.stand();
 
-    blackjack.on('runHands', async (cards: BlackjackData) => {
-      const { hands, playerDeck, opponentDeck } = cards;
+        break;
+      }
 
-      if (playerDeck.hand.length === 1) blackjack.hit(playerDeck.hand);
+      case 'doubleDown': {
+        playersHand.doubleDown();
 
-      if (blackjack.handValue(playerDeck) === 'blackjack') {
-        if (this.client.utils.arraysEqual(playerDeck.hand, hands[hands.length - 1].hand)) {
-          blackjack.sendAnswer('end', cards);
-          return;
+        break;
+      }
+
+      case 'split': {
+        playersHand.split();
+
+        break;
+      }
+      }
+
+      if (blackjack.ended) {
+        let winnings = amount;
+        let hideSecondCard = true;
+        embed.fields = [];
+        let i = 0;
+
+        dealersHand.finish();
+
+        for (const hand of playersHands) {
+          const playerValue = hand.handValue;
+          const result = blackjack.result(playerValue, dealersHand.handValue);
+
+          if (result !== 'bust') hideSecondCard = false;
+
+          const lossOrGain = Math.floor((
+            ['loss', 'bust'].includes(result) ? -1 : (result === 'push' ? 0 : 1))
+          * (hand.doubledDown ? 2 : 1) * (playerValue === 'blackjack' ? 1.5 : 1) * amount);
+
+          winnings += lossOrGain;
+
+          const soft = blackjack.isSoft(hand.hand);
+
+          i++;
+          embed.fields.push({
+            name: playersHands.length === 1 ? '**Your hand**' : `**Hand ${i + 1}**`,
+            value: `${hand.hand.map(c => c.emoji).join(' ')}\nTotal: \`${soft ? 'Soft ' : ''}${playerValue}\``,
+            inline: true,
+          });
         }
 
-        blackjack.sendAnswer('nextHand', cards);
-        return;
-      }
-
-      if (blackjack.handValue(playerDeck) >= 21) {
-        if (this.client.utils.arraysEqual(playerDeck.hand, hands[hands.length - 1].hand)) {
-          blackjack.sendAnswer('end', cards);
-          return;
-        }
-
-        blackjack.sendAnswer('nextHand', cards);
-        return;
-      }
-
-      if (playerDeck.doubled) {
-        blackjack.hit(playerDeck.hand);
-
-        if (this.client.util.arraysEqual(playerDeck.hand, hands[hands.length - 1].hand)) {
-          blackjack.sendAnswer('end', cards);
-          return;
-        }
-
-        blackjack.sendAnswer('nextHand', cards);
-        return;
-      }
-
-      const canDoubleDown = userData.balance >= totalBet + amount && playerDeck.hand.length === 2;
-      const canSplit = userData.balance >= totalBet + amount
-      && blackjack.handValue({ doubled: false, hand: [playerDeck.hand[0]] }) === blackjack.handValue({ doubled: false, hand: [playerDeck.hand[1]] })
-      && playerDeck.hand.length === 2;
-
-      const id = this.client.util.generateId();
-      const componentBase = new MessageComponent()
-        .addActionRow()
-        .addButton({
-          type: Constants.ComponentTypes.BUTTON,
-          label: 'Hit',
-          custom_id: `hit:${id}`,
-          style: Constants.ButtonStyles.PRIMARY,
-        })
-        .addButton({
-          type: Constants.ComponentTypes.BUTTON,
-          label: 'Stand',
-          custom_id: `stand:${id}`,
-          style: Constants.ButtonStyles.PRIMARY,
+        embed.fields.push({
+          name: '\u200B',
+          value: '\u200B',
+          inline: true,
+        },
+        {
+          name: '**Dealer hand**',
+          value: `${hideSecondCard ? `${dealersHand.hand[0].emoji} <:whatCardIsThis:777729431899996220>` : dealersHand.hand.join(' ')}\nTotal: \`${hideSecondCard ? (dealersHand.handValue as number) - dealersHand.hand[1].value : dealersHand.handValue}\``,
+          inline: true,
         });
 
-      if (canDoubleDown) componentBase.addButton({
-        type: Constants.ComponentTypes.BUTTON,
-        label: 'Double Down',
-        custom_id: `doubleDown:${id}`,
-        style: Constants.ButtonStyles.PRIMARY,
-      });
+        embed.color = winnings > amount ? this.client.utils.colors.green : (winnings < amount ? this.client.utils.colors.red : this.client.utils.colors.blue);
 
-      if (canSplit) componentBase.addButton({
-        type: Constants.ComponentTypes.BUTTON,
-        label: 'Split',
-        custom_id: `split:${id}`,
-        style: Constants.ButtonStyles.PRIMARY,
-      });
+        if (winnings === amount) {
+          embed.description = `You broke even and got your **${this.client.modules.economy.parseInt()}'s** back.`;
+
+          await this.client.modules.economy.editBalance(interaction.member.id, amount);
+        } else if (winnings > amount) {
+          embed.description = `You won **${this.client.modules.economy.parseInt(winnings - amount)}**`;
+
+          await this.client.modules.economy.editBalance(interaction.member.id, winnings);
+        } else {
+          embed.description = `You lost **${this.client.modules.economy.parseInt(winnings - amount)}**`;
+
+          await this.client.modules.economy.editBalance(interaction.member.id, winnings);
+        }
+
+        embed.footer = {
+          text: `You now have ${this.client.modules.economy.parseInt((Number(userData.balance) - amount) + winnings)}`,
+        };
+
+        await component.edit('', { embeds: [embed], components: [] });
+        end();
+        return;
+      }
+
+      if (playersHand.hand.length === 1) playersHand.hit();
+      if (playersHand.handValue === 'blackjack' || playersHand.handValue >> 21) return 'ended';
+      if (playersHand.doubledDown) playersHand.doubleDown();
+
+      canDoubleDown = userData.balance >= totalBet + amount && playersHand.hand.length === 2;
+      canSplit = userData.balance >= totalBet + amount
+      && playersHand.hand[0].value === playersHand.hand[1].value
+      && playersHand.hand.length === 2;
+
 
       embed.fields = [{
-        name: hands.length === 1
+        name: playersHands.length === 1
           ? '**Your hand**'
-          : `**Hand ${hands.findIndex(deck => this.client.util.arraysEqual(deck.hand, playerDeck.hand)) + 1}**`,
-        value: `${playerDeck.hand.join(' ')}\nTotal: \`${blackjack.isSoft(playerDeck) ? 'Soft ' : ''}${blackjack.handValue(playerDeck)}\``,
+          : `**Hand ${playersHands.findIndex(player => this.client.utils.arraysEqual(player.hand, playersHand.hand)) + 1}**`,
+        value: `${playersHand.hand.map(c => c.emoji).join(' ')}\nTotal: \`${blackjack.isSoft(playersHand.hand) ? 'Soft ' : ''}${playersHand.handValue}\``,
         inline: true,
       },
       {
@@ -162,138 +210,28 @@ export default class BlackjackCommand extends Command {
       },
       {
         name: '**Dealer hand**',
-        value: `${opponentDeck.hand[0]} <:whatCardIsThis:777729431899996220>\nTotal: \`${blackjack.isSoft({ doubled: false, hand: [opponentDeck.hand[0]] }) ? 'Soft ' : ''}${blackjack.handValue({ doubled: false, hand: [opponentDeck.hand[0]] })}\``,
+        value: `${dealersHand.hand[0].emoji} <:whatCardIsThis:777729431899996220>\nTotal: \`${blackjack.isSoft(dealersHand.hand) ? 'Soft ' : ''}${dealersHand.handValue}\``,
         inline: true,
       }];
 
-      if (interaction.responded) {
-        await component.editRaw({ embeds: [embed], components: componentBase.components });
-      } else {
-        await responder.sendRaw({ embeds: [embed], components: componentBase.components });
-
-        const message = await interaction.getOriginalMessage();
-        gameData.messageLink = message.jumpLink;
-        gameData.messageId = message.id;
-
-        this.client.activeGames.set(gameData.id, gameData);
-      }
-
-      let response: AwaitComponentReturn;
-      try {
-        response = await this.client.util.awaitComponent(interaction, responder, id);
-      } catch (error) {
-        if (error instanceof InteractionTimeoutError) {
-          componentBase.disableAllComponents();
-
-          responder.editRaw({
-            embeds: [{
-              description: 'You ran out of time :(',
-            }],
-            components: componentBase.components,
-          });
-
-          blackjack.endGame();
-        }
-
+      components = this.generateComponents(uniqueId, canDoubleDown, canSplit);
+      await component.edit('', { embeds: [embed], components });
+    }).catch(error => {
+      if (error instanceof InteractionTimeoutError) {
+        interaction.send('You took to long to respond, to bad so sad.');
         return;
       }
-
-      component = response.responder;
-
-      if (response.parsedId === 'stand' || blackjack.handValue(playerDeck) >= 21) {
-        if (this.client.util.arraysEqual(playerDeck.hand, hands[hands.length - 1].hand)) {
-          blackjack.sendAnswer('end', cards);
-          return;
-        }
-
-        blackjack.sendAnswer('stand', cards);
-      } else if (response.parsedId === 'hit') {
-        blackjack.sendAnswer('hit', cards);
-      } else if (response.parsedId === 'split' && canSplit) {
-        totalBet += amount;
-        hands.push({ doubled: false, hand: [playerDeck.hand.pop()] });
-        blackjack.sendAnswer('split', cards);
-      } else if (response.parsedId === 'doubleDown' && canDoubleDown) {
-        totalBet += amount;
-        hands[hands.findIndex(deck => this.client.util.arraysEqual(deck.hand, playerDeck.hand))].doubled = true;
-        blackjack.sendAnswer('doubleDown', cards);
-      }
     });
-
-    blackjack.on('endGame', async (cards: BlackjackData) => {
-      const { hands, playerDeck, opponentDeck } = cards;
-      const result = blackjack.gameResult(blackjack.handValue(hands[0]), 0);
-      const noHit = playerDeck.hand.length === 1 && result === 'bust';
-
-      let hideHoleCard = true;
-      let winnings = amount;
-      embed.fields = [];
-
-      // eslint-disable-next-line no-unmodified-loop-condition
-      while ((blackjack.isSoft(opponentDeck) || blackjack.handValue(opponentDeck) < 17) && !noHit) {
-        blackjack.hit(opponentDeck.hand);
-      }
-
-      const opponentValue = blackjack.handValue(opponentDeck);
-
-      for (const [i, deck] of hands.entries()) {
-        const playerValue = blackjack.handValue(deck);
-        const result = blackjack.gameResult(playerValue, opponentValue);
-
-        if (result !== 'bust') hideHoleCard = false;
-
-        const lossOrGain = Math.floor((
-          ['loss', 'bust'].includes(result) ? -1 : (result === 'push' ? 0 : 1))
-        * (deck.doubled ? 2 : 1) * (playerValue === 'blackjack' ? 1.5 : 1) * amount);
-
-        winnings += lossOrGain;
-
-        const soft = blackjack.isSoft(deck);
-
-        embed.fields.push({
-          name: hands.length === 1 ? '**Your hand**' : `**Hand ${i + 1}**`,
-          value: `${deck.hand.join(' ')}\nTotal: \`${soft ? 'Soft ' : ''}${playerValue}\``,
-          inline: true,
-        });
-      }
-
-      embed.fields.push({
-        name: '\u200B',
-        value: '\u200B',
-      },
-      {
-        name: '**Dealer hand**',
-        value: `${hideHoleCard ? `${opponentDeck.hand[0]} <:whatCardIsThis:777729431899996220>` : opponentDeck.hand.join(' ')}\nTotal: \`${hideHoleCard ? blackjack.handValue({ doubled: false, hand: [opponentDeck.hand[0]] }) : opponentValue}\``,
-      });
-
-      embed.color = winnings > amount ? responder.colors.green : (winnings < amount ? responder.colors.red : responder.colors.blue);
-
-      if (winnings === amount) {
-        embed.description = `You broke even and got your **${this.client.modules.economy.parseInt()}'s** back.`;
-
-        await this.client.modules.economy.editBalance(interaction.member.id, amount);
-      } else if (winnings > amount) {
-        embed.description = `You won **${this.client.modules.economy.parseInt(winnings - amount)}**`;
-
-        await this.client.modules.economy.editBalance(interaction.member.id, winnings);
-      } else {
-        embed.description = `You lost **${this.client.modules.economy.parseInt(winnings - amount)}**`;
-
-        await this.client.modules.economy.editBalance(interaction.member.id, winnings);
-      }
-
-      embed.footer = {
-        text: `You now have ${this.client.modules.economy.parseInt((Number(userData.balance) - amount) + winnings)}`,
-      };
-
-      await responder.editRaw({ embeds: [embed], components: [] });
-      blackjack.endGame();
-    });
-
-    blackjack.startGame();
   }
 
-  private generateEmbed() {}
+  private generateComponents(uniqueId: string, canDoubleDown: boolean, canSplit: boolean) {
+    const componentBase = new MessageComponent(uniqueId)
+      .addButton('Hit', 'hit', 'grey')
+      .addButton('Stand', 'stand', 'grey');
 
-  private generateComponents() {}
+    if (canDoubleDown) componentBase.addButton('Double Down', 'doubleDown', 'grey');
+    if (canSplit) componentBase.addButton('Split', 'split', 'grey');
+
+    return componentBase.components;
+  }
 }

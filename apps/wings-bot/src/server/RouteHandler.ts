@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 
-import { Client } from '..';
+import { Client } from '../Client';
 import { InteractionHandler } from './InteractionHandler';
 
 export interface RawBody {

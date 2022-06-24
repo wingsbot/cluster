@@ -1,5 +1,5 @@
 import { APIUser, Routes } from 'discord-api-types/v10';
-import { Client } from '../../..';
+import { Client } from '../../../Client';
 import { User } from '../../../structures';
 import type { Units } from '../../interfaces/Utility';
 

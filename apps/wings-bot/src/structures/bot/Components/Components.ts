@@ -1,4 +1,4 @@
-import type { Client } from '../../..';
+import type { Client } from '../../../Client';
 import { ComponentInteraction } from '../../discord';
 
 export interface ComponentData {

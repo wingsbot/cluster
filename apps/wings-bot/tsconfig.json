@@ -4,8 +4,10 @@
     "outDir": "build",
     "baseUrl": ".",
     "paths": {
-      "@database/*": ["../../packages/database/*"],
-    },
+      "@database": ["../../packages/database"],
+      "@database/structures": ["../../packages/database/structures"],
+      "@economy": ["../../packages/economy"]
+    }
   },
 
   "include": [
