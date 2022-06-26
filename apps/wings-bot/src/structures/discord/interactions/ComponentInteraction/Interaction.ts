@@ -7,7 +7,6 @@ import {
   RESTPostAPIInteractionFollowupResult,
   Routes,
   APIBaseInteraction,
-  APIMessage,
   APIMessageComponentInteraction,
   APIMessageComponentInteractionData,
   InteractionType,
@@ -16,6 +15,7 @@ import type { FastifyReply } from 'fastify';
 import type { Client } from '../../../../Client';
 import { Member, User } from '../..';
 import type { REST } from '@discordjs/rest';
+import { Message } from '../../Message';
 
 export class ComponentInteraction {
   private restClient: REST;
@@ -28,12 +28,12 @@ export class ComponentInteraction {
 
   data: APIMessageComponentInteractionData;
   responded = false;
-  message: APIMessage;
+  message: Message;
   channelId: string;
   locale: APIBaseInteraction<InteractionType.MessageComponent, APIMessageComponentInteractionData>['locale'];
 
   guildId?: string;
-  user?: User;
+  user: User;
   member?: Member;
 
   constructor(private client: Client, interaction: APIMessageComponentInteraction, private reply: FastifyReply) {
@@ -46,12 +46,12 @@ export class ComponentInteraction {
     this.type = interaction.type;
     this.data = interaction.data;
 
-    this.message = interaction.message;
+    this.message = new Message(interaction.message);
     this.channelId = interaction.channel_id;
     this.locale = interaction.locale;
 
     if (interaction.guild_id) this.guildId = interaction.guild_id;
-    if (interaction.user) this.user = new User(interaction.user);
+    if (interaction.user) this.user = new User(interaction.user || interaction.member.user);
     if (interaction.member) this.member = new Member(interaction.member);
   }
 

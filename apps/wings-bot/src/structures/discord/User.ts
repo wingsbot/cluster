@@ -8,13 +8,13 @@ export class User {
   avatar: string;
   bot?: boolean;
 
-  constructor(APIUser: APIUser) {
-    this.id = APIUser.id;
-    this.username = APIUser.username;
-    this.discriminator = APIUser.discriminator;
-    this.tag = `${APIUser.username}#${APIUser.discriminator}`;
-    this.avatar = APIUser.avatar;
-    this.bot = APIUser.bot;
+  constructor(private APIUser: APIUser) {
+    this.id = this.APIUser.id;
+    this.username = this.APIUser.username;
+    this.discriminator = this.APIUser.discriminator;
+    this.tag = `${this.APIUser.username}#${this.APIUser.discriminator}`;
+    this.avatar = this.APIUser.avatar;
+    this.bot = this.APIUser.bot;
   }
 
   get avatarURL() {

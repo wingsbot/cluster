@@ -11,7 +11,7 @@ export class DepositCommand extends Command {
     .addOption(Args.subCommand('half', 'Deposits half of the Wings in your balance.'));
 
   async run({ interaction, options }: CommandData<DepositCommand>) {
-    const userData = await this.client.modules.economy.getUserData(interaction.member.id);
+    const userData = await this.client.modules.economy.getUserData(interaction.user.id);
     let amount: number;
 
     if (options.get('all')) amount = Number(userData.balance);
@@ -40,15 +40,15 @@ export class DepositCommand extends Command {
 
     const bankCheckAmount = userData.bankCap - userData.bank;
     if (amount >= bankCheckAmount) {
-      await this.client.modules.economy.editBalance(interaction.member.id, -bankCheckAmount);
-      await this.client.modules.economy.editBank(interaction.member.id, bankCheckAmount);
+      await this.client.modules.economy.editBalance(interaction.user.id, -bankCheckAmount);
+      await this.client.modules.economy.editBank(interaction.user.id, bankCheckAmount);
 
       interaction.success(`Deposited **${this.client.modules.economy.parseInt(bankCheckAmount)}** into Wings Bank.\n> You hit the max bank limit! Upgrade it by doing \`/buy Bank Upgrade\``);
       return;
     }
 
-    await this.client.modules.economy.editBalance(interaction.member.id, -amount);
-    await this.client.modules.economy.editBank(interaction.member.id, amount);
+    await this.client.modules.economy.editBalance(interaction.user.id, -amount);
+    await this.client.modules.economy.editBank(interaction.user.id, amount);
 
     interaction.success(`Deposited **${this.client.modules.economy.parseInt(amount)}** into Wings Bank.`);
   }

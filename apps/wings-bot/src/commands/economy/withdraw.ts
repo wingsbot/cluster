@@ -11,7 +11,7 @@ export class WithdrawCommand extends Command {
 
 
   async run({ interaction, options }: CommandData<WithdrawCommand>) {
-    const userData = await this.client.modules.economy.getUserData(interaction.member.id);
+    const userData = await this.client.modules.economy.getUserData(interaction.user.id);
     let amount: number;
 
     if (options.get('all')) amount = Number(userData.bank);
@@ -33,8 +33,8 @@ export class WithdrawCommand extends Command {
       return;
     }
 
-    await this.client.modules.economy.editBank(interaction.member.id, -amount);
-    await this.client.modules.economy.editBalance(interaction.member.id, amount);
+    await this.client.modules.economy.editBank(interaction.user.id, -amount);
+    await this.client.modules.economy.editBalance(interaction.user.id, amount);
 
     interaction.success(`Withdrew **${this.client.modules.economy.parseInt(amount)}** from Wings Bank.`);
   }

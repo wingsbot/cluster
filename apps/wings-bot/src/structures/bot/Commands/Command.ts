@@ -15,7 +15,7 @@ export interface CommandData<T extends Command> {
 export class Command {
   description = 'No description implimented.';
   options?: CommandOptions;
-  allowDM = false;
+  allowDM = true;
   ownerOnly = false;
   patronOnly = false;
 

@@ -6,7 +6,6 @@ import {
   APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteractionData,
   APIEmbed,
-  APIMessage,
   InteractionResponseType,
   InteractionType,
   MessageFlags,
@@ -20,6 +19,7 @@ import { Member, User } from '../..';
 import { CommandInteractionData } from './InteractionData';
 import { InteractionTimeoutError } from '../../../../lib/framework';
 import { ComponentCallback, ResolvedComponent } from '../../../../server/InteractionHandler';
+import { Message } from '../../Message';
 
 export class CommandInteraction {
   private restClient: REST;
@@ -34,9 +34,9 @@ export class CommandInteraction {
   guildId?: string;
   channelId?: string;
   data?: CommandInteractionData;
-  user?: User;
+  user: User;
   member?: Member;
-  message?: APIMessage;
+  message?: Message;
 
   constructor(private client: Client, interaction: APIApplicationCommandInteraction, private reply: FastifyReply) {
     this.restClient = client.restClient;
@@ -50,26 +50,23 @@ export class CommandInteraction {
     if (interaction.guild_id) this.guildId = interaction.guild_id;
     if (interaction.channel_id) this.channelId = interaction.channel_id;
     if (interaction.data) this.data = new CommandInteractionData(interaction.data as APIChatInputApplicationCommandInteractionData);
-    if (interaction.user) this.user = new User(interaction.user);
+    if (interaction.user) this.user = new User(interaction.user || interaction.member.user);
     if (interaction.member) this.member = new Member(interaction.member);
-    if (interaction.message) this.message = interaction.message;
+    if (interaction.message) this.message = new Message(interaction.message);
   }
 
   async sendInteraction(type: number, data: RESTPostAPIInteractionCallbackFormDataBody) {
-    let body: RESTPostAPIInteractionFollowupJSONBody;
-
     try {
-      body = await this.reply.status(200).send({
+      this.responded = true;
+
+      const test = await this.reply.status(200).send({
         type,
         data,
       });
-
-      this.responded = true;
+      console.log(test);
     } catch (error) {
       console.log(error);
     }
-
-    return body;
   }
 
   async send(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {

@@ -1,4 +1,3 @@
-import 'module-alias';
 import fastify from 'fastify';
 import { REST } from '@discordjs/rest';
 import RedisClient from 'ioredis';
@@ -8,7 +7,7 @@ import config from './Config';
 
 import { LoadHandler } from './lib/core/LoadHandler';
 import { ModuleHandler } from './lib/framework';
-import { Database } from '@database';
+import { Database } from '@wings/database';
 import { ClientUtil } from './lib/core/utils/Util';
 import { GameData } from './lib/interfaces/Games';
 

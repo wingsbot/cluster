@@ -12,7 +12,7 @@ export class RobCommand extends Command{
     const robbeeData = await this.client.modules.economy.getUserData(user.id);
     const robberStopper = await this.client.modules.economy.getActiveItem(user.id, 'robberstopper');
 
-    const userData = await this.client.modules.economy.getUserData(interaction.member.id);
+    const userData = await this.client.modules.economy.getUserData(interaction.user.id);
 
     const randomNumber = Math.random();
     let robAmount: number;
@@ -26,7 +26,7 @@ export class RobCommand extends Command{
       robAmount = (Number(userData.balance) * 0.05) < 500 ? 500 : Math.round(Number(userData.balance) * 0.05);
 
       interaction.send(`You were caught tryna steal 👮🚔\n> You were fined **${this.client.modules.economy.parseInt(robAmount)}**`);
-      await this.client.modules.economy.editBalance(interaction.member.id, -robAmount);
+      await this.client.modules.economy.editBalance(interaction.user.id, -robAmount);
     } else if (randomNumber < 0.9) {
       if (robberStopper) {
         robAmount = (Number(userData.balance) * 0.05) < 500 ? 500 : Number(userData.balance) * 0.05;
@@ -37,10 +37,10 @@ export class RobCommand extends Command{
 
       robAmount = Math.round(Number(robbeeData.balance) * 0.3);
 
-      await this.client.modules.economy.editBalance(interaction.member.id, robAmount);
+      await this.client.modules.economy.editBalance(interaction.user.id, robAmount);
       await this.client.modules.economy.editBalance(user.id, -robAmount);
 
-      interaction.send(`**${interaction.member.tag}** slips their hand in **${user.tag}'s** bucket and stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
+      interaction.send(`**${interaction.user.tag}** slips their hand in **${user.tag}'s** bucket and stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
     } else if (randomNumber < 0.98) {
       if (robberStopper) {
         robAmount = (Number(userData.balance) * 0.05) < 500 ? 500 : Math.round(Number(userData.balance) * 0.05);
@@ -51,10 +51,10 @@ export class RobCommand extends Command{
 
       robAmount = Math.round(Number(robbeeData.balance) * 0.5);
 
-      await this.client.modules.economy.editBalance(interaction.member.id, robAmount);
+      await this.client.modules.economy.editBalance(interaction.user.id, robAmount);
       await this.client.modules.economy.editBalance(user.id, -robAmount);
 
-      interaction.send(`**${interaction.member.tag}** slips their hand in **${user.tag}'s** suitcase and stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
+      interaction.send(`**${interaction.user.tag}** slips their hand in **${user.tag}'s** suitcase and stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
     } else {
       if (robberStopper) {
         robAmount = (Number(userData.balance) * 0.05) < 500 ? 500 : Math.round(Number(userData.balance) * 0.05);
@@ -65,10 +65,10 @@ export class RobCommand extends Command{
 
       robAmount = Math.round(Number(robbeeData.balance) * 0.9);
 
-      await this.client.modules.economy.editBalance(interaction.member.id, robAmount);
+      await this.client.modules.economy.editBalance(interaction.user.id, robAmount);
       await this.client.modules.economy.editBalance(user.id, -robAmount);
 
-      interaction.send(`**${interaction.member.tag}** slips their hand in **${user.tag}'s** LIFE SAVINGS stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
+      interaction.send(`**${interaction.user.tag}** slips their hand in **${user.tag}'s** LIFE SAVINGS stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
     }
   }
 }

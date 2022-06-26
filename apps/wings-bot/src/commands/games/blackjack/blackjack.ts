@@ -1,6 +1,6 @@
 import { BlackjackUtil } from './util';
 import { Args, Command, CommandData, CommandOptions, MessageComponent } from '../../../structures';
-import { InteractionTimeoutError } from 'src/lib/framework';
+import { InteractionTimeoutError } from '../../../lib/framework';
 
 export default class BlackjackCommand extends Command {
   description = 'Play blackjack against Wings.';
@@ -9,12 +9,12 @@ export default class BlackjackCommand extends Command {
 
 
   async run({ interaction, options }: CommandData<BlackjackCommand>) {
-    const userGame = this.client.activeGames.get(`${interaction.member.id}:blackjack`);
+    const userGame = this.client.activeGames.get(`${interaction.user.id}:blackjack`);
     if (userGame) {
       interaction.sendEmbed({
         author: {
-          name: interaction.member.tag,
-          icon_url: interaction.member.avatarURL,
+          name: interaction.user.tag,
+          icon_url: interaction.user.avatarURL,
         },
         title: 'You already have an active blackjack game!',
         description: `[Press me to go to game](${userGame.messageLink})`,
@@ -24,7 +24,7 @@ export default class BlackjackCommand extends Command {
       return;
     }
 
-    const userData = await this.client.modules.economy.getUserData(interaction.member.id);
+    const userData = await this.client.modules.economy.getUserData(interaction.user.id);
     const amount = options.get('amount');
     const totalBet = amount;
 
@@ -47,7 +47,7 @@ export default class BlackjackCommand extends Command {
     const { playersHand, dealersHand, playersHands } = blackjack.initiate();
     const uniqueId = this.client.utils.generateId();
 
-    await this.client.modules.economy.editBalance(interaction.member.id, -amount);
+    await this.client.modules.economy.editBalance(interaction.user.id, -amount);
 
     let canDoubleDown = userData.balance >= totalBet + amount && playersHand.hand.length === 2;
     let canSplit = userData.balance >= totalBet + amount
@@ -57,8 +57,8 @@ export default class BlackjackCommand extends Command {
     let components = this.generateComponents(uniqueId, canDoubleDown, canSplit);
     const embed = {
       author: {
-        name: interaction.member.tag,
-        icon_url: interaction.member.avatarURL,
+        name: interaction.user.tag,
+        icon_url: interaction.user.avatarURL,
       },
       description: undefined,
       color: undefined,
@@ -87,13 +87,13 @@ export default class BlackjackCommand extends Command {
 
     const message = await interaction.send('', { embeds: [embed], components });
     // TODO: message link
-    this.client.activeGames.set(`${interaction.member.id}:blackjack`,  {
+    this.client.activeGames.set(`${interaction.user.id}:blackjack`,  {
       type: 'blackjack',
-      userId: interaction.member.id,
+      userId: interaction.user.id,
       messageLink: message.messageLink,
     });
 
-    interaction.collectComponents(uniqueId, { memberId: interaction.member.id }, async (component, customId, end) => {
+    interaction.collectComponents(uniqueId, { memberId: interaction.user.id }, async (component, customId, end) => {
       switch(customId[0]) {
       case 'hit': {
         playersHand.hit();
@@ -166,15 +166,15 @@ export default class BlackjackCommand extends Command {
         if (winnings === amount) {
           embed.description = `You broke even and got your **${this.client.modules.economy.parseInt()}'s** back.`;
 
-          await this.client.modules.economy.editBalance(interaction.member.id, amount);
+          await this.client.modules.economy.editBalance(interaction.user.id, amount);
         } else if (winnings > amount) {
           embed.description = `You won **${this.client.modules.economy.parseInt(winnings - amount)}**`;
 
-          await this.client.modules.economy.editBalance(interaction.member.id, winnings);
+          await this.client.modules.economy.editBalance(interaction.user.id, winnings);
         } else {
           embed.description = `You lost **${this.client.modules.economy.parseInt(winnings - amount)}**`;
 
-          await this.client.modules.economy.editBalance(interaction.member.id, winnings);
+          await this.client.modules.economy.editBalance(interaction.user.id, winnings);
         }
 
         embed.footer = {

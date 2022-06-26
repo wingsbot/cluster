@@ -1,10 +1,9 @@
 import { Client } from '../Client';
-import { ModuleBase } from '../lib/framework';
-import { ShopItems } from '@economy';
+import { ModuleBase } from '../lib/framework/';
+import { ShopItems } from '@wings/economy';
 
 export class Shop extends ModuleBase {
   private readonly defaultItems = ShopItems;
-  private specialItems: 
   constructor(client: Client) {
     super(client);
 

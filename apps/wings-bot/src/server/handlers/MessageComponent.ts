@@ -1,4 +1,4 @@
-import { InteractionTimeoutError } from 'src/lib/framework';
+import { InteractionTimeoutError } from '../../lib/framework';
 import type { ComponentInteraction } from '../../structures';
 import type { InteractionData } from '../InteractionHandler';
 
