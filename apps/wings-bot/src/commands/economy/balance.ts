@@ -11,10 +11,6 @@ export class BalanceCommand extends Command {
   async run({ interaction, options }: CommandData<BalanceCommand>) {
     const user = options?.get('user') ?? interaction.user;
 
-    interaction.send('test1');
-    interaction.send('test2');
-    return;
-
     const userData = await this.client.modules.economy.getUserData(user.id);
     // const activeItems = await this.client.modules.economy.getActiveItems(user.id);
 

@@ -1,4 +1,3 @@
-import { ActionRow, Constants, InteractionButton, SelectMenu } from 'eris';
 
 export class MessageComponent {
   components: ActionRow[];

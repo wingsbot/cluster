@@ -1,6 +1,6 @@
 import { CommandInteraction } from 'eris';
 
-import { ModuleBase } from '../lib/framework/';
+import { ModuleBase } from '../lib/framework/bases';
 import type { UserLevelData } from '../lib/interfaces/Levels';
 
 export class Levels extends ModuleBase {

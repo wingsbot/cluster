@@ -85,8 +85,9 @@ export default class BlackjackCommand extends Command {
       timestamp: new Date().toISOString(),
     };
 
-    const message = await interaction.send('', { embeds: [embed], components });
-    // TODO: message link
+    await interaction.send('', { embeds: [embed], components });
+    const message = await interaction.getOriginalMessage();
+
     this.client.activeGames.set(`${interaction.user.id}:blackjack`,  {
       type: 'blackjack',
       userId: interaction.user.id,

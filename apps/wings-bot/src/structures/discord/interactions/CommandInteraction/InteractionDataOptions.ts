@@ -6,7 +6,7 @@ import {
   APIRole,
   ApplicationCommandOptionType,
 } from 'discord-api-types/v10';
-import { CommandOptions } from '../../../bot';
+import type { CommandOptions } from '../../../bot';
 import { ResolvedMember } from '..';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

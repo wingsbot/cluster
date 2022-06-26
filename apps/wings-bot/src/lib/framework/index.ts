@@ -1,6 +1,5 @@
 // handlers
 export * from './ModuleHandler';
-export * from './utils/EventManager';
 
 // bases
 export * from './bases/ModuleBase';

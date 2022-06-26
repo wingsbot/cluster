@@ -6,19 +6,19 @@ import {
   APIApplicationCommandInteraction,
   APIChatInputApplicationCommandInteractionData,
   APIEmbed,
+  APIMessage,
   InteractionResponseType,
   InteractionType,
   MessageFlags,
   RESTPostAPIInteractionCallbackFormDataBody,
   RESTPostAPIInteractionFollowupJSONBody,
-  RESTPostAPIInteractionFollowupResult,
   Routes,
 } from 'discord-api-types/v10';
 
 import { Member, User } from '../..';
 import { CommandInteractionData } from './InteractionData';
 import { InteractionTimeoutError } from '../../../../lib/framework';
-import { ComponentCallback, ResolvedComponent } from '../../../../server/InteractionHandler';
+import type { ComponentCallback, ResolvedComponent } from '../../../../server/InteractionHandler';
 import { Message } from '../../Message';
 
 export class CommandInteraction {
@@ -57,13 +57,12 @@ export class CommandInteraction {
 
   async sendInteraction(type: number, data: RESTPostAPIInteractionCallbackFormDataBody) {
     try {
-      this.responded = true;
-
-      const test = await this.reply.status(200).send({
+      await this.reply.status(200).send({
         type,
         data,
       });
-      console.log(test);
+
+      this.responded = true;
     } catch (error) {
       console.log(error);
     }
@@ -72,9 +71,12 @@ export class CommandInteraction {
   async send(content: string, options: RESTPostAPIInteractionFollowupJSONBody = {}) {
     const data = Object.assign({ content }, options);
 
-    if (!this.responded) return this.sendInteraction(InteractionResponseType.ChannelMessageWithSource, data);
+    if (!this.responded) {
+      this.sendInteraction(InteractionResponseType.ChannelMessageWithSource, data);
+      return;
+    }
 
-    return this.restClient.post(
+    this.restClient.post(
       Routes.webhook(this.applicationId, this.token),
       {
         body: data,
@@ -82,8 +84,8 @@ export class CommandInteraction {
       },
     ).catch(error => {
       console.error(error);
-      return null;
-    }) as Promise<RESTPostAPIInteractionFollowupResult>;
+      return;
+    });
   }
 
   async sendEmbed(embeds: APIEmbed[] | APIEmbed, ephemeral = false) {
@@ -137,5 +139,15 @@ export class CommandInteraction {
         },
       });
     });
+  }
+
+  async getOriginalMessage(): Promise<Message> {
+    try {
+      const message = await this.restClient.get(Routes.webhook(this.applicationId, this.token)) as APIMessage;
+      return new Message(message);
+    } catch(error) {
+      console.error(error);
+      return null;
+    }
   }
 }

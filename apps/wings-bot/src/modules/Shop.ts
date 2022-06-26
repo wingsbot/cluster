@@ -1,5 +1,5 @@
-import { Client } from '../Client';
-import { ModuleBase } from '../lib/framework/';
+import type { Client } from '../Client';
+import { ModuleBase } from '../lib/framework/bases';
 import { ShopItems } from '@wings/economy';
 
 export class Shop extends ModuleBase {

@@ -8,6 +8,7 @@
   ],
   "extends": [
     "eslint:recommended",
+    "plugin:import/typescript",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:unicorn/recommended"
@@ -25,6 +26,7 @@
     "unicorn/filename-case": 0,
     "unicorn/no-useless-undefined": 0,
     "unicorn/no-null": 0,
-    "unicorn/prevent-abbreviations": 0
+    "unicorn/prevent-abbreviations": 0,
+    "import/no-cycle": 2
   }
 }

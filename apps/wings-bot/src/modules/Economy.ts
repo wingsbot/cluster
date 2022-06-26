@@ -1,6 +1,6 @@
 import type { ActiveItem, Inventory } from '@prisma/client';
 import { UserData } from '@wings/database/structures';
-import { ModuleBase } from '../lib/framework/';
+import { ModuleBase } from '../lib/framework/bases';
 
 export class Economy extends ModuleBase {
   readonly userCache: Map<string, UserData> = new Map();

@@ -2,6 +2,8 @@ import type { Client } from '../../Client';
 import { Economy, EventTimer, Levels, Shop } from '../../modules';
 // import { Gangs } from '../../modules/Gangs.disabled';
 
+type ModuleTypes = 'economy' | 'eventtimer' | 'gangs' | 'levels' | 'shop';
+
 export class ModuleHandler {
   economy: Economy;
   eventTimer: EventTimer;
@@ -12,7 +14,7 @@ export class ModuleHandler {
     this.loadAllModules();
   }
 
-  reloadModule(name: string) {
+  reloadModule(name: ModuleTypes) {
     switch (name.toLowerCase()) {
     case 'economy': {
       this.economy = new Economy(this.client);

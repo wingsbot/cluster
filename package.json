@@ -7,7 +7,7 @@
     "build": "pnpm turbo run build",
     "start-bot": "tsc && nodemon --watch 'build/**/*' build/index.js",
     "start-webhook-server": "tsc && nodemon --watch 'build/**/*' build/index.js",
-    "update-prisma": "prisma format --schema=./database/schema.prisma && prisma generate --schema=./database/schema.prisma && prisma db push --schema=./database/schema.prisma",
+    "update-prisma": "prisma format --schema=./packages/database/schema.prisma && prisma generate --schema=./packages/database/schema.prisma && prisma db push --schema=./packages/database/schema.prisma",
     "lint": "eslint . --ext .ts --fix",
     "build-bot": "tsc"
   },
