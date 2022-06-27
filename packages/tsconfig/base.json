@@ -4,8 +4,6 @@
     "module": "commonjs",
     "target": "es2021",
     "esModuleInterop": true,
-    "baseUrl": "../../",
-    "rootDir": "../../",
     "paths": {
       "@wings/database": ["../database"],
       "@wings/database/*": ["../database/*"],
