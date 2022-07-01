@@ -28,35 +28,40 @@ export interface Card {
 
 export class BlackjackUtil {
   public ended = false;
+  private deck: Card[];
 
-  get deck(): Card[] {
+  getDeck(): Card[] {
     const deck: Card[] = [];
 
     for (const suit of suits) {
       for (const rank of ranks) {
-        const card = `${suit}${rank}`;
+        const card = `${rank}${suit}`;
 
         deck.push({
           suit,
           rank,
           display: card,
-          value: this.cardValue(card),
+          value: this.cardValue(rank),
           emoji: emojis[card],
         });
       }
     }
 
-    this.shuffle(deck);
+    const shuffled = this.shuffle(deck);
 
-    return deck;
+    return shuffled;
   }
 
   initiate() {
+    this.deck = this.getDeck();
+    const playerCards = [this.deck.pop(), this.deck.pop()];
+    const dealersCards = [this.deck.pop(), this.deck.pop()];
+
     const playersHand: PlayerHand = {
       doubledDown: false,
       splitted: false,
-      handValue: 0,
-      hand: [this.deck.pop(), this.deck.pop()],
+      handValue: playerCards.reduce((value, currentCard) =>  value += currentCard.value, 0),
+      hand: playerCards,
       hit: () => {
         const card = this.deck.pop();
         if (playersHand.hand.some(c => c.value === 11) && playersHand.handValue > 21) playersHand.hand.find(c => c.value === 11).value = 1;
@@ -75,13 +80,13 @@ export class BlackjackUtil {
     };
 
     const dealersHand: DealerHand = {
-      handValue: 0,
-      hand: [this.deck.pop(), this.deck.pop()],
+      handValue: dealersCards.reduce((value, currentCard) =>  value += currentCard.value, 0),
+      hand: dealersCards,
       hit: () => {
         const card = this.deck.pop();
-        if (playersHand.hand.some(c => c.value === 11) && playersHand.handValue > 21) playersHand.hand.find(c => c.value === 11).value = 1;
+        if (dealersHand.hand.some(c => c.value === 11) && playersHand.handValue > 21) playersHand.hand.find(c => c.value === 11).value = 1;
 
-        (playersHand.handValue as number) += card.value;
+        (dealersHand.handValue as number) += card.value;
         dealersHand.hand.push(card);
       },
       finish: () => {
@@ -100,9 +105,8 @@ export class BlackjackUtil {
     this.ended = true;
   }
 
-
-  cardValue(card: string) {
-    const index = ranks.indexOf(card.slice(2, -21));
+  cardValue(rank: string) {
+    const index = ranks.indexOf(rank);
 
     if (index === 0) return 11;
 
@@ -126,9 +130,11 @@ export class BlackjackUtil {
   private shuffle(deck: Card[]) {
     for (let i = deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * i);
-      const temp = this.deck[i];
-      this.deck[i] = this.deck[j];
-      this.deck[j] = temp;
+      const temp = deck[i];
+      deck[i] = deck[j];
+      deck[j] = temp;
     }
+
+    return deck;
   }
 }

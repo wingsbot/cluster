@@ -32,7 +32,6 @@ export class LoadHandler {
     }
 
     this.client.commands = this.commands;
-
     await Promise.all([
       this.postGuildCommands(ownerCommands),
       this.postGlobalCommands(globalCommands),
@@ -41,7 +40,6 @@ export class LoadHandler {
 
   async setCaches() {
     const files = await this.getCommandFiles();
-    console.log(files);
     for (const file of files) {
       if (!file.endsWith('.js')) continue;
 

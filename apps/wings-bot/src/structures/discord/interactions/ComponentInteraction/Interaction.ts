@@ -47,11 +47,11 @@ export class ComponentInteraction {
     this.data = interaction.data;
 
     this.message = new Message(interaction.message);
+    this.user = new User(interaction.user || interaction.member.user);
     this.channelId = interaction.channel_id;
     this.locale = interaction.locale;
 
     if (interaction.guild_id) this.guildId = interaction.guild_id;
-    if (interaction.user) this.user = new User(interaction.user || interaction.member.user);
     if (interaction.member) this.member = new Member(interaction.member);
   }
 

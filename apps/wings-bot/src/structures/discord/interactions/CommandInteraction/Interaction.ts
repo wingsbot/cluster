@@ -46,11 +46,11 @@ export class CommandInteraction {
     this.id = interaction.id;
 
     this.type = interaction.type;
+    this.user = new User(interaction.user || interaction.member.user);
 
     if (interaction.guild_id) this.guildId = interaction.guild_id;
     if (interaction.channel_id) this.channelId = interaction.channel_id;
     if (interaction.data) this.data = new CommandInteractionData(interaction.data as APIChatInputApplicationCommandInteractionData);
-    if (interaction.user) this.user = new User(interaction.user || interaction.member.user);
     if (interaction.member) this.member = new Member(interaction.member);
     if (interaction.message) this.message = new Message(interaction.message);
   }
@@ -143,7 +143,10 @@ export class CommandInteraction {
 
   async getOriginalMessage(): Promise<Message> {
     try {
-      const message = await this.restClient.get(Routes.webhook(this.applicationId, this.token)) as APIMessage;
+      const message = await this.restClient.get(
+        Routes.webhookMessage(this.applicationId, this.token, '@original'), {
+          auth: false,
+        }) as APIMessage;
       return new Message(message);
     } catch(error) {
       console.error(error);

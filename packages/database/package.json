@@ -3,10 +3,24 @@
   "version": "1.0.0",
   "private": true,
   "description": "",
-  "main": "./build/index.js",
+  "main": "./build/index",
+  "types": "./build/index",
+  "exports": {
+    ".": {
+      "require": "./build/index",
+      "import": "./dist/index"
+    },
+    "./*": {
+      "require": "./build/*.js",
+      "import": "./build/*.d.ts"
+    }
+  },
   "files": [
     "build/**/*.js"
   ],
+  "directories": {
+    "structures": "./build/structures/*"
+  },
   "scripts": {
     "build": "rm -rf build && tsc"
   },

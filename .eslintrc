@@ -27,6 +27,7 @@
     "unicorn/no-useless-undefined": 0,
     "unicorn/no-null": 0,
     "unicorn/prevent-abbreviations": 0,
-    "import/no-cycle": 2
+    "import/no-cycle": 2,
+    "unicorn/no-array-reduce": 0
   }
 }

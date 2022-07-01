@@ -40,7 +40,7 @@ export interface PendingComponents {
 
 export class InteractionHandler {
   private publicKey: Buffer;
-  public pendingComponents: Map<string, PendingComponents>;
+  pendingComponents = new Map<string, PendingComponents>();
 
   constructor(private client: Client) {
     this.publicKey = Buffer.from(client.config.publicKey, 'hex');

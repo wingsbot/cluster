@@ -2,7 +2,7 @@ import { BlackjackUtil } from './util';
 import { Args, Command, CommandData, CommandOptions, MessageComponent } from '../../../structures';
 import { InteractionTimeoutError } from '../../../lib/framework';
 
-export default class BlackjackCommand extends Command {
+export class BlackjackCommand extends Command {
   description = 'Play blackjack against Wings.';
   options = new CommandOptions()
     .addOption(Args.number('amount', 'How many wings do you want to bet?', { required: true }));
@@ -95,6 +95,7 @@ export default class BlackjackCommand extends Command {
     });
 
     interaction.collectComponents(uniqueId, { memberId: interaction.user.id }, async (component, customId, end) => {
+      console.log(customId);
       switch(customId[0]) {
       case 'hit': {
         playersHand.hit();
@@ -158,7 +159,7 @@ export default class BlackjackCommand extends Command {
         },
         {
           name: '**Dealer hand**',
-          value: `${hideSecondCard ? `${dealersHand.hand[0].emoji} <:whatCardIsThis:777729431899996220>` : dealersHand.hand.join(' ')}\nTotal: \`${hideSecondCard ? (dealersHand.handValue as number) - dealersHand.hand[1].value : dealersHand.handValue}\``,
+          value: `${hideSecondCard ? `${dealersHand.hand[0].emoji} <:whatCardIsThis:777729431899996220>` : dealersHand.hand.map(c => c.emoji).join(' ')}\nTotal: \`${hideSecondCard ? (dealersHand.handValue as number) - dealersHand.hand[1].value : dealersHand.handValue}\``,
           inline: true,
         });
 

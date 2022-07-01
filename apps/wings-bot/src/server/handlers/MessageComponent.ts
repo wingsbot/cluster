@@ -4,6 +4,7 @@ import type { InteractionData } from '../InteractionHandler';
 
 export default async function({ client, interaction }: InteractionData<ComponentInteraction>) {
   const customId = interaction.data.custom_id.split(':');
+  console.log(client.routeHandler.interactionHandler);
   const awaitComponent = client.routeHandler.interactionHandler.pendingComponents.get([...customId].pop());
 
   if (awaitComponent) {
@@ -24,7 +25,7 @@ export default async function({ client, interaction }: InteractionData<Component
 
       const end = () => {
         awaitComponent.collector.ended = true;
-        this.client.routeHandler.interactionHandler.pendingComponents.delete(customId);
+        client.routeHandler.interactionHandler.pendingComponents.delete([...customId].pop());
         awaitComponent.collector.reject(new InteractionTimeoutError('Prompt timed out!'));
       };
 
