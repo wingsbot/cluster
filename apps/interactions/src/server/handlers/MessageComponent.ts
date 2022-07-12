@@ -1,4 +1,3 @@
-import { InteractionTimeoutError } from '../../lib/framework';
 import type { ComponentInteraction } from '../../structures';
 import type { InteractionData } from '../InteractionHandler';
 
@@ -14,30 +13,8 @@ export default async function({ client, interaction }: InteractionData<Component
     }
 
     clearTimeout(awaitComponent.timer);
-
     customId.splice(-1, 1);
 
-    if (awaitComponent.collector) {
-      if (awaitComponent.collector.ended) {
-        awaitComponent.resolve({ interaction, customId });
-        return;
-      }
-
-      const end = () => {
-        awaitComponent.collector.ended = true;
-        client.routeHandler.interactionHandler.pendingComponents.delete([...customId].pop());
-        awaitComponent.collector.reject(new InteractionTimeoutError('Prompt timed out!'));
-      };
-
-
-      const timer = setTimeout(() => {
-        end();
-      }, awaitComponent.collector.timeout);
-
-      awaitComponent.timer = timer;
-      awaitComponent.collector.callback(interaction, customId, end);
-      return;
-    }
     awaitComponent.resolve({ interaction, customId });
     return;
   }

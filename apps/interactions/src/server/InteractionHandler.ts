@@ -19,23 +19,11 @@ export interface ResolvedComponent {
   customId: string[];
 }
 
-export type ComponentCallback = (
-  interaction: ComponentInteraction,
-  customId: string[],
-  end: () => void,
-) => void;
 
 export interface PendingComponents {
   resolve: (value: ResolvedComponent) => void;
   timer: NodeJS.Timeout;
   memberId?: string;
-  collector?: {
-    callback: ComponentCallback;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    reject: (reason?: any) => void;
-    timeout: number;
-    ended: boolean;
-  }
 }
 
 export class InteractionHandler {

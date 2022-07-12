@@ -18,7 +18,7 @@ import {
 import { Member, User } from '../..';
 import { CommandInteractionData } from './InteractionData';
 import { InteractionTimeoutError } from '../../../../lib/framework';
-import type { ComponentCallback, ResolvedComponent } from '../../../../server/InteractionHandler';
+import type { ResolvedComponent } from '../../../../server/InteractionHandler';
 import { Message } from '../../Message';
 
 export class CommandInteraction {
@@ -113,30 +113,6 @@ export class CommandInteraction {
         resolve,
         timer,
         memberId,
-      });
-    });
-  }
-
-  async collectComponents(uniqueId: string, options: { timeout?: number, memberId?: string } = {}, callback: ComponentCallback) {
-    if (!options.timeout) options.timeout = 60_000;
-
-    return new Promise<ResolvedComponent>((resolve, reject) => {
-      const timer = setTimeout(() => {
-        this.client.routeHandler.interactionHandler.pendingComponents.delete(uniqueId);
-
-        reject(new InteractionTimeoutError('Prompt timed out!'));
-      }, options.timeout);
-
-      this.client.routeHandler.interactionHandler.pendingComponents.set(uniqueId, {
-        resolve,
-        timer,
-        memberId: options.memberId,
-        collector: {
-          callback,
-          reject,
-          timeout: options.timeout,
-          ended: false,
-        },
       });
     });
   }
