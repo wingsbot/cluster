@@ -2,7 +2,7 @@
 import type { Events } from '@prisma/client';
 
 import { ModuleBase} from '../lib/framework/bases';
-import { EventManager } from '../lib/framework/utils/';
+import { EventManager } from '../lib/framework/utils';
 import type { Client } from '../Client';
 
 export class EventTimer extends ModuleBase {

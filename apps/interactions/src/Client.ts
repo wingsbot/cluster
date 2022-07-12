@@ -31,6 +31,7 @@ export class Client {
 
   async init() {
     await Promise.all([
+      this.db.client.$connect(),
       this.loadHandler.loadCommands(),
       this.startServer(),
     ]);

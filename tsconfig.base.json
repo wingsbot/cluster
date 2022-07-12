@@ -5,15 +5,16 @@
     "target": "es2021",
     "esModuleInterop": true,
     "paths": {
-      "@wings/database": ["../database"],
-      "@wings/database/*": ["../database/*"],
-      "@wings/economy": ["../economy"]
+      "@wings/database": ["./packages/database"],
+      "@wings/database/*": ["./packages/database/*"],
+      "@wings/economy": ["./packages/economy"]
     }
   },
 
   "exclude": [
     "./node_modules",
     "./.turbo",
-    "./build"
+    "./build",
+    "./dist",
   ]
 }

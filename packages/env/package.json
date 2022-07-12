@@ -1,13 +1,8 @@
 {
-  "name": "@wings/economy",
+  "name": "@wings/env",
   "version": "1.0.0",
-  "private": true,
   "description": "",
-  "main": "./dist/index",
-  "types": "./dist/index",
-  "files": [
-    "dist/**/*.js"
-  ],
+  "main": "dist/index.js",
   "scripts": {
     "build": "rm -rf dist && tsc"
   },

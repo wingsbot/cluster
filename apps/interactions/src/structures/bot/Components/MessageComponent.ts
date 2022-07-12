@@ -53,6 +53,14 @@ export class MessageComponent {
     return this;
   }
 
+  disableAllButtons() {
+    for (const actionRows of this.components) {
+      for (const component of actionRows.components) {
+        component.disabled = true;
+      }
+    }
+  }
+
   addMenu(customId: string, selections: APISelectMenuOption[], options: MenuOptions = {}) {
     const menu: APISelectMenuComponent = {
       type: ComponentType.SelectMenu,

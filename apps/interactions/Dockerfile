@@ -12,4 +12,4 @@ RUN pnpm install
 RUN pnpm run update-prisma
 RUN pnpm run build
 
-CMD ["node", "build/src/"]
+CMD ["node", "dist/src/"]

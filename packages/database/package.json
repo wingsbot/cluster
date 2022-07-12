@@ -3,26 +3,26 @@
   "version": "1.0.0",
   "private": true,
   "description": "",
-  "main": "./build/index",
-  "types": "./build/index",
+  "main": "./dist/index",
+  "types": "./dist/index",
   "exports": {
     ".": {
-      "require": "./build/index",
+      "require": "./dist/index",
       "import": "./dist/index"
     },
     "./*": {
-      "require": "./build/*.js",
-      "import": "./build/*.d.ts"
+      "require": "./dist/*.js",
+      "import": "./dist/*.d.ts"
     }
   },
   "files": [
-    "build/**/*.js"
+    "dist/**/*.js"
   ],
   "directories": {
-    "structures": "./build/structures/*"
+    "structures": "./dist/structures/*"
   },
   "scripts": {
-    "build": "rm -rf build && tsc"
+    "build": "rm -rf dist && tsc"
   },
   "keywords": [],
   "author": "",

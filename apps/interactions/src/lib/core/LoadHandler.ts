@@ -4,7 +4,7 @@ import { join, resolve, parse } from 'node:path';
 import type { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import type { Client } from '../../Client';
-import type { Command, Components } from '../../structures';
+import { Command, Components } from '../../structures';
 
 export class LoadHandler {
   private restClient: REST;
@@ -52,8 +52,8 @@ export class LoadHandler {
 
       if (commandFile.__esModule) {
         for (const fileExport of Object.keys(commandFile)) {
-          if (fileExport.endsWith('Command')) newCommands.push(commandFile[fileExport]);
-          if (fileExport.endsWith('Component')) newComponents.push(commandFile[fileExport]);
+          if (commandFile[fileExport] instanceof Command) newCommands.push(commandFile[fileExport]);
+          if (commandFile[fileExport] instanceof Components) newComponents.push(commandFile[fileExport]);
 
           continue;
         }

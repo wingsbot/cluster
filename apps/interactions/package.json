@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Discord Bot",
   "private": true,
-  "main": "build/apps/wings-bot/src/index.js",
+  "main": "dist/apps/wings-bot/src/index.js",
   "scripts": {
-    "build": "rm -rf build && tsc",
-    "start": "nodemon --watch 'build/**/*' build/index.js"
+    "build": "rm -rf dist && tsc",
+    "start": "nodemon --watch 'dist/**/*' dist/index.js"
   },
   "repository": {
     "type": "git",
@@ -21,8 +21,8 @@
   "dependencies": {
     "@discordjs/rest": "^0.4.1",
     "@prisma/client": "3.15.2",
-    "@wings/database": "workspace:../../packages/database/build",
-    "@wings/economy": "workspace:../../packages/economy/build",
+    "@wings/database": "workspace:../../packages/database/dist",
+    "@wings/economy": "workspace:../../packages/economy/dist",
     "canvas": "^2.9.3",
     "discord-api-types": "^0.33.5",
     "dotenv": "^16.0.1",
