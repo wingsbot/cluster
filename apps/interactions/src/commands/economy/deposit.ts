@@ -1,4 +1,4 @@
-import { Command, CommandOptions, Args, CommandData } from '../../structures';
+import { Command, CommandOptions, Args, CommandData } from '@wings/structures';
 
 
 export class DepositCommand extends Command {

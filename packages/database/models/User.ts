@@ -1,6 +1,5 @@
 import type { User, PrismaClient } from '@prisma/client';
-import type { UserLevelData } from '../../../apps/wings-bot/src/lib/interfaces/Levels';
-import { UserPatronData } from '../structures/UserData';
+import type { UserPatronData, UserLevelData } from '../structures/UserData';
 
 export class UserDatabase {
   constructor(private client: PrismaClient, private database: PrismaClient['user']) {}

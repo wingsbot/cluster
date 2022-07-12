@@ -1,5 +1,5 @@
-import { BlackjackData, BlackjackUtil, DealerHand, PlayerHand } from './util';
-import { Args, Command, CommandData, CommandOptions, MessageComponent } from '../../../structures';
+import { BlackjackData, BlackjackUtil } from './util';
+import { Args, Command, CommandData, CommandOptions, MessageComponent } from '@wings/structures';
 import { InteractionTimeoutError } from '../../../lib/framework';
 import { APIEmbed, ButtonStyle, ComponentType } from 'discord-api-types/v10';
 import { ResolvedComponent } from 'src/server/InteractionHandler';
@@ -219,7 +219,7 @@ export class BlackjackCommand extends Command {
         },
       };
 
-      hands.forEach((hand: any, i: number) => {
+      for (const hand of allPlayersHands) {
         const playerValue = blackjack.handValue(hand);
         const result = this.gameResult(playerValue, opponentValue);
 
@@ -234,23 +234,21 @@ export class BlackjackCommand extends Command {
 
         const soft = blackjack.isSoft(hand);
         embed.fields.push({
-          name: hands.length === 1 ? '**Your hand**' : `**Hand ${i + 1}**`,
+          name: allPlayersHands.length === 1 ? '**Your hand**' : `**Hand ${i + 1}**`,
           value: `${hand.join(' ')}\nTotal: \`${soft ? 'Soft ' : ''}${playerValue}\``,
           inline: true,
         });
-      });
+      }
 
       embed.fields.push({
         name: '\u200B',
         value: '\u200B',
-      });
-
-      embed.fields.push({
+      },
+      {
         name: '**Dealer hand**',
         value: `${hideHoleCard ? `${opponentDeck[0]} <:__:788543289375588363>` : opponentDeck.join(' ')}\nTotal: \`${hideHoleCard ? blackjack.handValue([opponentDeck[0]]) : opponentValue}\``,
       });
 
-      // tslint:disable-next-line: max-line-length
       embed.color = winnings > bet ? Util.colors.success : (winnings < bet ? Util.colors.error : Util.colors.info);
       embed.description = `You ${winnings === bet ? `broke even and got your **${currency}** back.` : `${winnings > bet ? 'won' : 'lost'} **${this.bot.currency.parse(currency, Math.abs(winnings - bet).toLocaleString())}**`}`;
       // tslint:disable-next-line: max-line-length

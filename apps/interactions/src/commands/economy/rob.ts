@@ -1,8 +1,8 @@
-import { Args, Command, CommandData, CommandOptions } from '../../structures';
+import { Args, Command, CommandData, CommandOptions } from '@wings/structures';
 
-export class RobCommand extends Command{
+export class RobCommand extends Command {
   description = 'Take someones Wings... If you can 👀';
-  cooldown = 1000 * 60 * 60 * 4;
+  cooldown = 1000 * 60 * 60 * 24;
   options = new CommandOptions()
     .addOption(Args.user('user', 'select a user', { required: true }));
 
@@ -17,21 +17,19 @@ export class RobCommand extends Command{
     const randomNumber = Math.random();
     let robAmount: number;
 
-    if (robbeeData.balance < 250) {
+    if (robbeeData.balance < 100) {
       interaction.send(`**${user.tag}** barely has anything... Kinda fucked up 😐`);
       return;
     }
 
     if (randomNumber < 0.8) {
-      robAmount = (Number(userData.balance) * 0.05) < 500 ? 500 : Math.round(Number(userData.balance) * 0.05);
+      robAmount = (Number(userData.balance) * 0.25) < 500 ? 500 : Math.round(Number(userData.balance) * 0.25);
 
       interaction.send(`You were caught tryna steal 👮🚔\n> You were fined **${this.client.modules.economy.parseInt(robAmount)}**`);
       await this.client.modules.economy.editBalance(interaction.user.id, -robAmount);
     } else if (randomNumber < 0.9) {
       if (robberStopper) {
-        robAmount = (Number(userData.balance) * 0.05) < 500 ? 500 : Number(userData.balance) * 0.05;
-
-        interaction.send(`**${user.tag}** had an active robber stopper!\n> You were fined **${this.client.modules.economy.parseInt(robAmount)}**`);
+        this.robberStopper(interaction, user.tag, userData.balance);
         return;
       }
 
@@ -41,11 +39,9 @@ export class RobCommand extends Command{
       await this.client.modules.economy.editBalance(user.id, -robAmount);
 
       interaction.send(`**${interaction.user.tag}** slips their hand in **${user.tag}'s** bucket and stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
-    } else if (randomNumber < 0.98) {
+    } else if (randomNumber < 0.99) {
       if (robberStopper) {
-        robAmount = (Number(userData.balance) * 0.05) < 500 ? 500 : Math.round(Number(userData.balance) * 0.05);
-
-        interaction.send(`**${user.tag}** had an active robber stopper!\n> You were fined **${this.client.modules.economy.parseInt(robAmount)}**`);
+        this.robberStopper(interaction, user.tag, userData.balance);
         return;
       }
 
@@ -57,9 +53,7 @@ export class RobCommand extends Command{
       interaction.send(`**${interaction.user.tag}** slips their hand in **${user.tag}'s** suitcase and stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
     } else {
       if (robberStopper) {
-        robAmount = (Number(userData.balance) * 0.05) < 500 ? 500 : Math.round(Number(userData.balance) * 0.05);
-
-        interaction.send(`**${user.tag}** had an active robber stopper!\n> You were fined **${this.client.modules.economy.parseInt(robAmount)}**`);
+        this.robberStopper(interaction, user.tag, userData.balance);
         return;
       }
 
@@ -70,5 +64,11 @@ export class RobCommand extends Command{
 
       interaction.send(`**${interaction.user.tag}** slips their hand in **${user.tag}'s** LIFE SAVINGS stole **${this.client.modules.economy.parseInt(robAmount)}**!`);
     }
+  }
+
+  private robberStopper(interaction: CommandData<RobCommand>['interaction'], userTag: string, userBalance: number) {
+    const robAmount = (userBalance * 0.25) < 500 ? 500 : Math.floor(userBalance * 0.25);
+
+    interaction.send(`**${userTag}** had an active robber stopper!\n> You were fined **${this.client.modules.economy.parseInt(robAmount)}**`);
   }
 }

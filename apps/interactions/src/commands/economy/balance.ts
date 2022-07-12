@@ -1,4 +1,4 @@
-import { Command, CommandData, CommandOptions, Args } from '../../structures';
+import { Command, CommandData, CommandOptions, Args } from '@wings/structures';
 
 export class BalanceCommand extends Command {
   description = 'Check how much wings you got.';
