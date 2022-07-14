@@ -3,13 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "description": "",
-  "main": "./dist/index",
-  "types": "./dist/index",
-  "files": [
-    "dist/**/*.js"
-  ],
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "build": "rm -rf dist && tsc"
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",

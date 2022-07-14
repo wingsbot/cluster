@@ -1,14 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "dist",
-    "paths": {
-      "@wings/structures": ["./src/structures/"],
-    }
-  },
-
   "include": [
-    "./src/**/*.ts",
+    "./src/**/*.ts"
   ],
+  "exclude": [
+    "node_modules",
+    ".turbo",
+    "dist",
+  ]
 }

@@ -1,20 +1,37 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "moduleResolution": "node",
     "skipLibCheck": true,
     "module": "commonjs",
     "target": "es2021",
     "esModuleInterop": true,
+    "composite": false,
+    "declaration": true,
+    "incremental": true,
+    "declarationMap": true,
     "paths": {
       "@wings/database": ["./packages/database"],
-      "@wings/database/*": ["./packages/database/*"],
-      "@wings/economy": ["./packages/economy"]
+      "@wings/economy": ["./packages/economy"],
+      "@wings/env": ["./packages/env"],
+      "@wings/structures": ["./apps/interactions/src/structures"],
     }
   },
+  "references": [
+    {
+      "path": "./packages/database"
+    },
+    {
+      "path": "./packages/economy"
+    },
+    {
+      "path": "./packages/env"
+    },
+  ],
 
-  "exclude": [
-    "./node_modules",
-    "./.turbo",
-    "./build",
-    "./dist",
+  "include": [
+    ".env"
   ]
 }

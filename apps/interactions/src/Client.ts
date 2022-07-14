@@ -3,7 +3,7 @@ import { REST } from '@discordjs/rest';
 import RedisClient from 'ioredis';
 import { RouteHandler } from './server/routeHandler';
 
-import config from './Config';
+import config from '@wings/env';
 
 import { LoadHandler } from './lib/core/LoadHandler';
 import { ModuleHandler } from './lib/framework';
