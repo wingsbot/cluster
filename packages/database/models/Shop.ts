@@ -1,4 +1,4 @@
-import type { Shop, PrismaClient } from '@prisma/client';
+import type { Shop, PrismaClient } from '../generated';
 
 export class ShopDatabase {
   constructor(private client: PrismaClient, private database: PrismaClient['shop']) {}

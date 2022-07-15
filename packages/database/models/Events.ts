@@ -1,4 +1,4 @@
-import type { Events, PrismaClient } from '@prisma/client';
+import type { Events, PrismaClient } from '../generated';
 
 export class EventsDatabase {
   constructor(private client: PrismaClient, private database: PrismaClient['events']) {}

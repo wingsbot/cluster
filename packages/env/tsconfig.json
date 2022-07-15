@@ -3,6 +3,9 @@
   "include": [
     "./**/*.ts"
   ],
+  "compilerOptions": {
+    "outDir": "./dist"
+  },
   "exclude": [
     "node_modules",
     ".turbo",

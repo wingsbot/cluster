@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User } from '../generated';
 
 export interface UserPatronData {
   discordId: string;

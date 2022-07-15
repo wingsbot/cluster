@@ -1,6 +1,6 @@
 
 import EventEmitter from 'node:events';
-import type { Events } from '@prisma/client';
+import type { Events } from '@wings/database';
 
 import { Default } from './timers/Default';
 

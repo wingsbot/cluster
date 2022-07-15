@@ -1,4 +1,4 @@
-import { Inventory } from '@prisma/client';
+import { Inventory } from '@wings/database';
 import { TextChannel } from 'eris';
 import { CommandBase, CommandData } from '../../lib/framework';
 

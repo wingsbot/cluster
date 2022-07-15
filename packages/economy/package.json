@@ -7,6 +7,9 @@
   "scripts": {
     "build": "tsc"
   },
+  "dependencies": {
+    "@wings/database": "workspace:*"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"

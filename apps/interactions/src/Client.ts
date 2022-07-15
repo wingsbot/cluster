@@ -1,7 +1,7 @@
 import fastify from 'fastify';
 import { REST } from '@discordjs/rest';
 import RedisClient from 'ioredis';
-import { RouteHandler } from './server/routeHandler';
+import { RouteHandler } from './server/RouteHandler';
 
 import config from '@wings/env';
 

@@ -1,4 +1,4 @@
-import { Prisma, Shop } from '@prisma/client';
+import { Prisma, Shop } from '@wings/database';
 
 export class Item {
   id: number;

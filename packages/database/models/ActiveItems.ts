@@ -1,4 +1,4 @@
-import type { ActiveItem, PrismaClient } from '@prisma/client';
+import type { ActiveItem, PrismaClient } from '../generated';
 
 export class ActiveItemsDatabase {
   constructor(private client: PrismaClient, private database: PrismaClient['activeItem']) {}

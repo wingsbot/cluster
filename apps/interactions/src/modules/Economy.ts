@@ -1,4 +1,4 @@
-import type { ActiveItem, Inventory } from '@prisma/client';
+import type { ActiveItem, Inventory } from '@wings/database';
 import { UserData } from '@wings/database/structures';
 import { ModuleBase } from '../lib/framework/bases';
 

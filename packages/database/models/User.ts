@@ -1,4 +1,4 @@
-import type { User, PrismaClient } from '@prisma/client';
+import type { User, PrismaClient } from '../generated';
 import type { UserPatronData, UserLevelData } from '../structures/UserData';
 
 export class UserDatabase {
@@ -10,7 +10,7 @@ export class UserDatabase {
         id: userId,
       },
     });
-    console.log(userData);
+
     if (!userData) userData = await this.getDefaultUserData(userId, {});
     return userData;
   }

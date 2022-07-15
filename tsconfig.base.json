@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "outDir": "./dist",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "module": "commonjs",
     "target": "es2021",
@@ -13,25 +14,11 @@
     "incremental": true,
     "declarationMap": true,
     "paths": {
-      "@wings/database": ["./packages/database"],
-      "@wings/economy": ["./packages/economy"],
-      "@wings/env": ["./packages/env"],
-      "@wings/structures": ["./apps/interactions/src/structures"],
+      "@wings/database/structures": ["./packages/database/structures", "./dist/packages/database/structures"],
+      "@wings/database": ["./packages/database", "./dist/packages/database"],
+      "@wings/economy": ["./packages/economy", "./dist/packages/economy"],
+      "@wings/env": ["./packages/env", "./dist/packages/env"],
+      "@wings/structures": ["./apps/interactions/src/structures", "./dist/apps/interactions/src/structures"],
     }
   },
-  "references": [
-    {
-      "path": "./packages/database"
-    },
-    {
-      "path": "./packages/economy"
-    },
-    {
-      "path": "./packages/env"
-    },
-  ],
-
-  "include": [
-    ".env"
-  ]
 }

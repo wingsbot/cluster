@@ -1,4 +1,4 @@
-import type { Inventory, PrismaClient } from '@prisma/client';
+import type { Inventory, PrismaClient } from '../generated';
 
 export class InventoryDatabase {
   constructor(private client: PrismaClient, private database: PrismaClient['inventory']) {}

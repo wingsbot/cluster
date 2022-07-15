@@ -1,4 +1,4 @@
-import type { Events } from '@prisma/client';
+import type { Events } from '@wings/database';
 import type { EventManager } from '../EventManager';
 
 export class Default {
@@ -17,7 +17,7 @@ export class Default {
       return;
     }
 
-    const interval = Number(time) - Date.now() <= 10000 ? 1000 : (Number(time) - Date.now()) / 10;
+    const interval = Number(time) - Date.now() <= 10_000 ? 1000 : (Number(time) - Date.now()) / 10;
     setTimeout(this.update.bind(this), interval);
   }
 }

@@ -1,5 +1,5 @@
 import { Constants, InteractionButton } from 'eris';
-import type { Shop as ShopItem } from '@prisma/client';
+import type { Shop as ShopItem } from '@wings/database';
 import { CommandBase, CommandData, ComponentData } from '../../lib/framework';
 import { MessageComponent } from '../../lib/framework/utils';
 

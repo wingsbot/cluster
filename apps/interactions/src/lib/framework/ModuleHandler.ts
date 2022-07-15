@@ -1,6 +1,5 @@
 import type { Client } from '../../Client';
-import { Economy, EventTimer, Levels, Shop } from '../../modules';
-// import { Gangs } from '../../modules/Gangs.disabled';
+import { Economy, EventTimer, Levels/*, Shop, Gangs*/ } from '../../modules';
 
 type ModuleTypes = 'economy' | 'eventtimer' | 'gangs' | 'levels' | 'shop';
 
@@ -8,7 +7,7 @@ export class ModuleHandler {
   economy: Economy;
   eventTimer: EventTimer;
   levels: Levels;
-  shop: Shop;
+  // shop: Shop;
 
   constructor(public client: Client) {
     this.loadAllModules();
@@ -41,7 +40,7 @@ export class ModuleHandler {
     }
 
     case 'shop': {
-      this.shop = new Shop(this.client);
+      // this.shop = new Shop(this.client);
 
       break;
     }
@@ -57,7 +56,7 @@ export class ModuleHandler {
       this.economy = new Economy(this.client),
       this.eventTimer = new EventTimer(this.client),
       this.levels = new Levels(this.client),
-      this.shop = new Shop(this.client),
+      // this.shop = new Shop(this.client),
     ]);
   }
 

@@ -1,5 +1,5 @@
 
-import type { Events } from '@prisma/client';
+import type { Events } from '@wings/database';
 
 import { ModuleBase} from '../lib/framework/bases';
 import { EventManager } from '../lib/framework/utils';
@@ -37,9 +37,9 @@ export class EventTimer extends ModuleBase {
     }
 
     case 'limitedItemTimer': {
-      const item = this.client.modules.shop.getShopItem(timer.itemId);
+      //c const item = this.client.modules.shop.getShopItem(timer.itemId);
 
-      this.client.modules.shop.removeSpecialItem(item);
+      // this.client.modules.shop.removeSpecialItem(item);
       break;
     }
 

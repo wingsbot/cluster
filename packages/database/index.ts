@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated';
 import { ActiveItemsDatabase, EventsDatabase, InventoryDatabase, ShopDatabase, UserDatabase } from './models';
 
 export class Database {
@@ -18,3 +18,5 @@ export class Database {
     this.user = new UserDatabase(this.client, this.client.user);
   }
 }
+
+export * from './generated';

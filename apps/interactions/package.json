@@ -1,11 +1,12 @@
 {
-  "name": "wings",
+  "name": "interactions",
   "version": "1.0.0",
   "description": "Discord Bot",
   "private": true,
   "main": "index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start": "yarn ts-node src/Client.ts"
   },
   "repository": {
     "type": "git",
@@ -19,22 +20,21 @@
   "homepage": "https://github.com/wingsbot/cluster#readme",
   "dependencies": {
     "@discordjs/rest": "^0.4.1",
-    "@prisma/client": "3.15.2",
-    "@wings/database": "workspace:*",
-    "@wings/economy": "workspace:*",
-    "@wings/env": "workspace:*",
+    "@wings/database": "workspace:packages/database",
+    "@wings/economy": "workspace:packages/economy",
+    "@wings/env": "workspace:packages/env",
     "canvas": "^2.9.3",
     "discord-api-types": "^0.33.5",
     "dotenv": "^16.0.1",
     "eris": "^0.17.0",
     "fastify": "^3.29.0",
     "ioredis": "^4.28.5",
-    "module-alias": "^2.2.2",
     "prisma": "^3.15.2",
     "tweetnacl": "^1.0.3",
     "undici": "^4.16.0"
   },
   "devDependencies": {
-    "@types/ioredis": "^4.28.10"
+    "@types/ioredis": "^4.28.10",
+    "ts-node": "^10.9.1"
   }
 }

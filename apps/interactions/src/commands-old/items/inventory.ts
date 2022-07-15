@@ -1,5 +1,5 @@
 import { ComponentInteractionSelectMenuData, Constants, InteractionButton, SelectMenu, SelectMenuOptions } from 'eris';
-import { Inventory as InventoryItem } from '@prisma/client';
+import { Inventory as InventoryItem } from '@wings/database';
 import { CommandBase, CommandData, ComponentData } from '../../lib/framework';
 import { MessageComponent } from '../../lib/framework/utils';
 
@@ -173,29 +173,29 @@ export default class Inventory extends CommandBase {
 
   private filterInventory(value: string, filteredArray: InventoryItem[]) {
     switch (value) {
-      case 'oldestItems': {
-        filteredArray.reverse();
-        break;
-      }
+    case 'oldestItems': {
+      filteredArray.reverse();
+      break;
+    }
 
-      case 'alphabetical': {
-        filteredArray.sort((itemA, itemB) => itemA.itemId.localeCompare(itemB.itemId));
-        break;
-      }
+    case 'alphabetical': {
+      filteredArray.sort((itemA, itemB) => itemA.itemId.localeCompare(itemB.itemId));
+      break;
+    }
 
-      case 'mostValue': {
-        filteredArray.sort((itemA, itemB) => Number(itemB.price) - Number(itemA.price));
-        break;
-      }
+    case 'mostValue': {
+      filteredArray.sort((itemA, itemB) => Number(itemB.price) - Number(itemA.price));
+      break;
+    }
 
-      case 'leastValue': {
-        filteredArray.sort((itemA, itemB) => Number(itemA.price) - Number(itemB.price));
-        break;
-      }
+    case 'leastValue': {
+      filteredArray.sort((itemA, itemB) => Number(itemA.price) - Number(itemB.price));
+      break;
+    }
 
-      default: {
-        break;
-      }
+    default: {
+      break;
+    }
     }
   }
 }

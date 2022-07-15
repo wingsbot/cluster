@@ -1,8 +1,12 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist"
+  },
   "include": [
-    "./src/**/*.ts"
-  ],
+    "./src/**/*.ts",
+    "package.json"
+, "src/commands/games/blackjack/blackjack.ts.wip", "src/lib/framework/utils/WorkUtil.ts.old", "src/lib/framework/utils/RussianUtil.ts.old"  ],
   "exclude": [
     "node_modules",
     ".turbo",
