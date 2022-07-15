@@ -1,0 +1,8 @@
+{
+  "name": "premium",
+  "version": "1.0.0",
+  "description": "Wings premium services",
+  "private": true,
+  "main": "index.js",
+  "author": "ShyPianoGuy"
+}

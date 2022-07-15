@@ -1,8 +1,10 @@
 node_modules
 dist
 generated
+
 .env
 .turbo
+
 .pnp.*
 .yarn/*
 !.yarn/patches

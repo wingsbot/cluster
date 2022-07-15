@@ -1,0 +1,8 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Wings api",
+  "private": true,
+  "main": "index.js",
+  "author": "ShyPianoGuy"
+}

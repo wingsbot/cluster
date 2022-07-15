@@ -1,0 +1,8 @@
+{
+  "name": "timed-events",
+  "version": "1.0.0",
+  "description": "Wings timed events",
+  "private": true,
+  "main": "index.js",
+  "author": "ShyPianoGuy"
+}

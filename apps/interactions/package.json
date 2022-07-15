@@ -8,16 +8,7 @@
     "build": "tsc",
     "start": "yarn ts-node src/Client.ts"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wingsbot/cluster.git"
-  },
   "author": "ShyPianoGuy",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/wingsbot/cluster/issues"
-  },
-  "homepage": "https://github.com/wingsbot/cluster#readme",
   "dependencies": {
     "@discordjs/rest": "^0.4.1",
     "@wings/database": "workspace:packages/database",
