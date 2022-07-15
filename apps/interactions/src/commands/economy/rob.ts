@@ -1,4 +1,4 @@
-import { Args, Command, CommandData, CommandOptions } from '@wings/structures';
+import { Args, Command, CommandData, CommandOptions } from '../../structures';
 
 export class RobCommand extends Command {
   description = 'Take someones Wings... If you can 👀';

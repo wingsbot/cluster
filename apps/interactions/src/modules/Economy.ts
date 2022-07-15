@@ -156,7 +156,7 @@ export class Economy extends ModuleBase {
         userId,
         guildId,
         type: 'activeItemTimer',
-        time: item.timeUsed.getTime() + item.usageTime,
+        time: BigInt(item.timeUsed.getTime()) + item.usageTime,
         itemId: newActiveItem.id,
       };
 

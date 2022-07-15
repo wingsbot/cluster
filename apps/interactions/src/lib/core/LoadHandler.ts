@@ -40,8 +40,9 @@ export class LoadHandler {
 
   async setCaches() {
     const files = await this.getCommandFiles();
+
     for (const file of files) {
-      if (!file.endsWith('.js')) continue;
+      if (!file.endsWith('.js') && !file.endsWith('.ts')) continue;
 
       const filepath = resolve(this.commandsDir, file);
       const name = parse(filepath).name;
@@ -52,8 +53,8 @@ export class LoadHandler {
 
       if (commandFile.__esModule) {
         for (const fileExport of Object.keys(commandFile)) {
-          if (commandFile[fileExport] instanceof Command) newCommands.push(commandFile[fileExport]);
-          if (commandFile[fileExport] instanceof Components) newComponents.push(commandFile[fileExport]);
+          if (typeof commandFile[fileExport] === 'function' && new commandFile[fileExport] instanceof Command) newCommands.push(commandFile[fileExport]);
+          if (typeof commandFile[fileExport] === 'function' && new commandFile[fileExport] instanceof Components) newComponents.push(commandFile[fileExport]);
 
           continue;
         }

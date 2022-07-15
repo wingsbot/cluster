@@ -26,6 +26,9 @@
   },
   "dependencies": {
     "@prisma/client": "^3.13.0",
-    "prisma": "^3.13.0"
-  }
+    "@types/node": "^18.0.4",
+    "prisma": "^3.13.0",
+    "ts-node": "^10.9.1"
+  },
+  "packageManager": "pnpm@7.5.1"
 }

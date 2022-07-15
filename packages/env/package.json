@@ -2,7 +2,7 @@
   "name": "@wings/env",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index",
   "scripts": {
     "build": "tsc"
   },

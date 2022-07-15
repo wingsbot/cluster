@@ -1,8 +1,8 @@
 import { BlackjackData, BlackjackUtil } from './util';
-import { Args, Command, CommandData, CommandOptions, MessageComponent } from '@wings/structures';
+import { Args, Command, CommandData, CommandOptions, MessageComponent } from '../../../structures';
 import { InteractionTimeoutError } from '../../../lib/framework';
 import { APIEmbed, ButtonStyle, ComponentType } from 'discord-api-types/v10';
-import { ResolvedComponent } from 'src/server/InteractionHandler';
+import { ResolvedComponent } from '../../../server/InteractionHandler';
 
 export class BlackjackCommand extends Command {
   description = 'Play blackjack against Wings.';

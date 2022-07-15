@@ -1,4 +1,4 @@
-import { Command, CommandOptions, Args, CommandData } from '@wings/structures';
+import { Command, CommandOptions, Args, CommandData } from '../../structures';
 
 export class WithdrawCommand extends Command {
   description = 'Take your money out of the bank!';

@@ -1,4 +1,4 @@
-import { Command, CommandData, User } from '@wings/structures';
+import { Command, CommandData, User } from '../../structures';
 
 export class Top10Command extends Command {
   description = 'Grabs the top 10 best players';
